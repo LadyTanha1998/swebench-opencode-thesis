@@ -1,0 +1,14 @@
+[
+  {
+    "instance_id": "astropy__astropy-12907",
+    "repo": "astropy",
+    "run": 1,
+    "status": "empty_patch",
+    "elapsed_seconds": 195.6,
+    "patch_length": 0,
+    "tool_calls": 25,
+    "tokens_used": 382932,
+    "session_id": "ses_fe5b2e578ffe24Igf7wJte0iux",
+    "output_dir": "outputs/astropy__astropy-12907/run1"
+  }
+]

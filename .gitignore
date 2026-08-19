@@ -2,13 +2,14 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
-venv*/
+*env*/
 .env
 
 # SWE-bench output files (too large for git)
 *.jsonl
 *_runlog.json
 logs/
+outputs/
 
 # macOS
 .DS_Store
