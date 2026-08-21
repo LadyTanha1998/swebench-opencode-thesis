@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Automation script: runs OpenCode on a batch of SWE-bench Lite tasks.
+Automation script: runs OpenCode on a batch of SWE-bench Pro tasks.
 
 For each task:
-  1. Pull the official SWE-bench Docker image (swebench/sweb.eval.x86_64.{instance_id})
+  1. Pull the official SWE-bench Pro Docker image (jefzda/sweap-images:{docker_tag})
      which has the repo at base_commit with all dependencies pre-installed
   2. Run OpenCode inside the container with the bug report, network restricted to LLM API only
   3. Extract the resulting git diff from the container as the agent's patch
@@ -12,27 +12,36 @@ For each task:
 
 After this script finishes, run Docker evaluation separately with:
   python -m swebench.harness.run_evaluation \
-    --predictions_path predictions_batch.jsonl \
+    --predictions_path outputs/predictions_all.jsonl \
     --max_workers 4 \
     --run_id batch_run_1
 
 Usage:
-  # Full 300-task experiment (1 run each):
-  python3 run_swebench_batch.py \
-    --repos astropy,django,sympy,scikit-learn,matplotlib,pytest,sphinx,requests,pylint,xarray,seaborn,flask \
-    --per_repo 120 --runs 1
+  # Run 1 task (default):
+  python3 run_swebench_batch.py
 
-  # Quick test — 1 task from astropy:
-  python3 run_swebench_batch.py --repos astropy --per_repo 1 --runs 1
+  # Run 50 tasks from stratified sample:
+  python3 run_swebench_batch.py --n 50
 
-  # Multiple repos, explicit count per repo:
-  python3 run_swebench_batch.py --repos astropy,django,sympy,scikit-learn --per_repo 6
+  # Run tasks from specific repos only:
+  python3 run_swebench_batch.py --n 10 --repos astropy,django
+
+  # Custom sample size and seed:
+  python3 run_swebench_batch.py --sample-size 100 --seed 123 --n 20
 
   # With repetitions for variance testing:
-  python3 run_swebench_batch.py --repos astropy --per_repo 6 --runs 5
+  python3 run_swebench_batch.py --repos astropy --runs 5
 
   # With a different model:
-  python3 run_swebench_batch.py --repos astropy --per_repo 1 --model opencode/gpt-4o
+  python3 run_swebench_batch.py --repos astropy --n 1 --model opencode/gpt-4o
+
+  # List available repos:
+  python3 run_swebench_batch.py --check-repos-available
+
+Sampling:
+  The script uses stratified random sampling to select a representative subset of tasks.
+  By default, it samples 253 tasks (95% CI for ~700 task population) with seed=42.
+  Tasks are allocated proportionally based on repo size, then filtered by --repos if specified.
 
 Docker images are pulled from Docker Hub and cached locally.
 Images are removed after each task to save disk space.
@@ -40,6 +49,8 @@ Images are removed after each task to save disk space.
 
 import argparse
 import json
+import math
+import random
 import shutil
 import subprocess
 import sys
@@ -48,16 +59,9 @@ from pathlib import Path
 from subprocess import Popen, PIPE
 from tqdm import tqdm
 
-# ── Supported repositories ───────────────────────────────────────────────────
+DEFAULT_MODEL = "opencode/mimo-v2.5-free"
 
-VALID_REPOS = {
-    "astropy", "django", "sympy", "scikit-learn", "matplotlib", "pytest",
-    "sphinx", "requests", "pylint", "xarray", "seaborn", "flask",
-}
-
-DEFAULT_MODEL = "opencode/deepseek-v4-flash-free"
-
-OPENCODE_BIN = OPENCODE_BIN = Path(__file__).resolve().parent / "bin" / "opencode-linux-x64"
+OPENCODE_BIN = Path(__file__).resolve().parent / "bin" / "opencode-linux-x64"
 OPENCODE_CONFIG = Path("opencode.json").resolve()
 OPENCODE_AUTH = Path.home() / ".local" / "share" / "opencode" / "auth.json"
 
@@ -70,11 +74,77 @@ PROXY_LOG_VOLUME = "squid-logs"
 # ── Helper functions ──────────────────────────────────────────────────────────
 
 def get_repo_key(repo_full_name):
-    """Map a SWE-bench 'repo' field (e.g. 'django/django') to a repo keyword."""
-    for key in VALID_REPOS:
-        if key in repo_full_name:
-            return key
-    return None
+    """Extract repo keyword from full name (e.g., 'django/django' -> 'django')."""
+    if "/" in repo_full_name:
+        return repo_full_name.split("/")[0]
+    return repo_full_name
+
+
+def stratified_sample(dataset, sample_size=253, seed=42):
+    """
+    Stratified random sampling with proportional allocation.
+    
+    Args:
+        dataset: list of task dicts
+        sample_size: total number of tasks to sample
+        seed: random seed for reproducibility
+    
+    Returns:
+        list of sampled tasks (maintains stratified order)
+    """
+    random.seed(seed)
+    
+    # Group tasks by repo
+    repo_groups = {}
+    for task in dataset:
+        repo = get_repo_key(task["repo"])
+        if repo not in repo_groups:
+            repo_groups[repo] = []
+        repo_groups[repo].append(task)
+    
+    # Calculate proportional allocation
+    total_tasks = len(dataset)
+    allocations = {}
+    remainders = {}
+    
+    for repo, tasks in repo_groups.items():
+        # Proportional allocation
+        exact_alloc = (len(tasks) / total_tasks) * sample_size
+        allocations[repo] = math.floor(exact_alloc)
+        remainders[repo] = exact_alloc - allocations[repo]
+    
+    # Distribute remaining slots using largest remainder method
+    allocated = sum(allocations.values())
+    remaining = sample_size - allocated
+    
+    # Sort by remainder (descending) to distribute remaining slots
+    sorted_repos = sorted(remainders.keys(), key=lambda r: remainders[r], reverse=True)
+    
+    for i in range(remaining):
+        repo = sorted_repos[i % len(sorted_repos)]
+        allocations[repo] += 1
+    
+    # Sample from each repo
+    sampled_tasks = []
+    print("\nStratified sampling allocation:")
+    
+    for repo in sorted(allocations.keys()):
+        tasks = repo_groups[repo]
+        n_sample = allocations[repo]
+        
+        # Handle repos with fewer tasks than allocated
+        if len(tasks) <= n_sample:
+            sampled = tasks
+            print(f"  {repo}: {len(sampled)}/{n_sample} tasks (all available)")
+        else:
+            sampled = random.sample(tasks, n_sample)
+            print(f"  {repo}: {len(sampled)} tasks")
+        
+        sampled_tasks.extend(sampled)
+    
+    print(f"Total sampled: {len(sampled_tasks)} tasks\n")
+    
+    return sampled_tasks
 
 
 def check_docker_image_exists(image_name):
@@ -87,14 +157,10 @@ def check_docker_image_exists(image_name):
     return result.returncode == 0
 
 
-def ensure_task_image(instance_id):
-    """Pull the SWE-bench image for a specific task if not cached."""
-    # Transform instance_id (e.g., "astropy__astropy-12907") to image name
-    # Pattern: swebench/sweb.eval.x86_64.{repo}_1776_{issue}
-    parts = instance_id.split("__")
-    repo_name = parts[0]  # "astropy"
-    issue_id = parts[1]   # "astropy-12907"
-    image_name = f"swebench/sweb.eval.x86_64.{repo_name}_1776_{issue_id}"
+def ensure_task_image(task):
+    """Pull the SWE-bench Pro image for a specific task if not cached."""
+    docker_tag = task['dockerhub_tag']
+    image_name = f"jefzda/sweap-images:{docker_tag}"
     
     if check_docker_image_exists(image_name):
         print(f"  Using cached image: {image_name}")
@@ -314,7 +380,7 @@ def build_prompt(problem_statement):
         "## Issue\n"
         f"{problem_statement}\n\n"
         "## Goal\n"
-        "The codebase is located at /testbed. "
+        "The codebase is located at /app. "
         "Fix the issue by editing the source files. "
         "Verify your fix works by running tests or a reproduction script.\n\n"
         "## Environment\n"
@@ -511,8 +577,9 @@ def run_opencode_docker(image_name, model, prompt, docker_output_dir, timeout=48
         "-v", f"{docker_output_dir.resolve()}:/output",
         "-v", f"{OPENCODE_CONFIG}:/mnt/config/opencode.jsonc:ro",
         "-v", f"{OPENCODE_AUTH}:/mnt/auth/auth.json:ro",
+        "-v", f"{Path.home() / '.config' / 'opencode'}:/tmp/opencode-home/.config/opencode:ro",
         image_name,
-        "/bin/bash", "-c",
+        "-c",
         "mkdir -p /tmp/opencode-config "
         "/tmp/opencode-home/.local/share/opencode && "
         "cp /mnt/config/opencode.jsonc "
@@ -521,11 +588,13 @@ def run_opencode_docker(image_name, model, prompt, docker_output_dir, timeout=48
         "/tmp/opencode-home/.local/share/opencode/auth.json && "
         "export OPENCODE_CONFIG_DIR=/tmp/opencode-config && "
         "export HOME=/tmp/opencode-home && "
-        "cd /testbed && "
+        "cd /app && pwd && "
         "opencode run \"$OPENCODE_PROMPT\" "
         f"--model {model} "
         "--dangerously-skip-permissions "
-        "--format json --thinking"
+        "--format json --thinking "
+        "2>&1; "
+        "sleep infinity;" # Not sure why, but with SWE-Bench Pro, the container needs to be kept alive. This is a hack but it works
     ]
 
     events = []
@@ -540,7 +609,7 @@ def run_opencode_docker(image_name, model, prompt, docker_output_dir, timeout=48
             diff_result = subprocess.run(
                 [
                     "docker", "exec",
-                    "-w", "/testbed",
+                    "-w", "/app",
                     container_name,
                     "git", "diff",
                 ],
@@ -720,7 +789,7 @@ def extract_patch_from_container(container_name, docker_output_dir=None):
     result = subprocess.run(
         [
             "docker", "exec",
-            "-w", "/testbed",
+            "-w", "/app",
             container_name,
             "git", "diff",
         ],
@@ -747,16 +816,20 @@ def cleanup_container(container_name):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n", type=int, default=30, help="number of tasks to run")
+    parser.add_argument("--n", type=int, default=1, help="number of tasks to run (default: 1)")
     parser.add_argument("--runs", type=int, default=1, help="repetitions per task")
-    parser.add_argument("--repos", type=str, default="astropy,django,sympy,scikit-learn",
-                        help="comma-separated list of repo keywords to include")
-    parser.add_argument("--per_repo", type=int, default=None,
-                        help="max tasks to take from each repo (overrides even split if set)")
+    parser.add_argument("--repos", type=str, default=None,
+                        help="comma-separated list of repo keywords to include (default: all repos)")
     parser.add_argument("--start", type=int, default=0,
                         help="start index within each repo's task list (for resuming)")
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL,
-                        help="OpenCode model to use (e.g. opencode/deepseek-v4-flash-free)")
+                        help="OpenCode model to use (e.g. opencode/mimo-v2.5-free)")
+    parser.add_argument("--sample-size", type=int, default=253,
+                        help="total number of tasks to sample via stratified sampling (default: 253)")
+    parser.add_argument("--seed", type=int, default=42,
+                        help="random seed for stratified sampling (default: 42)")
+    parser.add_argument("--see-allocation", action='store_true',
+                        help="If used, only list sampled and filtered tasks. Used for debugging.")
     args = parser.parse_args()
 
     model = args.model
@@ -764,29 +837,57 @@ def main():
 
     print(f"Using model: {model}")
 
-    print("Loading SWE-bench Lite dataset...")
+    print("Loading SWE-bench Pro dataset...")
     from datasets import load_dataset
-    dataset = load_dataset("princeton-nlp/SWE-bench_Lite", split="test")
+    dataset = load_dataset("ScaleAI/SWE-bench_Pro", split="test")
 
-    repo_keywords = [r.strip() for r in args.repos.split(",")]
+    # Extract valid repos from dataset
+    valid_repos = set()
+    for task in dataset:
+        repo_field = task.get("repo", "")
+        if repo_field:
+            keyword = get_repo_key(repo_field)
+            valid_repos.add(keyword)
 
-    # Group dataset tasks by repo keyword
-    tasks = []
-    for repo_kw in repo_keywords:
-        repo_tasks = [t for t in dataset if repo_kw in t["repo"]]
-        repo_key = get_repo_key(repo_kw)
+    print(f"Available repos in dataset ({len(valid_repos)}): {', '.join(sorted(valid_repos))}")
 
-        if repo_key is None:
-            print(f"  WARNING: '{repo_kw}' not in known repo list — skipping")
-            continue
+    # Stratified sampling
+    print(f"\nStratified sampling {args.sample_size} tasks from {len(dataset)} total (seed={args.seed})...")
+    sampled_dataset = stratified_sample(list(dataset), sample_size=args.sample_size, seed=args.seed)
 
-        limit = args.per_repo if args.per_repo is not None else max(1, args.n // len(repo_keywords))
-        selected = repo_tasks[args.start: args.start + limit]
-        print(f"  {repo_kw}: {len(repo_tasks)} available in dataset, selected {len(selected)}")
-        for t in selected:
-            tasks.append((t, repo_key))
+    # Filter by repos if specified
+    if args.repos:
+        repo_keywords = [r.strip() for r in args.repos.split(",")]
+        filtered_tasks = []
+        
+        for repo_kw in repo_keywords:
+            if repo_kw not in valid_repos:
+                print(f"  WARNING: '{repo_kw}' not found in dataset")
+                print(f"  Available repos: {', '.join(sorted(valid_repos))}")
+                continue
+            
+            repo_tasks = [t for t in sampled_dataset if get_repo_key(t["repo"]) == repo_kw]
+            print(f"  {repo_kw}: {len(repo_tasks)} tasks in sample")
+            filtered_tasks.extend([(t, repo_kw) for t in repo_tasks])
+        
+        if not filtered_tasks:
+            print("ERROR: No tasks match the specified repos")
+            sys.exit(1)
+        
+        tasks = filtered_tasks
+    else:
+        # No filter, convert to (task, repo_key) tuples
+        tasks = [(t, get_repo_key(t["repo"])) for t in sampled_dataset]
 
-    print(f"\nTotal tasks selected across all repos: {len(tasks)}")
+    # Take first n tasks
+    tasks = tasks[:args.n]
+    
+    if len(tasks) < args.n:
+        print(f"INFO: Only {len(tasks)} tasks available (requested --n {args.n})")
+
+    print(f"\nTotal tasks to run: {len(tasks)}")
+    if args.see_allocation:
+        exit(0)
 
     print("\nSetting up proxy...")
     if not setup_proxy_network():
@@ -831,7 +932,7 @@ def main():
                 problem = task["problem_statement"]
                 repo_name = repo_key
 
-                image_ok, image_name = ensure_task_image(instance_id)
+                image_ok, image_name = ensure_task_image(task)
                 if not image_ok:
                     print(f"\nFAILED to get image for {instance_id}, skipping")
                     results_log.append({"instance_id": instance_id, "status": "image_pull_failed"})
@@ -855,6 +956,7 @@ def main():
                     t0 = time.time()
 
                     prompt = build_prompt(problem)
+
                     task_dir = output_dir / instance_id / f"run{run_num}"
                     docker_output_dir = task_dir / "_docker_output"
                     docker_output_dir.mkdir(parents=True, exist_ok=True)
@@ -863,6 +965,16 @@ def main():
                     
                     if stderr:
                         print(f"\nSTDERR: {stderr}")
+
+                    # Display OpenCode logs if they exist
+                    opencode_logs_dir = docker_output_dir / "opencode-logs"
+                    if opencode_logs_dir.exists():
+                        log_files = list(opencode_logs_dir.glob("*"))
+                        if log_files:
+                            print(f"\n[OPENCODE LOGS] Found {len(log_files)} log file(s):")
+                            for log_file in log_files:
+                                print(f"\n--- {log_file.name} ---")
+                                print(log_file.read_text())
 
                     trace_file = docker_output_dir / "trace.json"
 
@@ -879,7 +991,7 @@ def main():
                     else:
                         print(f"\n[DEBUG] Final patch size: {len(patch)} chars")
 
-                    cleanup_container(container_name)
+                    # cleanup_container(container_name)
                     elapsed = time.time() - t0
 
                     status = "ok" if patch.strip() else "empty_patch"
@@ -921,7 +1033,7 @@ def main():
 
                     pbar.update(1)
 
-                remove_task_image(image_name)
+                # remove_task_image(image_name)
     finally:
         print("\nCleaning up proxy...")
         stop_proxy()

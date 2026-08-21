@@ -1,14 +1,14 @@
 [
   {
-    "instance_id": "astropy__astropy-12907",
-    "repo": "astropy",
+    "instance_id": "instance_NodeBB__NodeBB-f083cd559d69c16481376868c8da65172729c0ca-vnan",
+    "repo": "NodeBB",
     "run": 1,
-    "status": "empty_patch",
-    "elapsed_seconds": 195.6,
-    "patch_length": 0,
-    "tool_calls": 25,
-    "tokens_used": 382932,
-    "session_id": "ses_fe5b2e578ffe24Igf7wJte0iux",
-    "output_dir": "outputs/astropy__astropy-12907/run1"
+    "status": "ok",
+    "elapsed_seconds": 450.4,
+    "patch_length": 7653,
+    "tool_calls": 30,
+    "tokens_used": 949608,
+    "session_id": "ses_fdb5530c3ffeIxoA3WlK0LDhAe",
+    "output_dir": "outputs/instance_NodeBB__NodeBB-f083cd559d69c16481376868c8da65172729c0ca-vnan/run1"
   }
 ]
