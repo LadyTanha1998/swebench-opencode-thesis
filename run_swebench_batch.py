@@ -57,7 +57,7 @@ VALID_REPOS = {
 
 DEFAULT_MODEL = "opencode/deepseek-v4-flash-free"
 
-OPENCODE_BIN = Path.home() / ".opencode" / "bin" / "opencode"
+OPENCODE_BIN = OPENCODE_BIN = Path(__file__).resolve().parent / "bin" / "opencode-linux-x64"
 OPENCODE_CONFIG = Path("opencode.json").resolve()
 OPENCODE_AUTH = Path.home() / ".local" / "share" / "opencode" / "auth.json"
 
@@ -125,7 +125,10 @@ def remove_task_image(image_name):
     if result.returncode == 0:
         print(f"  Removed image: {image_name}")
     else:
-        print(f"  WARNING: Failed to remove image {image_name}")
+        print(
+            f"  WARNING: Failed to remove image {image_name}"
+            + (f": {result.stderr.strip()}" if result.stderr.strip() else "")
+        )
 
 
 def check_docker_network_exists(network_name):
@@ -471,24 +474,29 @@ def save_run_artifacts(task_dir, docker_output_dir, instance_id, run_num, events
 
 def run_opencode_docker(image_name, model, prompt, docker_output_dir, timeout=480):
     """Run OpenCode in a per-task SWE-bench Docker container with network isolation."""
-    
+
     if not OPENCODE_BIN.exists():
         print(f"  ERROR: OpenCode binary not found at {OPENCODE_BIN}")
         return 1, [], f"OpenCode binary not found at {OPENCODE_BIN}", {}, None
-    
+
     if not OPENCODE_CONFIG.exists():
         print(f"  ERROR: OpenCode config not found at {OPENCODE_CONFIG}")
         return 1, [], f"OpenCode config not found at {OPENCODE_CONFIG}", {}, None
-    
+
     if not OPENCODE_AUTH.exists():
         print(f"  ERROR: OpenCode auth file not found at {OPENCODE_AUTH}")
         return 1, [], f"OpenCode auth file not found at {OPENCODE_AUTH}", {}, None
-    
-    prompt_file = docker_output_dir / "prompt.txt"
-    prompt_file.write_text(prompt)
+
+    docker_output_dir.mkdir(parents=True, exist_ok=True)
+    trace_file = docker_output_dir / "trace.json"
+    patch_file = docker_output_dir / "patch_from_container.diff"
 
     container_name = f"swebench-agent-{int(time.time())}"
-    
+
+    # Pass the prompt directly as an environment variable.
+    # This avoids Docker Desktop bind-mount issues with individual files.
+    prompt_env = prompt
+
     docker_cmd = [
         "docker", "run",
         "--name", container_name,
@@ -498,29 +506,62 @@ def run_opencode_docker(image_name, model, prompt, docker_output_dir, timeout=48
         "-e", "HTTP_PROXY=http://swebench-proxy:3128",
         "-e", "HTTPS_PROXY=http://swebench-proxy:3128",
         "-e", "NO_PROXY=localhost,127.0.0.1",
+        "-e", f"OPENCODE_PROMPT={prompt_env}",
         "-v", f"{OPENCODE_BIN}:/usr/local/bin/opencode:ro",
         "-v", f"{docker_output_dir.resolve()}:/output",
-        "-v", f"{prompt_file.resolve()}:/tmp/prompt.txt:ro",
         "-v", f"{OPENCODE_CONFIG}:/mnt/config/opencode.jsonc:ro",
         "-v", f"{OPENCODE_AUTH}:/mnt/auth/auth.json:ro",
         image_name,
         "/bin/bash", "-c",
-        "mkdir -p /tmp/opencode-config /tmp/opencode-home/.local/share/opencode && "
-        "cp /mnt/config/opencode.jsonc /tmp/opencode-config/opencode.jsonc && "
-        "cp /mnt/auth/auth.json /tmp/opencode-home/.local/share/opencode/auth.json && "
+        "mkdir -p /tmp/opencode-config "
+        "/tmp/opencode-home/.local/share/opencode && "
+        "cp /mnt/config/opencode.jsonc "
+        "/tmp/opencode-config/opencode.jsonc && "
+        "cp /mnt/auth/auth.json "
+        "/tmp/opencode-home/.local/share/opencode/auth.json && "
         "export OPENCODE_CONFIG_DIR=/tmp/opencode-config && "
         "export HOME=/tmp/opencode-home && "
         "cd /testbed && "
-        f"opencode run \"$(cat /tmp/prompt.txt)\" "
+        "opencode run \"$OPENCODE_PROMPT\" "
         f"--model {model} "
         "--dangerously-skip-permissions "
-        "--format json --thinking "
-        "| tee /output/trace.json"
+        "--format json --thinking"
     ]
 
     events = []
     start_time = time.time()
     tool_call_count = 0
+    returncode = None
+    stderr = ""
+
+    def extract_live_patch():
+        """Extract git diff while the task container is still running."""
+        try:
+            diff_result = subprocess.run(
+                [
+                    "docker", "exec",
+                    "-w", "/testbed",
+                    container_name,
+                    "git", "diff",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            patch_text = (
+                diff_result.stdout
+                if diff_result.returncode == 0
+                else ""
+            )
+            patch_file.write_text(patch_text)
+            print(
+                f"  [DEBUG] Patch extracted: {len(patch_text)} chars"
+            )
+            return patch_text
+        except Exception as exc:
+            print(f"  [DEBUG] Could not extract patch: {exc}")
+            patch_file.write_text("")
+            return ""
 
     try:
         proc = Popen(
@@ -531,52 +572,163 @@ def run_opencode_docker(image_name, model, prompt, docker_output_dir, timeout=48
             bufsize=1,
         )
 
-        for line in proc.stdout:
-            line = line.strip()
-            if not line:
-                continue
+        print(f"  [DEBUG] Docker process started, PID={proc.pid}")
+        print("  [DEBUG] Starting to read stdout...")
 
-            try:
-                event = json.loads(line)
+        # Use select so the timeout is effective even if OpenCode stops
+        # producing output without exiting.
+        import selectors
+
+        selector = selectors.DefaultSelector()
+        selector.register(proc.stdout, selectors.EVENT_READ)
+
+        with open(trace_file, "w") as trace_out:
+            finished = False
+
+            while True:
+                remaining = timeout - (time.time() - start_time)
+                if remaining <= 0:
+                    print(
+                        f"  [DEBUG] Timeout after {timeout}s. "
+                        "Saving partial patch before killing Docker process..."
+                    )
+                    extract_live_patch()
+                    proc.kill()
+                    returncode = -1
+                    stderr = "[TIMEOUT EXPIRED]"
+                    break
+
+                if proc.poll() is not None:
+                    returncode = proc.returncode
+                    break
+
+                ready = selector.select(timeout=min(1.0, remaining))
+                if not ready:
+                    continue
+
+                line = proc.stdout.readline()
+                if not line:
+                    if proc.poll() is not None:
+                        returncode = proc.returncode
+                        break
+                    continue
+
+                line = line.rstrip("\r\n")
+                if not line:
+                    continue
+
+                trace_out.write(line + "\n")
+                trace_out.flush()
+
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+
                 events.append(event)
 
                 elapsed = time.time() - start_time
                 progress = format_progress(event, elapsed)
                 if progress:
                     print(progress)
-                    if event.get("type") == "tool_use":
-                        tool_call_count += 1
 
-            except json.JSONDecodeError:
-                pass
+                if event.get("type") == "tool_use":
+                    tool_call_count += 1
 
-        proc.wait(timeout=timeout)
-        returncode = proc.returncode
-        stderr = proc.stderr.read() if proc.stderr else ""
+                if (
+                    event.get("type") == "step_finish"
+                    and event.get("part", {}).get("reason") == "stop"
+                ):
+                    print("  [DEBUG] OpenCode reported reason=stop")
+                    print("  [DEBUG] Agent finished. Extracting patch...")
+                    extract_live_patch()
+
+                    print("  [DEBUG] Stopping Docker container...")
+                    subprocess.run(
+                        ["docker", "stop", "-t", "2", container_name],
+                        capture_output=True,
+                        text=True,
+                        timeout=10,
+                    )
+                    finished = True
+                    returncode = 0
+                    break
+
+        selector.close()
+
+        if proc.poll() is None:
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                print(
+                    "  [DEBUG] Docker process did not exit after stop; "
+                    "killing it."
+                )
+                proc.kill()
+                proc.wait(timeout=10)
+
+        if returncode is None:
+            returncode = proc.returncode
+
+        if proc.stderr:
+            stderr_output = proc.stderr.read()
+            if stderr_output:
+                stderr = stderr_output
 
     except subprocess.TimeoutExpired:
-        proc.kill()
+        print("  [DEBUG] Timeout expired. Killing Docker process...")
+        try:
+            proc.kill()
+            proc.wait(timeout=10)
+        except Exception:
+            pass
         returncode = -1
         stderr = "[TIMEOUT EXPIRED]"
+
+    except Exception as exc:
+        print(f"  [DEBUG] Unexpected error: {exc}")
+        try:
+            proc.kill()
+            proc.wait(timeout=10)
+        except Exception:
+            pass
+        returncode = 1
+        stderr = str(exc)
 
     elapsed = time.time() - start_time
     summary = parse_summary(events)
 
-    final_msg = f"  [{elapsed:05.1f}s] ✓ done — {tool_call_count} tool calls, {summary['tokens']['total']} tokens"
+    final_msg = (
+        f"  [{elapsed:05.1f}s] ✓ done — "
+        f"{tool_call_count} tool calls, "
+        f"{summary['tokens']['total']} tokens"
+    )
     print(final_msg)
 
     return returncode, events, stderr, summary, container_name
 
+def extract_patch_from_container(container_name, docker_output_dir=None):
+    """Read a patch saved while the container was still running, with a live fallback."""
 
-def extract_patch_from_container(container_name):
-    """Extract git diff from the container after agent runs."""
+    if docker_output_dir is not None:
+        saved_patch = Path(docker_output_dir) / "patch_from_container.diff"
+        if saved_patch.exists():
+            patch_text = saved_patch.read_text()
+            if patch_text.strip():
+                return patch_text
+
     result = subprocess.run(
-        ["docker", "exec", "-w", "/testbed", container_name, "git", "diff"],
+        [
+            "docker", "exec",
+            "-w", "/testbed",
+            container_name,
+            "git", "diff",
+        ],
         capture_output=True,
         text=True,
+        timeout=30,
     )
     return result.stdout if result.returncode == 0 else ""
-
 
 def cleanup_container(container_name):
     """Remove the Docker container after extracting the patch."""
@@ -661,7 +813,8 @@ def main():
                 try:
                     entry = json.loads(line)
                     key = (entry["instance_id"], entry["model_name_or_path"])
-                    completed_keys.add(key)
+                    if entry.get("model_patch", "").strip():
+                        completed_keys.add(key)
                     predictions.append(entry)
                 except Exception:
                     pass
@@ -710,20 +863,22 @@ def main():
                     
                     if stderr:
                         print(f"\nSTDERR: {stderr}")
-                    
-                    check_result = subprocess.run(
-                        ["docker", "inspect", container_name],
-                        capture_output=True, text=True
+
+                    trace_file = docker_output_dir / "trace.json"
+
+                    if not trace_file.exists() or trace_file.stat().st_size == 0:
+                        print("\nERROR: No output from opencode (trace.json missing or empty)")
+
+                    patch = extract_patch_from_container(
+                        container_name,
+                        docker_output_dir,
                     )
-                    if check_result.returncode != 0:
-                        print(f"\nERROR: Container {container_name} not found")
-                        patch = ""
+
+                    if not patch.strip():
+                        print("\nWARNING: Patch is empty after extraction.")
                     else:
-                        trace_file = docker_output_dir / "trace.json"
-                        if not trace_file.exists() or trace_file.stat().st_size == 0:
-                            print(f"\nERROR: No output from opencode (trace.json missing or empty)")
-                        patch = extract_patch_from_container(container_name)
-                    
+                        print(f"\n[DEBUG] Final patch size: {len(patch)} chars")
+
                     cleanup_container(container_name)
                     elapsed = time.time() - t0
 
