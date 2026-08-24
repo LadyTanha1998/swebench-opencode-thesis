@@ -880,12 +880,12 @@ def main():
         tasks = [(t, get_repo_key(t["repo"])) for t in sampled_dataset]
 
     # Take first n tasks
-    tasks = tasks[:args.n]
-    
-    if len(tasks) < args.n:
-        print(f"INFO: Only {len(tasks)} tasks available (requested --n {args.n})")
+    # Keep all sampled tasks available so resume can skip completed tasks.
 
-    print(f"\nTotal tasks to run: {len(tasks)}")
+    
+    
+
+    print(f"\nTotal candidate tasks: {len(tasks)}")
     if args.see_allocation:
         exit(0)
 
@@ -913,7 +913,7 @@ def main():
             for line in f:
                 try:
                     entry = json.loads(line)
-                    key = (entry["instance_id"], entry["model_name_or_path"])
+                    key = entry["instance_id"]
                     if entry.get("model_patch", "").strip():
                         completed_keys.add(key)
                     predictions.append(entry)
@@ -922,12 +922,18 @@ def main():
         print(f"Resuming: found {len(completed_keys)} already-completed runs in {predictions_path}")
 
     # Calculate total runs for progress bar
-    total_runs = len(tasks) * args.runs
+    total_runs = args.n * args.runs
     
     try:
         with tqdm(total=total_runs, desc="Starting", unit="run", dynamic_ncols=True) as pbar:
+            run_count = 0
             for i, (task, repo_key) in enumerate(tasks):
+                if run_count >= args.n:
+                    break
                 instance_id = task["instance_id"]
+                # Skip tasks that already have a prediction
+                if instance_id in completed_keys:
+                    continue
                 commit = task["base_commit"]
                 problem = task["problem_statement"]
                 repo_name = repo_key
@@ -949,11 +955,9 @@ def main():
                     # Update progress bar description
                     pbar.set_description(f"[{i+1}/{len(tasks)}] {instance_id} (run {run_num}/{args.runs})")
 
-                    if (instance_id, run_model_name) in completed_keys:
-                        pbar.update(1)
-                        continue
-
                     t0 = time.time()
+
+
 
                     prompt = build_prompt(problem)
 
@@ -1032,6 +1036,7 @@ def main():
                         json.dump(results_log, f, indent=2)
 
                     pbar.update(1)
+                    run_count += 1
 
                 # remove_task_image(image_name)
     finally:
