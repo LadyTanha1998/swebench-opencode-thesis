@@ -230,7 +230,6 @@ proxy/                    # Squid proxy configuration
   Dockerfile.proxy        # Proxy container definition
   squid.conf              # Whitelist rules
 bin/                      # Helper scripts
-example_output/           # Example output of one run
 replication-package/      # Data and evidence of the thesis (see above)
 ```
 
