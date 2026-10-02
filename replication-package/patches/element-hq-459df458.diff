@@ -1,0 +1,87 @@
+diff --git a/src/voice-broadcast/utils/startNewVoiceBroadcastRecording.ts b/src/voice-broadcast/utils/startNewVoiceBroadcastRecording.ts
+index ae4e40c4a3..ea3897567a 100644
+--- a/src/voice-broadcast/utils/startNewVoiceBroadcastRecording.ts
++++ b/src/voice-broadcast/utils/startNewVoiceBroadcastRecording.ts
+@@ -21,6 +21,7 @@ import {
+     VoiceBroadcastInfoEventContent,
+     VoiceBroadcastInfoEventType,
+     VoiceBroadcastInfoState,
++    VoiceBroadcastPlaybacksStore,
+     VoiceBroadcastRecordingsStore,
+     VoiceBroadcastRecording,
+     getChunkLength,
+@@ -92,5 +93,10 @@ export const startNewVoiceBroadcastRecording = async (
+         return null;
+     }
+ 
++    // Stop any ongoing playback so the recording and playback do not run in parallel.
++    const playbacksStore = VoiceBroadcastPlaybacksStore.instance();
++    playbacksStore.getCurrent()?.stop();
++    playbacksStore.clearCurrent();
++
+     return startBroadcast(room, client, recordingsStore);
+ };
+diff --git a/test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts b/test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts
+index 1873a4b513..579e5e8998 100644
+--- a/test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts
++++ b/test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts
+@@ -22,6 +22,8 @@ import {
+     startNewVoiceBroadcastRecording,
+     VoiceBroadcastInfoEventType,
+     VoiceBroadcastInfoState,
++    VoiceBroadcastPlayback,
++    VoiceBroadcastPlaybacksStore,
+     VoiceBroadcastRecordingsStore,
+     VoiceBroadcastRecording,
+ } from "../../../src/voice-broadcast";
+@@ -138,6 +140,50 @@ describe("startNewVoiceBroadcastRecording", () => {
+             });
+         });
+ 
++        describe("when there is a currently playing voice broadcast", () => {
++            let playbacks: VoiceBroadcastPlaybacksStore;
++            let playback: VoiceBroadcastPlayback;
++
++            beforeEach(async () => {
++                playbacks = new VoiceBroadcastPlaybacksStore();
++
++                playback = {
++                    stop: jest.fn(),
++                } as unknown as VoiceBroadcastPlayback;
++
++                jest.spyOn(playbacks, "getCurrent").mockReturnValue(playback);
++                jest.spyOn(playbacks, "clearCurrent").mockImplementation(() => {});
++                jest.spyOn(VoiceBroadcastPlaybacksStore, "instance").mockReturnValue(playbacks);
++
++                mocked(client.sendStateEvent).mockImplementation(async (
++                    _roomId: string,
++                    _eventType: string,
++                    _content: any,
++                    _stateKey = "",
++                ) => {
++                    setTimeout(() => {
++                        room.currentState.setStateEvents([otherEvent]);
++                        room.currentState.setStateEvents([infoEvent]);
++                    }, 0);
++                    return { event_id: infoEvent.getId() };
++                });
++
++                result = await startNewVoiceBroadcastRecording(room, client, recordingsStore);
++            });
++
++            afterEach(() => {
++                jest.restoreAllMocks();
++            });
++
++            it("should stop the current playback", () => {
++                expect(playback.stop).toHaveBeenCalled();
++            });
++
++            it("should clear the current playback", () => {
++                expect(playbacks.clearCurrent).toHaveBeenCalled();
++            });
++        });
++
+         describe("when there is already a current voice broadcast", () => {
+             beforeEach(async () => {
+                 mocked(recordingsStore.getCurrent).mockReturnValue(

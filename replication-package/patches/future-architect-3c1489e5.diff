@@ -1,0 +1,60 @@
+diff --git a/models/vulninfos.go b/models/vulninfos.go
+index 83453b6..a9a24b8 100644
+--- a/models/vulninfos.go
++++ b/models/vulninfos.go
+@@ -446,6 +446,32 @@ func (v VulnInfo) MaxCvss3Score() CveContentCvss {
+ 			max = cont.Cvss3Score
+ 		}
+ 	}
++	if 0 < max {
++		return value
++	}
++
++	// If CVSS v3 score isn't on NVD, RedHat and JVN, use severity data.
++	// Convert severity to cvss v3 score roughly, then returns max severity.
++	// Some sources (e.g. Trivy, some OVAL entries) provide only severity.
++	order = AllCveContetTypes.Except(order...)
++	for _, ctype := range order {
++		if cont, found := v.CveContents[ctype]; found && 0 < len(cont.Cvss3Severity) {
++			score := severityToV3ScoreRoughly(cont.Cvss3Severity)
++			if max < score {
++				value = CveContentCvss{
++					Type: ctype,
++					Value: Cvss{
++						Type:                 CVSS3,
++						Score:                score,
++						CalculatedBySeverity: true,
++						Vector:               cont.Cvss3Vector,
++						Severity:             strings.ToUpper(cont.Cvss3Severity),
++					},
++				}
++				max = score
++			}
++		}
++	}
+ 	return value
+ }
+ 
+@@ -656,6 +682,22 @@ func severityToV2ScoreRoughly(severity string) float64 {
+ 	return 0
+ }
+ 
++// severityToV3ScoreRoughly returns a rough CVSS v3 score for the given severity.
++// Used when only severity is available and no numeric CVSS v3 score is provided.
++func severityToV3ScoreRoughly(severity string) float64 {
++	switch strings.ToUpper(severity) {
++	case "CRITICAL":
++		return 9.8
++	case "HIGH", "IMPORTANT":
++		return 8.9
++	case "MODERATE", "MEDIUM":
++		return 6.9
++	case "LOW":
++		return 3.9
++	}
++	return 0
++}
++
+ // FormatMaxCvssScore returns Max CVSS Score
+ func (v VulnInfo) FormatMaxCvssScore() string {
+ 	max := v.MaxCvssScore()

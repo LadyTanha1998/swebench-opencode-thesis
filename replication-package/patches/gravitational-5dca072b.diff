@@ -1,0 +1,75 @@
+diff --git a/lib/auth/middleware.go b/lib/auth/middleware.go
+index 0d4169edf8..5b81cd2ab3 100644
+--- a/lib/auth/middleware.go
++++ b/lib/auth/middleware.go
+@@ -551,8 +551,41 @@ func (a *Middleware) WrapContextWithUser(ctx context.Context, conn *tls.Conn) (c
+ 	return requestWithContext, nil
+ }
+ 
++// maxClientCertPoolSize is the maximum number of client certificate
++// authorities that can be added to the pool returned by ClientCertPool.
++//
++// The TLS protocol limits the list of acceptable certificate authorities
++// sent during an mTLS handshake to 2^16-1 bytes. When a large number of
++// trusted clusters (and therefore CAs) are configured, the combined size of
++// the CA subjects can exceed this limit, which causes the Go crypto/tls
++// library to fail the handshake (and panic in some Go versions). Limiting
++// the size of the pool keeps the handshake message within the protocol
++// limit.
++const maxClientCertPoolSize = 256
++
++// maxClientCertPoolSizeBytes is the maximum combined size, in bytes, of the
++// certificate authority subjects that can be added to the pool returned by
++// ClientCertPool.
++//
++// Each CA subject is sent in the TLS handshake encoded with a 2-byte length
++// prefix, and the acceptable CA list itself is prefixed with a 2-byte length
++// field, so the total size of all CA subjects must stay below 2^16-1 bytes.
++// Exceeding this limit causes crypto/tls to produce an invalid handshake
++// message (and to panic in some Go versions), so the pool is truncated once
++// the limit is reached. A small margin is reserved for the rest of the
++// CertificateRequest message (certificate types and signature algorithms).
++const maxClientCertPoolSizeBytes = (1 << 16) - 1 - 128
++
+ // ClientCertPool returns trusted x509 cerificate authority pool
+ func ClientCertPool(client AccessCache, clusterName string) (*x509.CertPool, error) {
++	return clientCertPool(client, clusterName, maxClientCertPoolSize, maxClientCertPoolSizeBytes)
++}
++
++// clientCertPool returns a trusted x509 certificate authority pool, adding at
++// most maxCAs certificates whose combined subject size does not exceed
++// maxSizeBytes. When a limit is reached the pool is truncated to avoid
++// exceeding the TLS handshake message size limit.
++func clientCertPool(client AccessCache, clusterName string, maxCAs, maxSizeBytes int) (*x509.CertPool, error) {
+ 	pool := x509.NewCertPool()
+ 	var authorities []services.CertAuthority
+ 	if clusterName == "" {
+@@ -583,6 +616,10 @@ func ClientCertPool(client AccessCache, clusterName string) (*x509.CertPool, err
+ 		authorities = append(authorities, userCA)
+ 	}
+ 
++	var (
++		added int
++		size  int
++	)
+ 	for _, auth := range authorities {
+ 		for _, keyPair := range auth.GetTLSKeyPairs() {
+ 			cert, err := tlsca.ParseCertificatePEM(keyPair.Cert)
+@@ -590,7 +627,17 @@ func ClientCertPool(client AccessCache, clusterName string) (*x509.CertPool, err
+ 				return nil, trace.Wrap(err)
+ 			}
+ 			log.Debugf("ClientCertPool -> %v", CertInfo(cert))
++			// Each CA subject is encoded in the TLS handshake with a 2-byte
++			// length prefix. Stop adding CAs if adding another one would
++			// exceed the protocol's acceptable CA list size limit.
++			subjectSize := len(cert.RawSubject) + 2
++			if added >= maxCAs || size+subjectSize > maxSizeBytes {
++				log.Warningf("ClientCertPool: number of trusted certificate authorities exceeds the maximum of %v (or exceeds the TLS handshake message size limit of %v bytes). Some CAs have been excluded from the client certificate pool.", maxCAs, maxSizeBytes)
++				return pool, nil
++			}
+ 			pool.AddCert(cert)
++			added++
++			size += subjectSize
+ 		}
+ 	}
+ 	return pool, nil

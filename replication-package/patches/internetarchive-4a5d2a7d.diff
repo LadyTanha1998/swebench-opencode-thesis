@@ -1,0 +1,71 @@
+diff --git a/openlibrary/core/wikidata.py b/openlibrary/core/wikidata.py
+index c20e101b7..2b8be562d 100644
+--- a/openlibrary/core/wikidata.py
++++ b/openlibrary/core/wikidata.py
+@@ -54,6 +54,23 @@ class WikidataEntity:
+             return self.sitelinks[english_wiki]['url'], 'en'
+         return None
+ 
++    def get_all_values(self, property_id: str) -> list:
++        """
++        Get all the values for a given property identifier.
++
++        Preserves the order of the statements, skips invalid entries, and
++        returns an empty list when the property is missing or has no usable
++        values.
++        """
++        statements = self.statements.get(property_id, {})
++        values = []
++        for statement in statements.values():
++            if isinstance(statement, dict):
++                value = statement.get('value')
++                if value is not None:
++                    values.append(value)
++        return values
++
+     @classmethod
+     def from_dict(cls, response: dict, updated: datetime):
+         return cls(
+diff --git a/openlibrary/tests/core/test_wikidata.py b/openlibrary/tests/core/test_wikidata.py
+index e448c7d85..044d4c9db 100644
+--- a/openlibrary/tests/core/test_wikidata.py
++++ b/openlibrary/tests/core/test_wikidata.py
+@@ -118,3 +118,38 @@ def test_get_wikipedia_link() -> None:
+         'es',
+     )
+     assert entity_no_english.get_wikipedia_link('en') is None
++
++
++def test_get_all_values() -> None:
++    entity = createWikidataEntity()
++    entity.statements = {
++        'P123': {
++            'a': {'value': 'first'},
++            'b': {'value': 'second'},
++            'c': {'value': 'third'},
++        },
++        'P456': {
++            'x': {'value': 'only'},
++        },
++    }
++
++    assert entity.get_all_values('P123') == ['first', 'second', 'third']
++
++    assert entity.get_all_values('P456') == ['only']
++
++    assert entity.get_all_values('P999') == []
++
++
++def test_get_all_values_skips_invalid_entries() -> None:
++    entity = createWikidataEntity()
++    entity.statements = {
++        'P123': {
++            'a': {'value': 'valid'},
++            'b': {},
++            'c': {'other': 'no value'},
++            'd': 'not a dict',
++            'e': {'value': None},
++        },
++    }
++
++    assert entity.get_all_values('P123') == ['valid']

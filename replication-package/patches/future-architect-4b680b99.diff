@@ -1,0 +1,65 @@
+diff --git a/models/scanresults.go b/models/scanresults.go
+index 9b30b55..4d5e878 100644
+--- a/models/scanresults.go
++++ b/models/scanresults.go
+@@ -423,6 +423,9 @@ func (r ScanResult) isDisplayUpdatableNum() bool {
+ 	if mode.IsOffline() {
+ 		return false
+ 	}
++	if r.Family == config.FreeBSD {
++		return false
++	}
+ 	if mode.IsFastRoot() || mode.IsDeep() {
+ 		return true
+ 	}
+diff --git a/scan/freebsd.go b/scan/freebsd.go
+index fe4745c..fc4ea32 100644
+--- a/scan/freebsd.go
++++ b/scan/freebsd.go
+@@ -163,12 +163,44 @@ func (o *bsd) rebootRequired() (bool, error) {
+ }
+ 
+ func (o *bsd) scanInstalledPackages() (models.Packages, error) {
+-	cmd := util.PrependProxyEnv("pkg version -v")
++	cmd := util.PrependProxyEnv("pkg info")
+ 	r := o.exec(cmd, noSudo)
+ 	if !r.isSuccess() {
+ 		return nil, xerrors.Errorf("Failed to SSH: %s", r)
+ 	}
+-	return o.parsePkgVersion(r.Stdout), nil
++	packs := o.parsePkgInfo(r.Stdout)
++
++	cmd = util.PrependProxyEnv("pkg version -v")
++	r = o.exec(cmd, noSudo)
++	if !r.isSuccess() {
++		return nil, xerrors.Errorf("Failed to SSH: %s", r)
++	}
++	for name, pack := range o.parsePkgVersion(r.Stdout) {
++		packs[name] = pack
++	}
++	return packs, nil
++}
++
++func (o *bsd) parsePkgInfo(stdout string) models.Packages {
++	packs := models.Packages{}
++	lines := strings.Split(stdout, "\n")
++	for _, l := range lines {
++		fields := strings.Fields(l)
++		if len(fields) == 0 {
++			continue
++		}
++
++		packVer := fields[0]
++		splitted := strings.Split(packVer, "-")
++		ver := splitted[len(splitted)-1]
++		name := strings.Join(splitted[:len(splitted)-1], "-")
++
++		packs[name] = models.Package{
++			Name:    name,
++			Version: ver,
++		}
++	}
++	return packs
+ }
+ 
+ func (o *bsd) scanUnsecurePackages() (models.VulnInfos, error) {

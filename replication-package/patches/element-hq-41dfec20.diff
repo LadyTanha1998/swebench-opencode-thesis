@@ -1,0 +1,110 @@
+diff --git a/src/utils/AutoDiscoveryUtils.tsx b/src/utils/AutoDiscoveryUtils.tsx
+index aaa602abb4..01f49cdab0 100644
+--- a/src/utils/AutoDiscoveryUtils.tsx
++++ b/src/utils/AutoDiscoveryUtils.tsx
+@@ -15,7 +15,8 @@ limitations under the License.
+ */
+ 
+ import React, { ReactNode } from "react";
+-import { AutoDiscovery, ClientConfig } from "matrix-js-sdk/src/autodiscovery";
++import { AutoDiscovery, AutoDiscoveryAction, ClientConfig } from "matrix-js-sdk/src/autodiscovery";
++import { M_AUTHENTICATION } from "matrix-js-sdk/src/client";
+ import { logger } from "matrix-js-sdk/src/logger";
+ import { IClientWellKnown } from "matrix-js-sdk/src/matrix";
+ 
+@@ -242,6 +243,10 @@ export default class AutoDiscoveryUtils {
+             } // else the error is not related to syntax - continue anyways.
+         }
+ 
++        const delegatedAuthConfig = M_AUTHENTICATION.findIn(discoveryResult) as
++            | (typeof discoveryResult[M_AUTHENTICATION.name] & { state?: AutoDiscoveryAction })
++            | undefined;
++
+         const preferredHomeserverUrl = hsResult["base_url"];
+ 
+         if (!preferredHomeserverUrl) {
+@@ -268,6 +273,8 @@ export default class AutoDiscoveryUtils {
+             isDefault: false,
+             warning: hsResult.error,
+             isNameResolvable: !isSynthetic,
++            delegatedAuthConfig:
++                delegatedAuthConfig?.state === AutoDiscoveryAction.SUCCESS ? delegatedAuthConfig : undefined,
+         } as ValidatedServerConfig;
+     }
+ }
+diff --git a/src/utils/ValidatedServerConfig.ts b/src/utils/ValidatedServerConfig.ts
+index bac271eef6..2200e4083f 100644
+--- a/src/utils/ValidatedServerConfig.ts
++++ b/src/utils/ValidatedServerConfig.ts
+@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+ 
++import { IDelegatedAuthConfig } from "matrix-js-sdk/src/client";
++
+ export interface ValidatedServerConfig {
+     hsUrl: string;
+     hsName: string;
+@@ -26,4 +28,6 @@ export interface ValidatedServerConfig {
+     isNameResolvable: boolean;
+ 
+     warning: string | Error;
++
++    delegatedAuthConfig?: IDelegatedAuthConfig;
+ }
+diff --git a/test/utils/AutoDiscoveryUtils-test.tsx b/test/utils/AutoDiscoveryUtils-test.tsx
+index 7282f9a824..b4a043d6d7 100644
+--- a/test/utils/AutoDiscoveryUtils-test.tsx
++++ b/test/utils/AutoDiscoveryUtils-test.tsx
+@@ -186,5 +186,51 @@ describe("AutoDiscoveryUtils", () => {
+                 warning: "Homeserver URL does not appear to be a valid Matrix homeserver",
+             });
+         });
++
++        it("exposes delegated auth config when m.authentication is successful", () => {
++            const delegatedAuthConfig = {
++                state: AutoDiscoveryAction.SUCCESS,
++                authorizationEndpoint: "https://issuer.example/authorize",
++                registrationEndpoint: "https://issuer.example/register",
++                tokenEndpoint: "https://issuer.example/token",
++                issuer: "https://issuer.example",
++                account: "https://issuer.example/account",
++            };
++            const discoveryResult = {
++                ...validIsConfig,
++                ...validHsConfig,
++                "m.authentication": delegatedAuthConfig,
++            };
++            expect(AutoDiscoveryUtils.buildValidatedConfigFromDiscovery(serverName, discoveryResult)).toEqual({
++                ...expectedValidatedConfig,
++                delegatedAuthConfig,
++            });
++        });
++
++        it("does not expose delegated auth config when m.authentication is absent", () => {
++            const discoveryResult = {
++                ...validIsConfig,
++                ...validHsConfig,
++            };
++            expect(AutoDiscoveryUtils.buildValidatedConfigFromDiscovery(serverName, discoveryResult)).toEqual({
++                ...expectedValidatedConfig,
++                delegatedAuthConfig: undefined,
++            });
++        });
++
++        it("does not expose delegated auth config when m.authentication is not successful", () => {
++            const discoveryResult = {
++                ...validIsConfig,
++                ...validHsConfig,
++                "m.authentication": {
++                    state: AutoDiscoveryAction.FAIL_ERROR,
++                    issuer: "https://issuer.example",
++                },
++            };
++            expect(AutoDiscoveryUtils.buildValidatedConfigFromDiscovery(serverName, discoveryResult)).toEqual({
++                ...expectedValidatedConfig,
++                delegatedAuthConfig: undefined,
++            });
++        });
+     });
+ });

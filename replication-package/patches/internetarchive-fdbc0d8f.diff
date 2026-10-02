@@ -1,0 +1,34 @@
+diff --git a/openlibrary/catalog/add_book/__init__.py b/openlibrary/catalog/add_book/__init__.py
+index 3cb3bb937..6d5081b7d 100644
+--- a/openlibrary/catalog/add_book/__init__.py
++++ b/openlibrary/catalog/add_book/__init__.py
+@@ -408,6 +408,20 @@ def update_ia_metadata_for_ol_edition(edition_id):
+     return data
+ 
+ 
++def remove_placeholders(rec: dict) -> None:
++    """
++    Remove fields holding known placeholder literal values.
++
++    :param dict rec: Edition import record
++    """
++    if rec.get('publishers') == ['????']:
++        del rec['publishers']
++    if rec.get('authors') == [{'name': '????'}]:
++        del rec['authors']
++    if rec.get('publish_date') == '????':
++        del rec['publish_date']
++
++
+ def normalize_record_bibids(rec):
+     """
+     Returns the Edition import record with all ISBN fields and LCCNs cleaned.
+@@ -801,6 +815,8 @@ def normalize_import_record(rec: dict) -> None:
+     # deduplicate authors
+     rec['authors'] = uniq(rec.get('authors', []), dicthash)
+ 
++    remove_placeholders(rec)
++
+ 
+ def validate_record(rec: dict) -> None:
+     """

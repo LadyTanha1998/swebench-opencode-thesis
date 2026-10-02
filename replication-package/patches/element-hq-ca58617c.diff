@@ -1,0 +1,60 @@
+diff --git a/src/LegacyCallHandler.tsx b/src/LegacyCallHandler.tsx
+index e13b0ec85c..e3050c032f 100644
+--- a/src/LegacyCallHandler.tsx
++++ b/src/LegacyCallHandler.tsx
+@@ -407,6 +407,10 @@ export default class LegacyCallHandler extends EventEmitter {
+                     // This still causes the chrome debugger to break on promise rejection if
+                     // the promise is rejected, even though we're catching the exception.
+                     logger.debug(`${logPrefix} attempting to play audio`);
++                    // Ensure the audio element is not muted, otherwise the call sound
++                    // could silently fail to be audible.
++                    audio.muted = false;
++                    audio.defaultMuted = false;
+                     await audio.play();
+                     logger.debug(`${logPrefix} playing audio successfully`);
+                 } catch (e) {
+diff --git a/test/LegacyCallHandler-test.ts b/test/LegacyCallHandler-test.ts
+index 2fd774ae50..d3af67b08e 100644
+--- a/test/LegacyCallHandler-test.ts
++++ b/test/LegacyCallHandler-test.ts
+@@ -445,6 +445,8 @@ describe('LegacyCallHandler without third party protocols', () => {
+         const mockAudioElement = {
+             play: jest.fn(),
+             pause: jest.fn(),
++            muted: false,
++            defaultMuted: false,
+         } as unknown as HTMLMediaElement;
+         beforeEach(() => {
+             jest.clearAllMocks();
+@@ -520,6 +522,31 @@ describe('LegacyCallHandler without third party protocols', () => {
+             expect(mockAudioElement.play).toHaveBeenCalled();
+         });
+ 
++        it('unmutes the audio element before playing a call sound', () => {
++            // remove local notification silencing mock for this test
++            jest.spyOn(MatrixClientPeg.get(), 'getAccountData').mockReturnValue(undefined);
++
++            mockAudioElement.muted = true;
++            mockAudioElement.defaultMuted = true;
++
++            const call = new MatrixCall({
++                client: MatrixClientPeg.get(),
++                roomId,
++            });
++            const cli = MatrixClientPeg.get();
++
++            cli.emit(CallEventHandlerEvent.Incoming, call);
++
++            // call added to call map
++            expect(callHandler.getCallForRoom(roomId)).toEqual(call);
++            call.emit(CallEvent.State, CallState.Ringing, CallState.Connected);
++
++            // ringer audio element started and was unmuted before playback
++            expect(mockAudioElement.play).toHaveBeenCalled();
++            expect(mockAudioElement.muted).toEqual(false);
++            expect(mockAudioElement.defaultMuted).toEqual(false);
++        });
++
+         it('does not ring when incoming call state is ringing but local notifications are silenced', () => {
+             const call = new MatrixCall({
+                 client: MatrixClientPeg.get(),

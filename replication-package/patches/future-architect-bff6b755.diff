@@ -1,0 +1,77 @@
+diff --git a/scanner/redhatbase.go b/scanner/redhatbase.go
+index 957a612..74d1eb6 100644
+--- a/scanner/redhatbase.go
++++ b/scanner/redhatbase.go
+@@ -810,7 +810,8 @@ func (o *redhatBase) parseUpdatablePacksLines(stdout string) (models.Packages, e
+ 		}
+ 		pack, err := o.parseUpdatablePacksLine(line)
+ 		if err != nil {
+-			return updatable, err
++			// Ignore prompt text and unrelated lines that are not valid package lines.
++			continue
+ 		}
+ 		updatable[pack.Name] = pack
+ 	}
+@@ -818,17 +819,24 @@ func (o *redhatBase) parseUpdatablePacksLines(stdout string) (models.Packages, e
+ }
+ 
+ func (o *redhatBase) parseUpdatablePacksLine(line string) (models.Package, error) {
+-	fields := strings.Split(line, " ")
++	fields := splitUpdatablePackFields(line)
+ 	if len(fields) < 5 {
+ 		return models.Package{}, xerrors.Errorf("Unknown format: %s, fields: %s", line, fields)
+ 	}
+ 
++	// Strictly validate the fields so that prompt text or unrelated lines
++	// (e.g. "Is this ok [y/N]:") are not parsed as package data.
++	// The epoch must be a non-negative integer.
++	epoch, err := strconv.ParseInt(fields[1], 10, 64)
++	if err != nil || epoch < 0 {
++		return models.Package{}, xerrors.Errorf("Unknown format: %s, fields: %s", line, fields)
++	}
++
+ 	ver := ""
+-	epoch := fields[1]
+-	if epoch == "0" {
++	if epoch == 0 {
+ 		ver = fields[2]
+ 	} else {
+-		ver = fmt.Sprintf("%s:%s", epoch, fields[2])
++		ver = fmt.Sprintf("%d:%s", epoch, fields[2])
+ 	}
+ 
+ 	repos := strings.Join(fields[4:], " ")
+@@ -842,6 +850,33 @@ func (o *redhatBase) parseUpdatablePacksLine(line string) (models.Package, error
+ 	return p, nil
+ }
+ 
++// splitUpdatablePackFields splits a repoquery line into fields, treating
++// double-quoted sections as a single field and stripping the surrounding quotes.
++func splitUpdatablePackFields(line string) []string {
++	var fields []string
++	var cur strings.Builder
++	inQuote := false
++	for _, r := range line {
++		switch {
++		case r == '"':
++			inQuote = !inQuote
++		case r == ' ' || r == '\t':
++			if inQuote {
++				cur.WriteRune(r)
++			} else if cur.Len() > 0 {
++				fields = append(fields, cur.String())
++				cur.Reset()
++			}
++		default:
++			cur.WriteRune(r)
++		}
++	}
++	if cur.Len() > 0 {
++		fields = append(fields, cur.String())
++	}
++	return fields
++}
++
+ func (o *redhatBase) isExecYumPS() bool {
+ 	switch o.Distro.Family {
+ 	case constant.Oracle:

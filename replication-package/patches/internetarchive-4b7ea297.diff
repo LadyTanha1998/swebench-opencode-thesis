@@ -1,0 +1,164 @@
+diff --git a/openlibrary/catalog/add_book/load_book.py b/openlibrary/catalog/add_book/load_book.py
+index 7d463ac25..482dd7a86 100644
+--- a/openlibrary/catalog/add_book/load_book.py
++++ b/openlibrary/catalog/add_book/load_book.py
+@@ -173,15 +173,44 @@ def find_author(author: dict[str, Any]) -> list["Author"]:
+     return authors
+ 
+ 
++def find_entity_by_remote_id(author: dict[str, Any]) -> list["Author"]:
++    """
++    Fetches a list of authors that have a matching remote id.
++
++    :param dict author: Author import dict {"name": "Some One", "remote_ids": {"viaf": "1234"}}
++    :return: List of matching OL Author records, if any.
++    """
++    if not author.get('remote_ids'):
++        return []
++    things = set()
++    for remote_id, values in author['remote_ids'].items():
++        query = {
++            "type": "/type/author",
++            "remote_ids": {remote_id: values},
++        }
++        things.update(web.ctx.site.things(query))
++    return [web.ctx.site.get(k) for k in things]
++
++
+ def find_entity(author: dict[str, Any]) -> "Author | None":
+     """
+     Looks for an existing Author record in OL
+     and returns it if found.
+ 
++    The priority order for matching is:
++    1. Open Library ID (author['key'])
++    2. External identifiers (author['remote_ids'])
++    3. Name and date matching
++
+     :param dict author: Author import dict {"name": "Some One"}
+     :return: Existing Author record if found, or None.
+     """
+     assert isinstance(author, dict)
++    if author.get('key'):
++        # Prefer an explicit Open Library ID match above all else.
++        return web.ctx.site.get(author['key'])
++    if things := find_entity_by_remote_id(author):
++        return things[0]
+     things = find_author(author)
+     if author.get('entity_type', 'person') != 'person':
+         return things[0] if things else None
+@@ -253,7 +282,15 @@ def import_author(author: dict[str, Any], eastern=False) -> "Author | dict[str,
+             new['death_date'] = author['death_date']
+         return new
+     a = {'type': {'key': '/type/author'}}
+-    for f in 'name', 'title', 'personal_name', 'birth_date', 'death_date', 'date':
++    for f in (
++        'name',
++        'title',
++        'personal_name',
++        'birth_date',
++        'death_date',
++        'date',
++        'remote_ids',
++    ):
+         if f in author:
+             a[f] = author[f]
+     return a
+diff --git a/openlibrary/catalog/add_book/tests/test_load_book.py b/openlibrary/catalog/add_book/tests/test_load_book.py
+index 4b971f0f3..69d75b6ce 100644
+--- a/openlibrary/catalog/add_book/tests/test_load_book.py
++++ b/openlibrary/catalog/add_book/tests/test_load_book.py
+@@ -4,6 +4,7 @@ from openlibrary.catalog.add_book import load_book
+ from openlibrary.catalog.add_book.load_book import (
+     build_query,
+     find_entity,
++    find_entity_by_remote_id,
+     import_author,
+     remove_author_honorifics,
+ )
+@@ -179,6 +180,85 @@ class TestImportAuthor:
+         found = import_author(searched_author)
+         assert found.key == author_with_birth_and_death["key"]
+ 
++    def test_find_entity_by_remote_id(self, mock_site):
++        """
++        An author can be found by a matching external identifier (remote_id).
++        """
++        author = {
++            "name": "William Brewer",
++            "key": "/authors/OL3A",
++            "type": {"key": "/type/author"},
++            "remote_ids": {"viaf": "1234", "goodreads": "5678"},
++        }
++        mock_site.save(author)
++
++        searched_author = {"name": "William Brewer", "remote_ids": {"viaf": "1234"}}
++        found = find_entity_by_remote_id(searched_author)
++        assert [a.key for a in found] == [author["key"]]
++
++        # No match when the remote id differs.
++        searched_author = {"name": "William Brewer", "remote_ids": {"viaf": "9999"}}
++        assert find_entity_by_remote_id(searched_author) == []
++
++    def test_remote_id_match_takes_priority(self, mock_site):
++        """
++        A remote id match should take priority over name/date matching.
++        """
++        author_by_remote_id = {
++            "name": "William H. Brewer",
++            "key": "/authors/OL3A",
++            "type": {"key": "/type/author"},
++            "remote_ids": {"viaf": "1234"},
++        }
++        author_by_name = {
++            "name": "William H. Brewer",
++            "key": "/authors/OL4A",
++            "type": {"key": "/type/author"},
++            "birth_date": "1829",
++            "death_date": "1910",
++        }
++        mock_site.save(author_by_remote_id)
++        mock_site.save(author_by_name)
++
++        searched_author = {
++            "name": "William H. Brewer",
++            "birth_date": "1829",
++            "death_date": "1910",
++            "remote_ids": {"viaf": "1234"},
++        }
++        found = import_author(searched_author)
++        assert found.key == author_by_remote_id["key"]
++
++    def test_olid_match_takes_highest_priority(self, mock_site):
++        """
++        An explicit Open Library ID match takes priority over all other matching.
++        """
++        author = {
++            "name": "William Brewer",
++            "key": "/authors/OL3A",
++            "type": {"key": "/type/author"},
++        }
++        mock_site.save(author)
++
++        searched_author = {
++            "name": "Someone Else",
++            "key": "/authors/OL3A",
++            "remote_ids": {"viaf": "9999"},
++        }
++        found = import_author(searched_author)
++        assert found.key == author["key"]
++
++    def test_remote_ids_preserved_on_new_author(self, new_import):
++        """
++        When no existing author matches, remote ids are preserved on the new candidate.
++        """
++        searched_author = {
++            "name": "Fyodor Dostoevsky",
++            "remote_ids": {"viaf": "104023094"},
++        }
++        found = import_author(searched_author)
++        assert found["remote_ids"] == {"viaf": "104023094"}
++
+     def test_non_matching_birth_death_creates_new_author(self, mock_site):
+         """
+         If a year in birth or death date isn't an exact match, create a new record,

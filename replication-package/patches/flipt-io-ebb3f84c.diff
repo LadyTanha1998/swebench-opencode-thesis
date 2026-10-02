@@ -1,0 +1,162 @@
+diff --git a/internal/cmd/auth.go b/internal/cmd/auth.go
+index 2a933671..0dd4e26d 100644
+--- a/internal/cmd/auth.go
++++ b/internal/cmd/auth.go
+@@ -48,7 +48,10 @@ func authenticationGRPC(
+ 	// register auth method token service
+ 	if cfg.Methods.Token.Enabled {
+ 		// attempt to bootstrap authentication store
+-		clientToken, err := storageauth.Bootstrap(ctx, store)
++		clientToken, err := storageauth.Bootstrap(ctx, store, storageauth.BootstrapToken{
++			Token:      cfg.Methods.Token.Method.Bootstrap.Token,
++			Expiration: cfg.Methods.Token.Method.Bootstrap.Expiration,
++		})
+ 		if err != nil {
+ 			return nil, nil, nil, fmt.Errorf("configuring token authentication: %w", err)
+ 		}
+diff --git a/internal/config/authentication.go b/internal/config/authentication.go
+index adc59995..a219b385 100644
+--- a/internal/config/authentication.go
++++ b/internal/config/authentication.go
+@@ -261,10 +261,24 @@ func (a *AuthenticationMethod[C]) info() StaticAuthenticationMethodInfo {
+ // method "token".
+ // This authentication method supports the ability to create static tokens via the
+ // /auth/v1/method/token prefix of endpoints.
+-type AuthenticationMethodTokenConfig struct{}
++type AuthenticationMethodTokenConfig struct {
++	// Bootstrap configures the bootstrap token for the token authentication method.
++	Bootstrap AuthenticationMethodTokenBootstrap `json:"bootstrap,omitempty" mapstructure:"bootstrap"`
++}
+ 
+ func (a AuthenticationMethodTokenConfig) setDefaults(map[string]any) {}
+ 
++// AuthenticationMethodTokenBootstrap contains fields used to configure the bootstrapping
++// of a static authentication token.
++type AuthenticationMethodTokenBootstrap struct {
++	// Token is the static token value used to bootstrap the token authentication method.
++	// If left empty, a random token is generated instead.
++	Token string `json:"token,omitempty" mapstructure:"token"`
++	// Expiration is the duration until the bootstrap token expires.
++	// If left empty or zero, the token does not expire.
++	Expiration time.Duration `json:"expiration,omitempty" mapstructure:"expiration"`
++}
++
+ // info describes properties of the authentication method "token".
+ func (a AuthenticationMethodTokenConfig) info() AuthenticationMethodInfo {
+ 	return AuthenticationMethodInfo{
+diff --git a/internal/storage/auth/auth.go b/internal/storage/auth/auth.go
+index 7afa7eae..ccb4238a 100644
+--- a/internal/storage/auth/auth.go
++++ b/internal/storage/auth/auth.go
+@@ -43,9 +43,10 @@ type Store interface {
+ // CreateAuthenticationRequest is the argument passed when creating instances
+ // of an Authentication on a target AuthenticationStore.
+ type CreateAuthenticationRequest struct {
+-	Method    auth.Method
+-	ExpiresAt *timestamppb.Timestamp
+-	Metadata  map[string]string
++	Method      auth.Method
++	ClientToken string
++	ExpiresAt   *timestamppb.Timestamp
++	Metadata    map[string]string
+ }
+ 
+ // ListWithMethod can be passed to storage.NewListRequest.
+diff --git a/internal/storage/auth/bootstrap.go b/internal/storage/auth/bootstrap.go
+index 14edfd8e..a1dd3915 100644
+--- a/internal/storage/auth/bootstrap.go
++++ b/internal/storage/auth/bootstrap.go
+@@ -3,14 +3,27 @@ package auth
+ import (
+ 	"context"
+ 	"fmt"
++	"time"
+ 
+ 	"go.flipt.io/flipt/internal/storage"
+ 	rpcauth "go.flipt.io/flipt/rpc/flipt/auth"
++	"google.golang.org/protobuf/types/known/timestamppb"
+ )
+ 
++// BootstrapToken is a type which represents a token to be created
++// during the bootstrap process.
++type BootstrapToken struct {
++	// Token is the static token value to create.
++	// If left empty, a random token is generated instead.
++	Token string
++	// Expiration is the duration until the token expires.
++	// If left zero, the token does not expire.
++	Expiration time.Duration
++}
++
+ // Bootstrap creates an initial static authentication of type token
+ // if one does not already exist.
+-func Bootstrap(ctx context.Context, store Store) (string, error) {
++func Bootstrap(ctx context.Context, store Store, token BootstrapToken) (string, error) {
+ 	req := storage.NewListRequest(ListWithMethod(rpcauth.Method_METHOD_TOKEN))
+ 	set, err := store.ListAuthentications(ctx, req)
+ 	if err != nil {
+@@ -22,8 +35,15 @@ func Bootstrap(ctx context.Context, store Store) (string, error) {
+ 		return "", nil
+ 	}
+ 
++	var expiresAt *timestamppb.Timestamp
++	if token.Expiration > 0 {
++		expiresAt = timestamppb.New(time.Now().Add(token.Expiration))
++	}
++
+ 	clientToken, _, err := store.CreateAuthentication(ctx, &CreateAuthenticationRequest{
+-		Method: rpcauth.Method_METHOD_TOKEN,
++		Method:      rpcauth.Method_METHOD_TOKEN,
++		ClientToken: token.Token,
++		ExpiresAt:   expiresAt,
+ 		Metadata: map[string]string{
+ 			"io.flipt.auth.token.name":        "initial_bootstrap_token",
+ 			"io.flipt.auth.token.description": "Initial token created when bootstrapping authentication",
+diff --git a/internal/storage/auth/memory/store.go b/internal/storage/auth/memory/store.go
+index f11956dd..7999b779 100644
+--- a/internal/storage/auth/memory/store.go
++++ b/internal/storage/auth/memory/store.go
+@@ -89,7 +89,7 @@ func (s *Store) CreateAuthentication(_ context.Context, r *auth.CreateAuthentica
+ 
+ 	var (
+ 		now            = s.now()
+-		clientToken    = s.generateToken()
++		clientToken    = r.ClientToken
+ 		authentication = &rpcauth.Authentication{
+ 			Id:        s.generateID(),
+ 			Method:    r.Method,
+@@ -100,6 +100,10 @@ func (s *Store) CreateAuthentication(_ context.Context, r *auth.CreateAuthentica
+ 		}
+ 	)
+ 
++	if clientToken == "" {
++		clientToken = s.generateToken()
++	}
++
+ 	hashedToken, err := auth.HashClientToken(clientToken)
+ 	if err != nil {
+ 		return "", nil, fmt.Errorf("creating authentication: %w", err)
+diff --git a/internal/storage/auth/sql/store.go b/internal/storage/auth/sql/store.go
+index 2360e6d7..65be2d94 100644
+--- a/internal/storage/auth/sql/store.go
++++ b/internal/storage/auth/sql/store.go
+@@ -91,7 +91,7 @@ func WithIDGeneratorFunc(fn func() string) Option {
+ func (s *Store) CreateAuthentication(ctx context.Context, r *storageauth.CreateAuthenticationRequest) (string, *rpcauth.Authentication, error) {
+ 	var (
+ 		now            = s.now()
+-		clientToken    = s.generateToken()
++		clientToken    = r.ClientToken
+ 		authentication = rpcauth.Authentication{
+ 			Id:        s.generateID(),
+ 			Method:    r.Method,
+@@ -102,6 +102,10 @@ func (s *Store) CreateAuthentication(ctx context.Context, r *storageauth.CreateA
+ 		}
+ 	)
+ 
++	if clientToken == "" {
++		clientToken = s.generateToken()
++	}
++
+ 	hashedToken, err := storageauth.HashClientToken(clientToken)
+ 	if err != nil {
+ 		return "", nil, fmt.Errorf("creating authentication: %w", err)

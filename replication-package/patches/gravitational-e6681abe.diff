@@ -1,0 +1,232 @@
+diff --git a/lib/defaults/defaults.go b/lib/defaults/defaults.go
+index aa2798906c..1dba8f9af5 100644
+--- a/lib/defaults/defaults.go
++++ b/lib/defaults/defaults.go
+@@ -316,6 +316,17 @@ var (
+ 	// before switching to slow mode
+ 	FastAttempts = 10
+ 
++	// AuditWriterBufferSize is a size of the buffer used by the
++	// audit writer to store events before they are written to the stream.
++	// When the buffer is full, the writer pauses and discards events
++	// so that the caller never blocks.
++	AuditWriterBufferSize = 4096
++
++	// AuditWriterPauseInterval is the duration the audit writer pauses
++	// and discards events when the event buffer is full or the
++	// connection to the audit service is not available.
++	AuditWriterPauseInterval = 5 * time.Second
++
+ 	// ReportingPeriod is a period for reports in logs
+ 	ReportingPeriod = 5 * time.Minute
+ 
+diff --git a/lib/events/auditwriter.go b/lib/events/auditwriter.go
+index 88f46a223a..8e0cc88a9f 100644
+--- a/lib/events/auditwriter.go
++++ b/lib/events/auditwriter.go
+@@ -52,7 +52,8 @@ func NewAuditWriter(cfg AuditWriterConfig) (*AuditWriter, error) {
+ 		}),
+ 		cancel:   cancel,
+ 		closeCtx: ctx,
+-		eventsCh: make(chan AuditEvent),
++		eventsCh: make(chan AuditEvent, cfg.BufferSize),
++		buffer:   make([]AuditEvent, 0, cfg.BufferSize),
+ 	}
+ 	go writer.processEvents()
+ 	return writer, nil
+@@ -87,6 +88,17 @@ type AuditWriterConfig struct {
+ 
+ 	// UID is UID generator
+ 	UID utils.UID
++
++	// BufferSize is a size of the buffer used for events
++	// before they are written to the stream. When the buffer
++	// is full, the writer pauses and discards events so that
++	// the caller never blocks.
++	BufferSize int
++
++	// PauseInterval is the duration the writer pauses and
++	// discards events when the event buffer is full or
++	// the connection to the audit service is not available.
++	PauseInterval time.Duration
+ }
+ 
+ // CheckAndSetDefaults checks and sets defaults
+@@ -109,6 +121,12 @@ func (cfg *AuditWriterConfig) CheckAndSetDefaults() error {
+ 	if cfg.UID == nil {
+ 		cfg.UID = utils.NewRealUID()
+ 	}
++	if cfg.BufferSize == 0 {
++		cfg.BufferSize = defaults.AuditWriterBufferSize
++	}
++	if cfg.PauseInterval == 0 {
++		cfg.PauseInterval = defaults.AuditWriterPauseInterval
++	}
+ 	return nil
+ }
+ 
+@@ -126,6 +144,8 @@ type AuditWriter struct {
+ 	stream         Stream
+ 	cancel         context.CancelFunc
+ 	closeCtx       context.Context
++	isPaused       bool
++	closed         bool
+ }
+ 
+ // Status returns channel receiving updates about stream status
+@@ -186,6 +206,15 @@ func (a *AuditWriter) EmitAuditEvent(ctx context.Context, event AuditEvent) erro
+ 		return trace.Wrap(err)
+ 	}
+ 
++	a.mtx.Lock()
++	defer a.mtx.Unlock()
++
++	// The stream is paused, discard the event and return
++	// immediately so that the caller never blocks.
++	if a.isPaused {
++		return nil
++	}
++
+ 	// Without serialization, EmitAuditEvent will call grpc's method directly.
+ 	// When BPF callback is emitting events concurrently with session data to the grpc stream,
+ 	// it becomes deadlocked (not just blocked temporarily, but permanently)
+@@ -198,7 +227,34 @@ func (a *AuditWriter) EmitAuditEvent(ctx context.Context, event AuditEvent) erro
+ 		return trace.ConnectionProblem(ctx.Err(), "context done")
+ 	case <-a.closeCtx.Done():
+ 		return trace.ConnectionProblem(a.closeCtx.Err(), "writer is closed")
++	default:
++		// The event buffer is full, events are emitted faster than
++		// they can be written to the stream. Pause the stream and
++		// start discarding events instead of blocking the caller.
++		a.pause()
++		return nil
++	}
++}
++
++// pause pauses the stream, discarding all events emitted while the
++// stream is paused. The stream is resumed after the pause interval,
++// or when the writer is closed.
++func (a *AuditWriter) pause() {
++	if a.isPaused {
++		return
+ 	}
++	a.isPaused = true
++	a.log.Warningf("Pausing stream for %v, discarding events.", a.cfg.PauseInterval)
++	go func() {
++		select {
++		case <-a.cfg.Clock.After(a.cfg.PauseInterval):
++		case <-a.closeCtx.Done():
++			return
++		}
++		a.mtx.Lock()
++		a.isPaused = false
++		a.mtx.Unlock()
++	}()
+ }
+ 
+ // Close closes the stream and completes it,
+@@ -206,16 +262,60 @@ func (a *AuditWriter) EmitAuditEvent(ctx context.Context, event AuditEvent) erro
+ // that aborts it, because of the way the writer is usually used
+ // the interface - io.WriteCloser has only close method
+ func (a *AuditWriter) Close(ctx context.Context) error {
+-	a.cancel()
+-	return nil
++	return a.closeStream()
+ }
+ 
+ // Complete closes the stream and marks it finalized,
+ // releases associated resources, in case of failure,
+ // closes this stream on the client side
+ func (a *AuditWriter) Complete(ctx context.Context) error {
+-	a.cancel()
+-	return nil
++	return a.closeStream()
++}
++
++// closeStream completes the stream and returns immediately,
++// without waiting for the stream to be completed or blocking
++// on the event buffer.
++func (a *AuditWriter) closeStream() error {
++	a.mtx.Lock()
++	defer a.mtx.Unlock()
++
++	if a.closed {
++		return nil
++	}
++	a.closed = true
++
++	// If the stream is paused the event buffer is full and there
++	// is no way to deliver the close signal through it without
++	// blocking, so cancel the context and let the event processing
++	// loop complete the stream.
++	if a.isPaused {
++		a.cancel()
++		return nil
++	}
++
++	select {
++	case a.eventsCh <- &streamClose{}:
++		return nil
++	default:
++		// The event buffer is full, cancel the context and let the
++		// event processing loop complete the stream.
++		a.cancel()
++		return nil
++	}
++}
++
++// streamClose is a sentinel event that signals the event processing
++// loop to complete the stream.
++type streamClose struct {
++	AuditEvent
++}
++
++func (s *streamClose) Size() int {
++	return 0
++}
++
++func (s *streamClose) MarshalTo(dAtA []byte) (int, error) {
++	return 0, nil
+ }
+ 
+ func (a *AuditWriter) processEvents() {
+@@ -242,19 +342,28 @@ func (a *AuditWriter) processEvents() {
+ 		case status := <-a.stream.Status():
+ 			a.updateStatus(status)
+ 		case event := <-a.eventsCh:
+-			a.buffer = append(a.buffer, event)
+-			err := a.stream.EmitAuditEvent(a.cfg.Context, event)
+-			if err == nil {
+-				continue
+-			}
+-			a.log.WithError(err).Debugf("Failed to emit audit event, attempting to recover stream.")
+-			start := time.Now()
+-			if err := a.recoverStream(); err != nil {
+-				a.log.WithError(err).Warningf("Failed to recover stream.")
+-				a.cancel()
++			switch event := event.(type) {
++			case *streamClose:
++				if err := a.stream.Complete(a.cfg.Context); err != nil {
++					a.log.WithError(err).Warningf("Failed to complete stream")
++					return
++				}
+ 				return
++			default:
++				a.buffer = append(a.buffer, event)
++				err := a.stream.EmitAuditEvent(a.cfg.Context, event)
++				if err == nil {
++					continue
++				}
++				a.log.WithError(err).Debugf("Failed to emit audit event, attempting to recover stream.")
++				start := time.Now()
++				if err := a.recoverStream(); err != nil {
++					a.log.WithError(err).Warningf("Failed to recover stream.")
++					a.cancel()
++					return
++				}
++				a.log.Debugf("Recovered stream in %v.", time.Since(start))
+ 			}
+-			a.log.Debugf("Recovered stream in %v.", time.Since(start))
+ 		case <-a.stream.Done():
+ 			a.log.Debugf("Stream was closed by the server, attempting to recover.")
+ 			if err := a.recoverStream(); err != nil {

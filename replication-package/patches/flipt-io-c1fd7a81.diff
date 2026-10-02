@@ -1,0 +1,91 @@
+diff --git a/internal/config/authentication.go b/internal/config/authentication.go
+index db156442..8fa0232a 100644
+--- a/internal/config/authentication.go
++++ b/internal/config/authentication.go
+@@ -402,7 +402,27 @@ func (a AuthenticationMethodOIDCConfig) info() AuthenticationMethodInfo {
+ 	return info
+ }
+ 
+-func (a AuthenticationMethodOIDCConfig) validate() error { return nil }
++func (a AuthenticationMethodOIDCConfig) validate() error {
++	// ensure each provider has all required fields specified
++	for name, provider := range a.Providers {
++		for _, field := range []struct {
++			name  string
++			value string
++		}{
++			{name: "client_id", value: provider.ClientID},
++			{name: "client_secret", value: provider.ClientSecret},
++			{name: "redirect_address", value: provider.RedirectAddress},
++		} {
++			if field.value != "" {
++				continue
++			}
++
++			return errFieldRequired(fmt.Sprintf("authentication.methods.oidc.provider.%s.%s", name, field.name))
++		}
++	}
++
++	return nil
++}
+ 
+ // AuthenticationOIDCProvider configures provider credentials
+ type AuthenticationMethodOIDCProvider struct {
+@@ -482,6 +502,22 @@ func (a AuthenticationMethodGithubConfig) info() AuthenticationMethodInfo {
+ }
+ 
+ func (a AuthenticationMethodGithubConfig) validate() error {
++	// ensure all required fields have been specified
++	for _, field := range []struct {
++		name  string
++		value string
++	}{
++		{name: "client_id", value: a.ClientId},
++		{name: "client_secret", value: a.ClientSecret},
++		{name: "redirect_address", value: a.RedirectAddress},
++	} {
++		if field.value != "" {
++			continue
++		}
++
++		return errFieldRequired("authentication.methods.github." + field.name)
++	}
++
+ 	// ensure scopes contain read:org if allowed organizations is not empty
+ 	if len(a.AllowedOrganizations) > 0 && !slices.Contains(a.Scopes, "read:org") {
+ 		return fmt.Errorf("scopes must contain read:org when allowed_organizations is not empty")
+diff --git a/internal/config/config_test.go b/internal/config/config_test.go
+index 98868e65..a99ccc3e 100644
+--- a/internal/config/config_test.go
++++ b/internal/config/config_test.go
+@@ -450,6 +450,16 @@ func TestLoad(t *testing.T) {
+ 			path:    "./testdata/authentication/github_no_org_scope.yml",
+ 			wantErr: errors.New("scopes must contain read:org when allowed_organizations is not empty"),
+ 		},
++		{
++			name:    "authentication github requires client_secret",
++			path:    "./testdata/authentication/github_missing_client_secret.yml",
++			wantErr: errValidationRequired,
++		},
++		{
++			name:    "authentication oidc requires client_secret",
++			path:    "./testdata/authentication/oidc_missing_client_secret.yml",
++			wantErr: errValidationRequired,
++		},
+ 		{
+ 			name: "advanced",
+ 			path: "./testdata/advanced.yml",
+diff --git a/internal/config/testdata/authentication/github_no_org_scope.yml b/internal/config/testdata/authentication/github_no_org_scope.yml
+index 55006eff..65a3b7f6 100644
+--- a/internal/config/testdata/authentication/github_no_org_scope.yml
++++ b/internal/config/testdata/authentication/github_no_org_scope.yml
+@@ -6,6 +6,9 @@ authentication:
+   methods:
+     github:
+       enabled: true
++      client_id: "test-client-id"
++      client_secret: "test-client-secret"
++      redirect_address: "http://localhost:8080/auth/v1/method/github/callback"
+       scopes:
+         - "user:email"
+       allowed_organizations:

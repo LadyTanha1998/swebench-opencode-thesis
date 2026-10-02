@@ -1,0 +1,18 @@
+diff --git a/detector/vuls2/db.go b/detector/vuls2/db.go
+index 2d6b04e..9326ec5 100644
+--- a/detector/vuls2/db.go
++++ b/detector/vuls2/db.go
+@@ -90,6 +90,13 @@ func shouldDownload(vuls2Conf config.Vuls2Conf, now time.Time) (bool, error) {
+ 		return false, xerrors.Errorf("Unexpected Vuls2 db metadata. metadata: nil,. path: %s", vuls2Conf.Path)
+ 	}
+ 
++	if metadata.SchemaVersion != db.SchemaVersion {
++		if vuls2Conf.SkipUpdate {
++			return false, xerrors.Errorf("schema version mismatch. expected: %d, actual: %d, path: %s, cannot skip update", db.SchemaVersion, metadata.SchemaVersion, vuls2Conf.Path)
++		}
++		return true, nil
++	}
++
+ 	if metadata.Downloaded != nil && now.Before((*metadata.Downloaded).Add(1*time.Hour)) {
+ 		return false, nil
+ 	}

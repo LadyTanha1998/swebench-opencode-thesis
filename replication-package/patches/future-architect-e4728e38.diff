@@ -1,0 +1,35 @@
+diff --git a/gost/debian.go b/gost/debian.go
+index 9bbaff6..d30396d 100644
+--- a/gost/debian.go
++++ b/gost/debian.go
+@@ -6,6 +6,7 @@ package gost
+ import (
+ 	"encoding/json"
+ 	"fmt"
++	"sort"
+ 	"strconv"
+ 	"strings"
+ 
+@@ -81,6 +82,10 @@ func (deb Debian) detectCVEsWithFixState(r *models.ScanResult, fixed bool) ([]st
+ 			return nil, xerrors.Errorf("Failed to get CVEs via HTTP. err: %w", err)
+ 		}
+ 
++		sort.Slice(responses, func(i, j int) bool {
++			return responses[i].request.packName < responses[j].request.packName
++		})
++
+ 		for _, res := range responses {
+ 			if !res.request.isSrcPack {
+ 				continue
+@@ -115,7 +120,10 @@ func (deb Debian) detectCVEsWithFixState(r *models.ScanResult, fixed bool) ([]st
+ 			}
+ 		}
+ 	} else {
+-		for _, p := range r.SrcPackages {
++		pkgNames := maps.Keys(r.SrcPackages)
++		sort.Strings(pkgNames)
++		for _, name := range pkgNames {
++			p := r.SrcPackages[name]
+ 			n := strings.NewReplacer("linux-signed", "linux", "linux-latest", "linux", "-amd64", "", "-arm64", "", "-i386", "").Replace(p.Name)
+ 
+ 			if deb.isKernelSourcePackage(n) {

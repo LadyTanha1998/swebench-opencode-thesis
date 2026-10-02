@@ -1,0 +1,66 @@
+diff --git a/contrib/trivy/parser/parser.go b/contrib/trivy/parser/parser.go
+index 6358e0d..4605b1a 100644
+--- a/contrib/trivy/parser/parser.go
++++ b/contrib/trivy/parser/parser.go
+@@ -93,6 +93,7 @@ func Parse(vulnJSON []byte, scanResult *models.ScanResult) (result *models.ScanR
+ 					Key:     trivyResult.Type,
+ 					Name:    vuln.PkgName,
+ 					FixedIn: vuln.FixedVersion,
++					Path:    trivyResult.Target,
+ 				})
+ 				libScanner := uniqueLibraryScannerPaths[trivyResult.Target]
+ 				libScanner.Libs = append(libScanner.Libs, types.Library{
+diff --git a/models/library.go b/models/library.go
+index 5eb6731..55ae8d4 100644
+--- a/models/library.go
++++ b/models/library.go
+@@ -94,6 +94,7 @@ func (s LibraryScanner) getVulnDetail(tvuln types.DetectedVulnerability) (vinfo
+ 				Key:     s.GetLibraryKey(),
+ 				Name:    tvuln.PkgName,
+ 				FixedIn: tvuln.FixedVersion,
++				Path:    s.Path,
+ 			},
+ 		}
+ 	}
+@@ -141,4 +142,5 @@ type LibraryFixedIn struct {
+ 	Key     string `json:"key,omitempty"`
+ 	Name    string `json:"name,omitempty"`
+ 	FixedIn string `json:"fixedIn,omitempty"`
++	Path    string `json:"path,omitempty"`
+ }
+diff --git a/report/tui.go b/report/tui.go
+index 192afc3..0a7e536 100644
+--- a/report/tui.go
++++ b/report/tui.go
+@@ -746,7 +746,13 @@ func setChangelogLayout(g *gocui.Gui) error {
+ 
+ 		for _, l := range vinfo.LibraryFixedIns {
+ 			libs := r.LibraryScanners.Find(l.Name)
++			if len(libs) == 0 {
++				continue
++			}
+ 			for path, lib := range libs {
++				if l.Path != "" && l.Path != path {
++					continue
++				}
+ 				lines = append(lines, fmt.Sprintf("%s-%s, FixedIn: %s (%s)",
+ 					lib.Name, lib.Version, l.FixedIn, path))
+ 			}
+diff --git a/report/util.go b/report/util.go
+index 7425665..a9c7393 100644
+--- a/report/util.go
++++ b/report/util.go
+@@ -293,7 +293,13 @@ No CVE-IDs are found in updatable packages.
+ 
+ 		for _, l := range vuln.LibraryFixedIns {
+ 			libs := r.LibraryScanners.Find(l.Name)
++			if len(libs) == 0 {
++				continue
++			}
+ 			for path, lib := range libs {
++				if l.Path != "" && l.Path != path {
++					continue
++				}
+ 				data = append(data, []string{l.Key,
+ 					fmt.Sprintf("%s-%s, FixedIn: %s (%s)",
+ 						lib.Name, lib.Version, l.FixedIn, path)})

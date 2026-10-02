@@ -1,0 +1,132 @@
+diff --git a/openlibrary/catalog/utils/__init__.py b/openlibrary/catalog/utils/__init__.py
+index 36b2e9fc8..81de1f080 100644
+--- a/openlibrary/catalog/utils/__init__.py
++++ b/openlibrary/catalog/utils/__init__.py
+@@ -450,15 +450,29 @@ def format_languages(languages: Iterable) -> list[dict[str, str]]:
+     Format language data to match Open Library's expected format.
+     For an input of ["eng", "fre"], return:
+     [{'key': '/languages/eng'}, {'key': '/languages/fre'}]
++
++    Alternative language identifiers are normalized to their canonical MARC
++    code: ISO-639-1 two-letter codes and full language names (in English or
++    the language's native name) are resolved to their MARC three-letter code.
++    Duplicate languages are collapsed into a single entry, preserving the
++    first occurrence.
+     """
+     if not languages:
+         return []
+ 
++    from openlibrary.plugins.upstream.utils import get_marc21_language
++
+     formatted_languages = []
++    seen = set()
+     for language in languages:
+-        if web.ctx.site.get(f"/languages/{language.lower()}") is None:
+-            raise InvalidLanguage(language.lower())
++        marc_code = get_marc21_language(language)
++        if marc_code is None:
++            raise InvalidLanguage(language)
++
++        if marc_code in seen:
++            continue
+ 
+-        formatted_languages.append({'key': f'/languages/{language.lower()}'})
++        seen.add(marc_code)
++        formatted_languages.append({'key': f'/languages/{marc_code}'})
+ 
+     return formatted_languages
+diff --git a/openlibrary/plugins/upstream/utils.py b/openlibrary/plugins/upstream/utils.py
+index c3eab3931..123512eca 100644
+--- a/openlibrary/plugins/upstream/utils.py
++++ b/openlibrary/plugins/upstream/utils.py
+@@ -1165,6 +1165,71 @@ def get_marc21_language(language: str) -> str | None:
+         'zh-tw': 'chi',
+         'zul': 'zul',
+         'zulu': 'zul',
++        # Native language names
++        'shqip': 'alb',
++        'العربية': 'ara',
++        'aramean': 'arc',
++        'հայերեն': 'hye',
++        'azərbaycan': 'aze',
++        'беларуская': 'bel',
++        'বাংলা': 'ben',
++        'bosanski': 'bos',
++        'български': 'bul',
++        'català': 'cat',
++        '中文': 'chi',
++        'hrvatski': 'hrv',
++        'čeština': 'cze',
++        'dansk': 'dan',
++        'nederlands': 'dut',
++        'ελληνικά': 'gre',
++        'esperanto': 'epo',
++        'eesti': 'est',
++        'suomi': 'fin',
++        'français': 'fre',
++        'galego': 'glg',
++        'ქართული': 'kat',
++        'deutsch': 'ger',
++        'עברית': 'heb',
++        'हिन्दी': 'hin',
++        'magyar': 'hun',
++        'íslenska': 'ice',
++        'bahasa indonesia': 'ind',
++        'gaeilge': 'iri',
++        'italiano': 'ita',
++        '日本語': 'jpn',
++        'ಕನ್ನಡ': 'kan',
++        'қазақ': 'kaz',
++        'ខ្មែរ': 'khm',
++        '한국어': 'kor',
++        'latviešu': 'lav',
++        'lietuvių': 'lit',
++        'македонски': 'mac',
++        'melayu': 'msa',
++        'മലയാളം': 'mal',
++        'norsk': 'nor',
++        'فارسی': 'per',
++        'polski': 'pol',
++        'português': 'por',
++        'română': 'rum',
++        'русский': 'rus',
++        'српски': 'srp',
++        'slovenčina': 'slo',
++        'slovenščina': 'slv',
++        'español': 'spa',
++        'svenska': 'swe',
++        'தமிழ்': 'tam',
++        'తెలుగు': 'tel',
++        'ไทย': 'tha',
++        'türkçe': 'tur',
++        'українська': 'ukr',
++        'اردو': 'urd',
++        'o\'zbek': 'uzb',
++        'việt nam': 'vie',
++        'cymraeg': 'wel',
++        'ísiXhosa': 'xho',
++        'yiddish': 'yid',
++        'yorùbá': 'yor',
++        'isiZulu': 'zul',
+     }
+     return language_map.get(language.casefold())
+ 
+diff --git a/openlibrary/tests/catalog/test_utils.py b/openlibrary/tests/catalog/test_utils.py
+index 7fd42f464..0ff9256fe 100644
+--- a/openlibrary/tests/catalog/test_utils.py
++++ b/openlibrary/tests/catalog/test_utils.py
+@@ -431,6 +431,14 @@ def test_remove_trailing_number_dot(date: str, expected: str) -> None:
+     [
+         (["eng"], [{'key': '/languages/eng'}]),
+         (["eng", "FRE"], [{'key': '/languages/eng'}, {'key': '/languages/fre'}]),
++        (["es"], [{'key': '/languages/spa'}]),
++        (["German"], [{'key': '/languages/ger'}]),
++        (["Deutsch"], [{'key': '/languages/ger'}]),
++        (["eng", "eng"], [{'key': '/languages/eng'}]),
++        (
++            ["German", "Deutsch", "es"],
++            [{'key': '/languages/ger'}, {'key': '/languages/spa'}],
++        ),
+         ([], []),
+     ],
+ )

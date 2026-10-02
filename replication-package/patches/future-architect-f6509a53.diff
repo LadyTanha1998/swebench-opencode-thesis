@@ -1,0 +1,45 @@
+diff --git a/scanner/scanner.go b/scanner/scanner.go
+index 745a160..71e4e74 100644
+--- a/scanner/scanner.go
++++ b/scanner/scanner.go
+@@ -10,6 +10,7 @@ import (
+ 	"strings"
+ 	"time"
+ 
++	"github.com/mitchellh/go-homedir"
+ 	"golang.org/x/exp/maps"
+ 	"golang.org/x/xerrors"
+ 
+@@ -564,7 +565,7 @@ func parseSSHConfiguration(stdout string) sshConfiguration {
+ 		case strings.HasPrefix(line, "globalknownhostsfile "):
+ 			sshConfig.globalKnownHosts = strings.Split(strings.TrimPrefix(line, "globalknownhostsfile "), " ")
+ 		case strings.HasPrefix(line, "userknownhostsfile "):
+-			sshConfig.userKnownHosts = strings.Split(strings.TrimPrefix(line, "userknownhostsfile "), " ")
++			sshConfig.userKnownHosts = expandKnownHostsPaths(strings.Split(strings.TrimPrefix(line, "userknownhostsfile "), " "), runtime.GOOS)
+ 		case strings.HasPrefix(line, "proxycommand "):
+ 			sshConfig.proxyCommand = strings.TrimPrefix(line, "proxycommand ")
+ 		case strings.HasPrefix(line, "proxyjump "):
+@@ -574,6 +575,23 @@ func parseSSHConfiguration(stdout string) sshConfiguration {
+ 	return sshConfig
+ }
+ 
++func expandKnownHostsPaths(paths []string, goos string) []string {
++	if goos != constant.Windows {
++		return paths
++	}
++	expandedPaths := make([]string, 0, len(paths))
++	for _, path := range paths {
++		if strings.HasPrefix(path, "~") {
++			if home, err := homedir.Expand(path); err == nil {
++				expandedPaths = append(expandedPaths, home)
++				continue
++			}
++		}
++		expandedPaths = append(expandedPaths, path)
++	}
++	return expandedPaths
++}
++
+ func parseSSHScan(stdout string) map[string]string {
+ 	keys := map[string]string{}
+ 	for _, line := range strings.Split(stdout, "\n") {

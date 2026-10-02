@@ -1,0 +1,43 @@
+diff --git a/lib/kube/kubeconfig/kubeconfig.go b/lib/kube/kubeconfig/kubeconfig.go
+index 0961ba6f1d..59ddea46ee 100644
+--- a/lib/kube/kubeconfig/kubeconfig.go
++++ b/lib/kube/kubeconfig/kubeconfig.go
+@@ -139,6 +139,16 @@ func Update(path string, v Values) error {
+ 		return trace.Wrap(err)
+ 	}
+ 
++	// Determine whether the current kubeconfig context is a Teleport-generated
++	// one. We only update CurrentContext when it's empty or already points at a
++	// Teleport context; otherwise we must not clobber the user's existing
++	// context (e.g. on `tsh login`), which could cause kubectl to act against
++	// the wrong cluster.
++	lastContext := config.CurrentContext
++	if lastContext == "" || !strings.HasPrefix(lastContext, v.TeleportClusterName+"-") {
++		lastContext = ""
++	}
++
+ 	cas := bytes.Join(v.Credentials.TLSCAs(), []byte("\n"))
+ 	if len(cas) == 0 {
+ 		return trace.BadParameter("TLS trusted CAs missing in provided credentials")
+@@ -176,7 +186,9 @@ func Update(path string, v Values) error {
+ 			if _, ok := config.Contexts[contextName]; !ok {
+ 				return trace.BadParameter("can't switch kubeconfig context to cluster %q, run 'tsh kube ls' to see available clusters", v.Exec.SelectCluster)
+ 			}
+-			config.CurrentContext = contextName
++			if lastContext != "" {
++				config.CurrentContext = contextName
++			}
+ 		}
+ 	} else {
+ 		// Called when generating an identity file, use plaintext credentials.
+@@ -196,7 +208,9 @@ func Update(path string, v Values) error {
+ 		}
+ 
+ 		setContext(config.Contexts, v.TeleportClusterName, v.TeleportClusterName, v.TeleportClusterName)
+-		config.CurrentContext = v.TeleportClusterName
++		if lastContext != "" {
++			config.CurrentContext = v.TeleportClusterName
++		}
+ 	}
+ 
+ 	return Save(path, *config)

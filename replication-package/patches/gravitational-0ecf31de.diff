@@ -1,0 +1,47 @@
+diff --git a/lib/utils/prompt/context_reader.go b/lib/utils/prompt/context_reader.go
+index 01d437133..d535325c6 100644
+--- a/lib/utils/prompt/context_reader.go
++++ b/lib/utils/prompt/context_reader.go
+@@ -224,6 +224,10 @@ func (cr *ContextReader) fireCleanRead() error {
+ func (cr *ContextReader) waitForRead(ctx context.Context) ([]byte, error) {
+ 	select {
+ 	case <-ctx.Done():
++		// The read was abandoned, but a password read may still be in progress,
++		// keeping the terminal in a password (no-echo) state. Restore the
++		// terminal so it doesn't remain locked after the process exits.
++		cr.restoreTerminal()
+ 		return nil, trace.Wrap(ctx.Err())
+ 	case <-cr.closed:
+ 		return nil, ErrReaderClosed
+@@ -232,6 +236,23 @@ func (cr *ContextReader) waitForRead(ctx context.Context) ([]byte, error) {
+ 	}
+ }
+ 
++// restoreTerminal restores the terminal to the state previous to an ongoing
++// password read, if any.
++// It is safe to call multiple times; subsequent calls become no-ops.
++func (cr *ContextReader) restoreTerminal() {
++	cr.mu.Lock()
++	defer cr.mu.Unlock()
++
++	if cr.previousTermState == nil {
++		return
++	}
++	state := cr.previousTermState
++	cr.previousTermState = nil
++	if err := cr.term.Restore(cr.fd, state); err != nil {
++		log.WithError(err).Error("prompt: Failed to restore terminal state")
++	}
++}
++
+ // ReadPassword reads a password from the underlying reader, provided that the
+ // reader is a terminal.
+ // It follows the semantics of ReadContext.
+@@ -285,6 +306,7 @@ func (cr *ContextReader) Close() error {
+ 		cr.cond.Broadcast()
+ 	}
+ 	cr.mu.Unlock()
++	cr.restoreTerminal()
+ 	return nil
+ }
+ 

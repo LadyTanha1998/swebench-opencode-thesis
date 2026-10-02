@@ -1,0 +1,15 @@
+diff --git a/tool/tsh/common/device.go b/tool/tsh/common/device.go
+index 3fbdf18273..2c5763ddc3 100644
+--- a/tool/tsh/common/device.go
++++ b/tool/tsh/common/device.go
+@@ -129,6 +129,10 @@ func (c *deviceEnrollCommand) run(cf *CLIConf) error {
+ }
+ 
+ func printEnrollOutcome(outcome enroll.RunAdminOutcome, dev *devicepb.Device) {
++	if dev == nil {
++		return // Can't report partial successes without a device.
++	}
++
+ 	var action string
+ 	switch outcome {
+ 	case enroll.DeviceRegisteredAndEnrolled:

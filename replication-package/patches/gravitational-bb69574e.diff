@@ -1,0 +1,101 @@
+diff --git a/lib/services/user.go b/lib/services/user.go
+index b6e1486aa0..894a4e9fb1 100644
+--- a/lib/services/user.go
++++ b/lib/services/user.go
+@@ -491,8 +491,8 @@ func (u *UserV1) Check() error {
+ 		return trace.BadParameter("user name cannot be empty")
+ 	}
+ 	for _, login := range u.AllowedLogins {
+-		_, err := parse.RoleVariable(login)
+-		if err == nil {
++		expr, err := parse.RoleVariable(login)
++		if err == nil && !expr.IsLiteral() {
+ 			return trace.BadParameter("role variables not allowed in allowed logins")
+ 		}
+ 	}
+diff --git a/lib/utils/parse/parse.go b/lib/utils/parse/parse.go
+index ce84239a52..a7ab5aa832 100644
+--- a/lib/utils/parse/parse.go
++++ b/lib/utils/parse/parse.go
+@@ -19,6 +19,7 @@ package parse
+ import (
+ 	"go/ast"
+ 	"go/parser"
++	"go/token"
+ 	"net/mail"
+ 	"regexp"
+ 	"strconv"
+@@ -44,6 +45,11 @@ type Expression struct {
+ 	suffix string
+ 	// transform is an optional transformer for the variable.
+ 	transform transformer
++	// literal is an optional literal value, e.g. "foo". If set, the
++	// expression is a string literal and returns its value directly.
++	literal string
++	// isLiteral is true when the expression is a string literal.
++	isLiteral bool
+ }
+ 
+ // emailLocalTransformer extracts local part of the email.
+@@ -75,10 +81,19 @@ func (p *Expression) Name() string {
+ 	return p.variable
+ }
+ 
++// IsLiteral returns true if the expression is a string literal
++func (p *Expression) IsLiteral() bool {
++	return p.isLiteral
++}
++
+ // Interpolate interpolates the variable adding prefix and suffix if present,
+ // returns trace.NotFound in case if the trait is not found, nil in case of
+ // success and BadParameter error otherwise
+ func (p *Expression) Interpolate(traits map[string][]string) ([]string, error) {
++	// If the expression is a string literal, return the value directly.
++	if p.IsLiteral() {
++		return []string{p.literal}, nil
++	}
+ 	values, ok := traits[p.variable]
+ 	if !ok {
+ 		return nil, trace.NotFound("variable is not found")
+@@ -111,8 +126,19 @@ var reVariable = regexp.MustCompile(
+ // {{external.foo}} or {{internal.bar}}. If it does, it returns the variable
+ // prefix and the variable name. In the previous example this would be
+ // "external" or "internal" for the variable prefix and "foo" or "bar" for the
+-// variable name. If no variable pattern is found, trace.NotFound is returned.
++// variable name. If the string is a string literal, e.g. "foo", a literal
++// expression that returns the value directly is returned. If no variable
++// pattern is found, trace.NotFound is returned.
+ func RoleVariable(variable string) (*Expression, error) {
++	// If the string is a valid string literal, e.g. "foo", return it as a
++	// literal expression that returns the value directly.
++	if isStringLiteral(variable) {
++		value, err := strconv.Unquote(variable)
++		if err != nil {
++			return nil, trace.BadParameter("failed to parse string literal %q: %v", variable, err)
++		}
++		return &Expression{literal: value, isLiteral: true}, nil
++	}
+ 	match := reVariable.FindStringSubmatch(variable)
+ 	if len(match) == 0 {
+ 		if strings.Contains(variable, "{{") || strings.Contains(variable, "}}") {
+@@ -158,6 +184,20 @@ const (
+ 	EmailLocalFnName = "local"
+ )
+ 
++// isStringLiteral checks if the passed in string is a valid string literal,
++// e.g. "foo". It returns true if the string parses as a Go string literal.
++func isStringLiteral(s string) bool {
++	expr, err := parser.ParseExpr(s)
++	if err != nil {
++		return false
++	}
++	lit, ok := expr.(*ast.BasicLit)
++	if !ok {
++		return false
++	}
++	return lit.Kind == token.STRING
++}
++
+ // transformer is an optional value transformer function that can take in
+ // string and replace it with another value
+ type transformer interface {

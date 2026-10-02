@@ -1,0 +1,12 @@
+diff --git a/packages/components/components/modalTwo/Modal.tsx b/packages/components/components/modalTwo/Modal.tsx
+index f049c0160..a4f7a0cb3 100644
+--- a/packages/components/components/modalTwo/Modal.tsx
++++ b/packages/components/components/modalTwo/Modal.tsx
+@@ -147,6 +147,7 @@ const Modal = <E extends ElementType = typeof defaultElement>({
+             >
+                 <dialog
+                     ref={dialogRef}
++                    open
+                     aria-labelledby={id}
+                     aria-describedby={`${id}-description`}
+                     {...focusTrapProps}

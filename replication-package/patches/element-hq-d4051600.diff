@@ -1,0 +1,187 @@
+diff --git a/src/async-components/views/dialogs/security/ExportE2eKeysDialog.tsx b/src/async-components/views/dialogs/security/ExportE2eKeysDialog.tsx
+index 139ede4d9c..89d844a63a 100644
+--- a/src/async-components/views/dialogs/security/ExportE2eKeysDialog.tsx
++++ b/src/async-components/views/dialogs/security/ExportE2eKeysDialog.tsx
+@@ -19,12 +19,14 @@ import FileSaver from "file-saver";
+ import React, { ChangeEvent } from "react";
+ import { MatrixClient } from "matrix-js-sdk/src/client";
+ import { logger } from "matrix-js-sdk/src/logger";
++import zxcvbn from "zxcvbn";
+ 
+ import { _t } from "../../../../languageHandler";
+ import * as MegolmExportEncryption from "../../../../utils/MegolmExportEncryption";
+ import BaseDialog from "../../../../components/views/dialogs/BaseDialog";
+ import Field from "../../../../components/views/elements/Field";
+-import { KeysStartingWith } from "../../../../@types/common";
++import withValidation, { IFieldState, IValidationResult } from "../../../../components/views/elements/Validation";
++import { PASSWORD_MIN_SCORE } from "../../../../components/views/auth/RegistrationForm";
+ 
+ enum Phase {
+     Edit = "edit",
+@@ -41,9 +43,11 @@ interface IState {
+     errStr: string | null;
+     passphrase1: string;
+     passphrase2: string;
++    passphrase1Valid: boolean;
++    passphrase2Valid: boolean;
+ }
+ 
+-type AnyPassphrase = KeysStartingWith<IState, "passphrase">;
++type AnyPassphrase = "passphrase1" | "passphrase2";
+ 
+ export default class ExportE2eKeysDialog extends React.Component<IProps, IState> {
+     private unmounted = false;
+@@ -56,6 +60,8 @@ export default class ExportE2eKeysDialog extends React.Component<IProps, IState>
+             errStr: null,
+             passphrase1: "",
+             passphrase2: "",
++            passphrase1Valid: false,
++            passphrase2Valid: false,
+         };
+     }
+ 
+@@ -63,16 +69,84 @@ export default class ExportE2eKeysDialog extends React.Component<IProps, IState>
+         this.unmounted = true;
+     }
+ 
++    private validatePassphrase1 = withValidation<this, zxcvbn.ZXCVBNResult | null>({
++        description: function (complexity) {
++            const score = complexity ? complexity.score : 0;
++            return <progress className="mx_PassphraseField_progress" max={4} value={score} />;
++        },
++        deriveData: async ({ value }): Promise<zxcvbn.ZXCVBNResult | null> => {
++            if (!value) return null;
++            const { scorePassword } = await import("../../../../utils/PasswordScorer");
++            return scorePassword(this.props.matrixClient, value);
++        },
++        rules: [
++            {
++                key: "required",
++                test: ({ value, allowEmpty }) => allowEmpty || !!value,
++                invalid: () => _t("Enter a passphrase"),
++            },
++            {
++                key: "complexity",
++                test: async function ({ value }, complexity): Promise<boolean> {
++                    if (!value || !complexity) {
++                        return false;
++                    }
++                    return complexity.score >= PASSWORD_MIN_SCORE;
++                },
++                valid: () => _t("Nice, strong passphrase!"),
++                invalid: function (complexity) {
++                    if (!complexity) {
++                        return null;
++                    }
++                    const { feedback } = complexity;
++                    return feedback.warning || feedback.suggestions[0] || _t("Keep going…");
++                },
++            },
++        ],
++        memoize: true,
++    });
++
++    private validatePassphrase2 = withValidation<this>({
++        rules: [
++            {
++                key: "required",
++                test: ({ value, allowEmpty }) => allowEmpty || !!value,
++                invalid: () => _t("Enter a passphrase"),
++            },
++            {
++                key: "match",
++                test: ({ value }) => !value || value === this.state.passphrase1,
++                invalid: () => _t("Passphrases must match"),
++            },
++        ],
++    });
++
++    private onPassphrase1Validate = async (fieldState: IFieldState): Promise<IValidationResult> => {
++        const result = await this.validatePassphrase1(fieldState);
++        this.setState({ passphrase1Valid: !!result.valid });
++        return result;
++    };
++
++    private onPassphrase2Validate = async (fieldState: IFieldState): Promise<IValidationResult> => {
++        const result = await this.validatePassphrase2(fieldState);
++        this.setState({ passphrase2Valid: !!result.valid });
++        return result;
++    };
++
+     private onPassphraseFormSubmit = (ev: React.FormEvent): boolean => {
+         ev.preventDefault();
+ 
+         const passphrase = this.state.passphrase1;
++        if (!passphrase) {
++            this.setState({ errStr: _t("Passphrase must not be empty") });
++            return false;
++        }
+         if (passphrase !== this.state.passphrase2) {
+             this.setState({ errStr: _t("Passphrases must match") });
+             return false;
+         }
+-        if (!passphrase) {
+-            this.setState({ errStr: _t("Passphrase must not be empty") });
++        if (!this.state.passphrase1Valid || !this.state.passphrase2Valid) {
++            this.setState({ errStr: _t("Passphrase must be stronger") });
+             return false;
+         }
+ 
+@@ -127,6 +201,11 @@ export default class ExportE2eKeysDialog extends React.Component<IProps, IState>
+         } as Pick<IState, AnyPassphrase>);
+     };
+ 
++    private get enableSubmit(): boolean {
++        const { passphrase1, passphrase2, passphrase1Valid, passphrase2Valid } = this.state;
++        return !!passphrase1Valid && !!passphrase2Valid && passphrase1 !== "" && passphrase1 === passphrase2;
++    }
++
+     public render(): React.ReactNode {
+         const disableForm = this.state.phase === Phase.Exporting;
+ 
+@@ -166,6 +245,7 @@ export default class ExportE2eKeysDialog extends React.Component<IProps, IState>
+                                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                         this.onPassphraseChange(e, "passphrase1")
+                                     }
++                                    onValidate={this.onPassphrase1Validate}
+                                     autoFocus={true}
+                                     size={64}
+                                     type="password"
+@@ -179,6 +259,7 @@ export default class ExportE2eKeysDialog extends React.Component<IProps, IState>
+                                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                         this.onPassphraseChange(e, "passphrase2")
+                                     }
++                                    onValidate={this.onPassphrase2Validate}
+                                     size={64}
+                                     type="password"
+                                     disabled={disableForm}
+@@ -191,7 +272,7 @@ export default class ExportE2eKeysDialog extends React.Component<IProps, IState>
+                             className="mx_Dialog_primary"
+                             type="submit"
+                             value={_t("Export")}
+-                            disabled={disableForm}
++                            disabled={disableForm || !this.enableSubmit}
+                         />
+                         <button onClick={this.onCancelClick} disabled={disableForm}>
+                             {_t("Cancel")}
+@@ -201,4 +282,4 @@ export default class ExportE2eKeysDialog extends React.Component<IProps, IState>
+             </BaseDialog>
+         );
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/i18n/strings/en_EN.json b/src/i18n/strings/en_EN.json
+index 13bcc82fab..b3c509ea38 100644
+--- a/src/i18n/strings/en_EN.json
++++ b/src/i18n/strings/en_EN.json
+@@ -3683,6 +3683,9 @@
+     "Unable to set up secret storage": "Unable to set up secret storage",
+     "Passphrases must match": "Passphrases must match",
+     "Passphrase must not be empty": "Passphrase must not be empty",
++    "Passphrase must be stronger": "Passphrase must be stronger",
++    "Enter a passphrase": "Enter a passphrase",
++    "Nice, strong passphrase!": "Nice, strong passphrase!",
+     "Export room keys": "Export room keys",
+     "This process allows you to export the keys for messages you have received in encrypted rooms to a local file. You will then be able to import the file into another Matrix client in the future, so that client will also be able to decrypt these messages.": "This process allows you to export the keys for messages you have received in encrypted rooms to a local file. You will then be able to import the file into another Matrix client in the future, so that client will also be able to decrypt these messages.",
+     "The exported file will allow anyone who can read it to decrypt any encrypted messages that you can see, so you should be careful to keep it secure. To help with this, you should enter a passphrase below, which will be used to encrypt the exported data. It will only be possible to import the data by using the same passphrase.": "The exported file will allow anyone who can read it to decrypt any encrypted messages that you can see, so you should be careful to keep it secure. To help with this, you should enter a passphrase below, which will be used to encrypt the exported data. It will only be possible to import the data by using the same passphrase.",

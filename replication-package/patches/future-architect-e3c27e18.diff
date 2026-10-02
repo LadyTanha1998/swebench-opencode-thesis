@@ -1,0 +1,128 @@
+diff --git a/saas/uuid.go b/saas/uuid.go
+index f1bf1d8..d3aa831 100644
+--- a/saas/uuid.go
++++ b/saas/uuid.go
+@@ -50,6 +50,7 @@ func EnsureUUIDs(configPath string, results models.ScanResults) (err error) {
+ 	})
+ 
+ 	re := regexp.MustCompile(reUUID)
++	changed := false
+ 	for i, r := range results {
+ 		server := c.Conf.Servers[r.ServerName]
+ 		if server.UUIDs == nil {
+@@ -63,8 +64,9 @@ func EnsureUUIDs(configPath string, results models.ScanResults) (err error) {
+ 			if err != nil {
+ 				return err
+ 			}
+-			if serverUUID != "" {
++			if serverUUID != "" && server.UUIDs[r.ServerName] != serverUUID {
+ 				server.UUIDs[r.ServerName] = serverUUID
++				changed = true
+ 			}
+ 		} else {
+ 			name = r.ServerName
+@@ -92,6 +94,7 @@ func EnsureUUIDs(configPath string, results models.ScanResults) (err error) {
+ 			return err
+ 		}
+ 		server.UUIDs[name] = serverUUID
++		changed = true
+ 		c.Conf.Servers[r.ServerName] = server
+ 
+ 		if r.IsContainer() {
+@@ -102,6 +105,11 @@ func EnsureUUIDs(configPath string, results models.ScanResults) (err error) {
+ 		}
+ 	}
+ 
++	if !changed {
++		util.Log.Info("UUIDs are already assigned. config.toml is not rewritten.")
++		return nil
++	}
++
+ 	for name, server := range c.Conf.Servers {
+ 		server = cleanForTOMLEncoding(server, c.Conf.Default)
+ 		c.Conf.Servers[name] = server
+diff --git a/saas/uuid_test.go b/saas/uuid_test.go
+index 75fd428..652cab1 100644
+--- a/saas/uuid_test.go
++++ b/saas/uuid_test.go
+@@ -1,9 +1,12 @@
+ package saas
+ 
+ import (
++	"io/ioutil"
++	"os"
++	"path/filepath"
+ 	"testing"
+ 
+-	"github.com/future-architect/vuls/config"
++	c "github.com/future-architect/vuls/config"
+ 	"github.com/future-architect/vuls/models"
+ )
+ 
+@@ -13,14 +16,14 @@ func TestGetOrCreateServerUUID(t *testing.T) {
+ 
+ 	cases := map[string]struct {
+ 		scanResult models.ScanResult
+-		server     config.ServerInfo
++		server     c.ServerInfo
+ 		isDefault  bool
+ 	}{
+ 		"baseServer": {
+ 			scanResult: models.ScanResult{
+ 				ServerName: "hoge",
+ 			},
+-			server: config.ServerInfo{
++			server: c.ServerInfo{
+ 				UUIDs: map[string]string{
+ 					"hoge": defaultUUID,
+ 				},
+@@ -31,7 +34,7 @@ func TestGetOrCreateServerUUID(t *testing.T) {
+ 			scanResult: models.ScanResult{
+ 				ServerName: "hoge",
+ 			},
+-			server: config.ServerInfo{
++			server: c.ServerInfo{
+ 				UUIDs: map[string]string{
+ 					"fuga": defaultUUID,
+ 				},
+@@ -51,3 +54,40 @@ func TestGetOrCreateServerUUID(t *testing.T) {
+ 	}
+ 
+ }
++
++func TestEnsureUUIDsDoesNotRewriteWhenValid(t *testing.T) {
++	configPath := filepath.Join(t.TempDir(), "config.toml")
++	if err := ioutil.WriteFile(configPath, []byte(""), 0600); err != nil {
++		t.Fatal(err)
++	}
++
++	serverUUID := "11111111-1111-1111-1111-111111111111"
++	containerUUID := "22222222-2222-2222-2222-222222222222"
++
++	c.Conf = c.Config{
++		Servers: map[string]c.ServerInfo{
++			"hoge": {
++				UUIDs: map[string]string{
++					"hoge":     serverUUID,
++					"ctr@hoge": containerUUID,
++				},
++			},
++		},
++	}
++
++	results := models.ScanResults{
++		{
++			ServerName:  "hoge",
++			ServerUUID:  serverUUID,
++			Container:   models.Container{ContainerID: "docker1", Name: "ctr"},
++		},
++	}
++
++	if err := EnsureUUIDs(configPath, results); err != nil {
++		t.Fatal(err)
++	}
++
++	if _, err := os.Stat(configPath + ".bak"); !os.IsNotExist(err) {
++		t.Errorf("config.toml.bak was created despite valid UUIDs")
++	}
++}

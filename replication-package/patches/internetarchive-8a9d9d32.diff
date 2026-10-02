@@ -1,0 +1,62 @@
+diff --git a/openlibrary/core/imports.py b/openlibrary/core/imports.py
+index fc96a03fc..434d57126 100644
+--- a/openlibrary/core/imports.py
++++ b/openlibrary/core/imports.py
+@@ -101,7 +101,11 @@ class Batch(web.storage):
+         return
+ 
+     def get_items(self, status="pending"):
+-        result = db.where("import_item", batch_id=self.id, status=status)
++        result = (
++            db.where("import_item", batch_id=self.id, status=status)
++            if status
++            else db.where("import_item", batch_id=self.id)
++        )
+         return [ImportItem(row) for row in result]
+ 
+ 
+diff --git a/scripts/manage_imports.py b/scripts/manage_imports.py
+index 8afb7947f..30d3b19eb 100755
+--- a/scripts/manage_imports.py
++++ b/scripts/manage_imports.py
+@@ -151,6 +151,31 @@ def import_item(args, **kwargs):
+         logger.error(f"{ia_id} is not found in the import queue")
+ 
+ 
++def import_isbndb(args, **kwargs):
++    """Imports ISBNdb records from a locally staged `.jsonl` data dump.
++
++    Processes every `isbndb*.jsonl` file found in the given directory, staging
++    them into the ``isbndb_bulk_import`` batch and importing them into
++    OpenLibrary. Intended for testing or processing ISBNdb-provided records
++    using the manage_imports pipeline.
++
++    Usage:
++        python scripts/manage_imports.py --config <config> import-isbndb <path>
++    """
++    from scripts.providers.isbndb import batch_import
++
++    servername = kwargs.get('servername', None)
++    require_marc = not kwargs.get('no_marc', False)
++    batch_path = args[0]
++
++    batch_name = "isbndb_bulk_import"
++    batch = Batch.find(batch_name) or Batch.new(batch_name)
++    batch_import(batch_path, batch)
++
++    for item in batch.get_items(status=None):
++        do_import(item, servername=servername, require_marc=require_marc)
++
++
+ def import_all(args, **kwargs):
+     import multiprocessing
+ 
+@@ -246,6 +271,8 @@ def main():
+         return import_all(args, **flags)
+     elif cmd == "import-item":
+         return import_item(args, **flags)
++    elif cmd == "import-isbndb":
++        return import_isbndb(args, **flags)
+     else:
+         logger.error(f"Unknown command: {cmd}")
+ 

