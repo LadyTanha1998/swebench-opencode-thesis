@@ -1,48 +1,27 @@
-# Replication Package - Layer-2 Failure Taxonomy Study
+# Replication Package
 
-Per-task evidence files for the 93 Incomplete Generation (IG) failures
-(SWE-bench Pro, OpenCode + DeepSeek agent). Generated from the experiment audit
-(`digest2_summary.csv`) and the raw `outputs/` tree.
+Data and evidence for the thesis *Bugs in AI-Generated Code: An Empirical Study on
+SWE-bench Pro* (University of Luxembourg). The method is described in Chapter 3 of
+the thesis; the defect categories are defined in its Appendix A.
 
-## Final Layer-2 distribution (93 tasks)
-| Category | Definition | n | % |
-|---|---|---|---|
-| IG-A (empty patch) | Final attempt produced a 0-byte patch | 21 | 23% |
-| IG-D (artifact-only diff) | Final patch contains only auto-generated dependency/build artefacts (lockfiles, checksum caches, vendor pointers, bundled assets); no task-relevant source change | 16 | 17% |
-| IG-B (partial implementation) | Real code written; a required piece is missing | 55 | 59% |
-| IG-C (integration failure) | Patch present but the patched package fails to compile | 1 | 1% |
+## Contents
 
-IG-D was created as its own category (rather than folding these tasks into
-IG-A) following supervisor guidance (2026-09-30): the phenomenon - non-empty
-diffs of up to ~213KB containing zero task-relevant change - is qualitatively
-distinct from both empty patches and partial implementations. IG-C is retained
-despite n=1: it is defined by an objective criterion (the patched package fails
-to build; verified in the evaluator log of gravitational-3fa69043), and merging
-it into IG-B would misrepresent the mechanism. Its rarity is a finding: 55/56
-real-patch failures (98%) are partial implementations.
+| Path | Content |
+|------|---------|
+| `master_dataset.csv` | One row per task (253 rows): final outcome, main defect label, second-layer form for Incomplete Generation, number of attempt folders, final run status, patch sizes, files touched, failing tests. |
+| `cases/` | One short file per task: the outcome, the label and why it was chosen, and links to the patch, the evaluation output, and the trace. |
+| `patches/` | The final patch of the final attempt for each task. 32 files are empty, because the final attempt produced no code change. |
+| `evaluator/` | Benchmark evaluation output for each task (test logs and result files). 249 of the 253 tasks have evaluator output. For four failed tasks (`gravitational-cb712e3f`, `internetarchive-53e02a22`, `internetarchive-8a5a63af`, `tutao-40e94dee`), no evaluation output could be located; all four have an empty final patch. |
+| `traces/` | The execution trace of the final attempt for each task: model messages, tool calls, file reads and edits, shell commands, and test runs. Local file paths were replaced with neutral paths. |
 
-## Coding protocol
-Layer-2 labels were proposed from per-task evidence briefs (`coding/`) by an
-LLM assistant and reviewed and adjudicated by the author; the category
-structure was discussed with the supervisor before finalisation (email trail,
-2026-09-30). Cross-cutting factors (e.g. time exhaustion) are recorded per task
-in `data/final_labels.csv` rather than as subcategories.
+File names use the pattern `<repository>-<first 8 characters of the commit hash>`,
+for example `internetarchive-4a5d2a7d`. The same name links a row in
+`master_dataset.csv` with its case file, patch, evaluation output, and trace.
 
-## Layout
-- `cases/` - 93 case files: processing history, final patch, evaluator output, classification + rationale.
-- `patches/` - the final patch of each task's final attempt.
-- `evaluator/` - evaluator artefacts where located.
-- `coding/` - evidence briefs + decision rules used during coding.
-- `data/final_labels.csv` - master sheet (labels, rationales, provenance notes).
-- `data/master_dataset.csv` - all 253 processed tasks: outcome, main Layer-1 label, second-layer form for IG, processing history and evidence pointers.
-- `SECRET_SCAN.txt` - auto secrets scan (review before making the repo public).
+## Summary of the results
 
-## Method notes
-- Final attempt = latest attempt by file modification time (thesis rule 3.5).
-- Layer-1 labels are frozen from the published study; only Layer-2 is coded here.
-- Where evaluator output was truncated, tasks were coded IG-B by default after a
-  systematic build-failure scan of all eval folders found no build errors (the
-  only scan hits were the harness's own parser source - false positives).
-- Teleport eval caveat: some eval runs show environment-level build failures in
-  packages untouched by the agent; labels use the patched package's own result.
-- Traces are referenced by path but not copied (size + secrets scrub pending).
+- 71 of 253 tasks passed (28.1%); 182 failed.
+- Main defect labels of the failures: Incomplete Generation 93, Misinterpretation 67,
+  Silly Mistake 12, Missing Corner Case 8, Wrong Attribute 2.
+- Second-layer forms of the 93 Incomplete Generation cases: IG-A empty patch 21,
+  IG-B partial implementation 55, IG-C integration failure 1, IG-D artefact-only diff 16.
