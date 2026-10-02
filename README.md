@@ -53,7 +53,6 @@ The thesis uses the word *repair* for every attempt to resolve a task.
 | Path | Content |
 |------|---------|
 | `master_dataset.csv` | One row per task (253 rows): final outcome, main defect label, second-layer form, number of attempt folders, final run status, patch sizes, files touched, failing tests. |
-| `data/final_labels.csv` | Label sheet for the 93 Incomplete Generation cases, with the second-layer form and the rationale. |
 | `patches/` | The final patch of the final attempt for each of the 253 tasks. 32 files are empty, because the final attempt produced no code change. |
 | `evaluator/` | Benchmark evaluation output for each task (test logs and result files). 249 of the 253 tasks have evaluator output. For four failed tasks (`gravitational-cb712e3f`, `internetarchive-53e02a22`, `internetarchive-8a5a63af`, `tutao-40e94dee`), no evaluation output could be located; all four have an empty final patch. |
 | `traces/` | The execution trace of the final attempt for each of the 253 tasks: model messages, tool calls, file reads and edits, shell commands, and test runs. Local file paths were replaced with neutral paths. |
