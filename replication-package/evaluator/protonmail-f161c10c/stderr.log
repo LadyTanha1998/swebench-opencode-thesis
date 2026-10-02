@@ -1,0 +1,166 @@
+PASS containers/contacts/import/ContactImportModal.test.tsx (295.236 s, 449 MB heap size)
+  ContactImportModal
+    ✓ should succeed to import a simple CSV file (1523 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        309.548 s
+Ran all test suites matching /packages\/components\/containers\/contacts\/import\/ContactImportModal.test.tsx/i.
+[
+  {
+    moduleIdentifier: '/app/node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!/app/packages/shared/test/contacts/property.spec.ts',
+    moduleName: './test/contacts/property.spec.ts',
+    loc: '9:19-36',
+    message: "export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)",
+    moduleId: './test/contacts/property.spec.ts',
+    moduleTrace: [ [Object], [Object] ],
+    details: undefined,
+    stack: '    at HarmonyImportSpecifierDependency.getLinkingErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportDependency.js:160:8)\n' +
+      '    at HarmonyImportSpecifierDependency._getErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:202:15)\n' +
+      '    at HarmonyImportSpecifierDependency.getWarnings (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:178:16)\n' +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3132:24)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '\n' +
+      "ModuleDependencyWarning: export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)\n" +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3137:23)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:51:16'
+  },
+  {
+    moduleIdentifier: '/app/node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!/app/packages/shared/test/contacts/property.spec.ts',
+    moduleName: './test/contacts/property.spec.ts',
+    loc: '10:19-36',
+    message: "export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)",
+    moduleId: './test/contacts/property.spec.ts',
+    moduleTrace: [ [Object], [Object] ],
+    details: undefined,
+    stack: '    at HarmonyImportSpecifierDependency.getLinkingErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportDependency.js:160:8)\n' +
+      '    at HarmonyImportSpecifierDependency._getErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:202:15)\n' +
+      '    at HarmonyImportSpecifierDependency.getWarnings (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:178:16)\n' +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3132:24)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '\n' +
+      "ModuleDependencyWarning: export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)\n" +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3137:23)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:51:16'
+  },
+  {
+    moduleIdentifier: '/app/node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!/app/packages/shared/test/contacts/property.spec.ts',
+    moduleName: './test/contacts/property.spec.ts',
+    loc: '11:19-36',
+    message: "export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)",
+    moduleId: './test/contacts/property.spec.ts',
+    moduleTrace: [ [Object], [Object] ],
+    details: undefined,
+    stack: '    at HarmonyImportSpecifierDependency.getLinkingErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportDependency.js:160:8)\n' +
+      '    at HarmonyImportSpecifierDependency._getErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:202:15)\n' +
+      '    at HarmonyImportSpecifierDependency.getWarnings (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:178:16)\n' +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3132:24)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '\n' +
+      "ModuleDependencyWarning: export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)\n" +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3137:23)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:51:16'
+  },
+  {
+    moduleIdentifier: '/app/node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!/app/packages/shared/test/contacts/property.spec.ts',
+    moduleName: './test/contacts/property.spec.ts',
+    loc: '13:19-36',
+    message: "export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)",
+    moduleId: './test/contacts/property.spec.ts',
+    moduleTrace: [ [Object], [Object] ],
+    details: undefined,
+    stack: '    at HarmonyImportSpecifierDependency.getLinkingErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportDependency.js:160:8)\n' +
+      '    at HarmonyImportSpecifierDependency._getErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:202:15)\n' +
+      '    at HarmonyImportSpecifierDependency.getWarnings (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:178:16)\n' +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3132:24)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '\n' +
+      "ModuleDependencyWarning: export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)\n" +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3137:23)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:51:16'
+  },
+  {
+    moduleIdentifier: '/app/node_modules/ts-loader/index.js??ruleSet[1].rules[0].use[0]!/app/packages/shared/test/contacts/property.spec.ts',
+    moduleName: './test/contacts/property.spec.ts',
+    loc: '17:19-36',
+    message: "export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)",
+    moduleId: './test/contacts/property.spec.ts',
+    moduleTrace: [ [Object], [Object] ],
+    details: undefined,
+    stack: '    at HarmonyImportSpecifierDependency.getLinkingErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportDependency.js:160:8)\n' +
+      '    at HarmonyImportSpecifierDependency._getErrors (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:202:15)\n' +
+      '    at HarmonyImportSpecifierDependency.getWarnings (/app/node_modules/webpack/lib/dependencies/HarmonyImportSpecifierDependency.js:178:16)\n' +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3132:24)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '\n' +
+      "ModuleDependencyWarning: export 'guessDateFromText' (imported as 'guessDateFromText') was not found in '@proton/shared/lib/contacts/property' (possible exports: cleanMultipleValue, clearType, getDateFromVCardProperty, getType, getValue, unescapeVcardValue)\n" +
+      '    at Compilation.reportDependencyErrorsAndWarnings (/app/node_modules/webpack/lib/Compilation.js:3137:23)\n' +
+      '    at /app/node_modules/webpack/lib/Compilation.js:2729:28\n' +
+      '    at eval (eval at create (/app/node_modules/webpack/node_modules/tapable/lib/HookCodeFactory.js:33:10), <anonymous>:29:1)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:385:11\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:361:18\n' +
+      '    at /app/node_modules/neo-async/async.js:2830:7\n' +
+      '    at Object.each (/app/node_modules/neo-async/async.js:2850:39)\n' +
+      '    at /app/node_modules/webpack/lib/FlagDependencyExportsPlugin.js:51:16'
+  }
+]

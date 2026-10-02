@@ -1,0 +1,70 @@
+diff --git a/internal/cmd/auth.go b/internal/cmd/auth.go
+index 8f73732a..ded757eb 100644
+--- a/internal/cmd/auth.go
++++ b/internal/cmd/auth.go
+@@ -39,11 +39,11 @@ func authenticationGRPC(
+ 		return nil
+ 	}
+ 
+-	// NOTE: we skip attempting to connect to any database in the situation that either the git or local
+-	// FS backends are configured.
++	// NOTE: we skip attempting to connect to any database in the situation that either the git, local
++	// or object FS backends are configured.
+ 	// All that is required to establish a connection for authentication is to either make auth required
+ 	// or configure at-least one authentication method (e.g. enable token method).
+-	if !cfg.Authentication.Enabled() && (cfg.Storage.Type == config.GitStorageType || cfg.Storage.Type == config.LocalStorageType) {
++	if !cfg.Authentication.Enabled() && cfg.Storage.Type != config.DatabaseStorageType {
+ 		return grpcRegisterers{
+ 			public.NewServer(logger, cfg.Authentication),
+ 			auth.NewServer(logger, storageauthmemory.NewStore()),
+diff --git a/internal/config/storage.go b/internal/config/storage.go
+index 2f675651..f53d3915 100644
+--- a/internal/config/storage.go
++++ b/internal/config/storage.go
+@@ -25,10 +25,11 @@ const (
+ // StorageConfig contains fields which will configure the type of backend in which Flipt will serve
+ // flag state.
+ type StorageConfig struct {
+-	Type   StorageType `json:"type,omitempty" mapstructure:"type"`
+-	Local  *Local      `json:"local,omitempty" mapstructure:"local,omitempty"`
+-	Git    *Git        `json:"git,omitempty" mapstructure:"git,omitempty"`
+-	Object *Object     `json:"object,omitempty" mapstructure:"object,omitempty"`
++	Type     StorageType `json:"type,omitempty" mapstructure:"type"`
++	ReadOnly *bool       `json:"readOnly,omitempty" mapstructure:"readOnly,omitempty"`
++	Local    *Local      `json:"local,omitempty" mapstructure:"local,omitempty"`
++	Git      *Git        `json:"git,omitempty" mapstructure:"git,omitempty"`
++	Object   *Object     `json:"object,omitempty" mapstructure:"object,omitempty"`
+ }
+ 
+ func (c *StorageConfig) setDefaults(v *viper.Viper) {
+@@ -80,6 +81,10 @@ func (c *StorageConfig) validate() error {
+ 		}
+ 	}
+ 
++	if c.ReadOnly != nil && c.Type != DatabaseStorageType {
++		return errors.New("setting read only mode is only supported with database storage")
++	}
++
+ 	return nil
+ }
+ 
+diff --git a/internal/config/testdata/storage/invalid_readonly.yml b/internal/config/testdata/storage/invalid_readonly.yml
+new file mode 100644
+index 00000000..d736983e
+--- /dev/null
++++ b/internal/config/testdata/storage/invalid_readonly.yml
+@@ -0,0 +1,13 @@
++experimental:
++  filesystem_storage:
++    enabled: true
++storage:
++  type: object
++  readOnly: false
++  object:
++    type: s3
++    s3:
++      bucket: "testbucket"
++      prefix: "prefix"
++      region: "region"
++      poll_interval: "5m"
+\ No newline at end of file

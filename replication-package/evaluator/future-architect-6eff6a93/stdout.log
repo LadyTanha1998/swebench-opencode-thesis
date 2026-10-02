@@ -1,0 +1,56 @@
+Running selected tests: TestEOL_IsStandardSupportEnded/Debian_9_supported TestEOL_IsStandardSupportEnded/freebsd_11_supported TestEOL_IsStandardSupportEnded/freebsd_11_eol_on_2021-9-30 TestEOL_IsStandardSupportEnded/CentOS_7_supported TestEOL_IsStandardSupportEnded/Debian_10_supported Test_major TestEOL_IsStandardSupportEnded/Oracle_Linux_9_not_found TestEOL_IsStandardSupportEnded/Ubuntu_12.10_not_found TestEOL_IsStandardSupportEnded/CentOS_9_not_found TestEOL_IsStandardSupportEnded/CentOS_8_supported TestDistro_MajorVersion TestEOL_IsStandardSupportEnded/amazon_linux_2_supported TestSyslogConfValidate TestEOL_IsStandardSupportEnded/Ubuntu_18.04_ext_supported TestEOL_IsStandardSupportEnded/Ubuntu_21.04_supported TestEOL_IsStandardSupportEnded/Debian_11_supported TestEOL_IsStandardSupportEnded/freebsd_10_eol TestPrependHTTPProxyEnv TestEOL_IsStandardSupportEnded/Oracle_Linux_7_supported TestEOL_IsStandardSupportEnded/RHEL7_supported TestEOL_IsStandardSupportEnded/Debian_8_supported TestTruncate TestEOL_IsStandardSupportEnded TestEOL_IsStandardSupportEnded/amazon_linux_1_eol_on_2023-6-30 TestEOL_IsStandardSupportEnded/Ubuntu_14.10_eol TestEOL_IsStandardSupportEnded/Ubuntu_18.04_supported TestEOL_IsStandardSupportEnded/Alpine_3.11_supported TestEOL_IsStandardSupportEnded/RHEL9_not_found TestEOL_IsStandardSupportEnded/amazon_linux_1_supported TestEOL_IsStandardSupportEnded/RHEL6_eol TestEOL_IsStandardSupportEnded/Debian_3.13_not_found TestEOL_IsStandardSupportEnded/CentOS_6_eol TestEOL_IsStandardSupportEnded/alpine_3.10_supported TestEOL_IsStandardSupportEnded/Alpine_3.12_supported TestEOL_IsStandardSupportEnded/RHEL8_supported TestEOL_IsStandardSupportEnded/Oracle_Linux_8_supported TestUrlJoin TestEOL_IsStandardSupportEnded/Debian_3.9_eol TestEOL_IsStandardSupportEnded/freebsd_12_supported TestEOL_IsStandardSupportEnded/Ubuntu_14.04_eol TestToCpeURI TestEOL_IsStandardSupportEnded/Ubuntu_16.04_supported TestEOL_IsStandardSupportEnded/Oracle_Linux_6_eol
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/cache	0.354s [no tests to run]
+# github.com/future-architect/vuls/config [github.com/future-architect/vuls/config.test]
+config/os_test.go:312:18: undefined: GetEOL
+# github.com/mattn/go-sqlite3
+sqlite3-binding.c: In function 'sqlite3SelectNew':
+sqlite3-binding.c:128049:10: warning: function may return address of local variable [-Wreturn-local-addr]
+128049 |   return pNew;
+       |          ^~~~
+sqlite3-binding.c:128009:10: note: declared here
+128009 |   Select standin;
+       |          ^~~~~~~
+?   	github.com/future-architect/vuls/cmd/scanner	[no test files]
+?   	github.com/future-architect/vuls/cmd/vuls	[no test files]
+FAIL	github.com/future-architect/vuls/config [build failed]
+?   	github.com/future-architect/vuls/contrib/future-vuls/cmd	[no test files]
+?   	github.com/future-architect/vuls/contrib/owasp-dependency-check/parser	[no test files]
+?   	github.com/future-architect/vuls/contrib/trivy/cmd	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/contrib/trivy/parser	0.119s [no tests to run]
+?   	github.com/future-architect/vuls/cwe	[no test files]
+?   	github.com/future-architect/vuls/errof	[no test files]
+?   	github.com/future-architect/vuls/exploit	[no test files]
+?   	github.com/future-architect/vuls/github	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/gost	0.147s [no tests to run]
+?   	github.com/future-architect/vuls/libmanager	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/models	0.145s [no tests to run]
+?   	github.com/future-architect/vuls/msf	[no test files]
+# github.com/future-architect/vuls/util [github.com/future-architect/vuls/util.test]
+util/util_test.go:177:8: undefined: Major
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/oval	0.156s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/report	0.226s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/saas	0.206s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/scan	0.158s [no tests to run]
+?   	github.com/future-architect/vuls/server	[no test files]
+?   	github.com/future-architect/vuls/subcmds	[no test files]
+FAIL	github.com/future-architect/vuls/util [build failed]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/wordpress	0.109s [no tests to run]
+FAIL

@@ -1,0 +1,125 @@
+HEAD is now at c12ce90636 [auto] Update webassets in master (#7621)
+diff --git a/lib/utils/concurrentqueue/queue.go b/lib/utils/concurrentqueue/queue.go
+new file mode 100644
+index 0000000000..b0e4ddc0eb
+--- /dev/null
++++ b/lib/utils/concurrentqueue/queue.go
+@@ -0,0 +1,118 @@
++// Package concurrentqueue provides a reusable concurrent queue that
++// processes a stream of items with a configurable worker pool while
++// preserving the order of results and applying backpressure when the
++// configured capacity is exceeded.
++package concurrentqueue
++
++import (
++	"sync"
++	"sync/atomic"
++)
++
++// queuedItem wraps a submitted item with its submission index so that
++// results can be reordered to match the order in which items were
++// submitted.
++type queuedItem struct {
++	idx  int
++	item interface{}
++}
++
++// Queue is a concurrent queue that processes items with a fixed-size
++// worker pool and collects the results in submission order.
++type Queue struct {
++	workerPoolSize int
++	queueSize      int
++	items          chan queuedItem
++	task           func(interface{}) (interface{}, error)
++	results        []interface{}
++	errors         []error
++	done           chan struct{}
++	wg             sync.WaitGroup
++	mu             sync.Mutex
++	started        sync.Once
++	finished       sync.Once
++	next           int64
++}
++
++// New creates a new concurrent queue. workerPoolSize controls how many
++// items are processed in parallel, queueSize controls how many items may
++// be buffered before Submit blocks (backpressure), and task is invoked
++// for each submitted item to produce a result and, optionally, an error.
++func New(workerPoolSize int, queueSize int, task func(interface{}) (interface{}, error)) *Queue {
++	return &Queue{
++		workerPoolSize: workerPoolSize,
++		queueSize:      queueSize,
++		items:          make(chan queuedItem, queueSize),
++		task:           task,
++		results:        []interface{}{},
++		errors:         []error{},
++		done:           make(chan struct{}),
++	}
++}
++
++// Submit adds an item to the queue for processing. It blocks (applying
++// backpressure) when the queue's buffer is full.
++func (q *Queue) Submit(item interface{}) {
++	q.started.Do(q.run)
++	idx := int(atomic.AddInt64(&q.next, 1)) - 1
++	q.items <- queuedItem{idx: idx, item: item}
++}
++
++// GetResults blocks until all submitted items have been processed and
++// returns the results and errors in submission order.
++func (q *Queue) GetResults() ([]interface{}, []error) {
++	q.finish()
++	<-q.done
++	q.mu.Lock()
++	defer q.mu.Unlock()
++	return q.results, q.errors
++}
++
++// GetNumResults blocks until all submitted items have been processed and
++// returns the number of results and errors collected.
++func (q *Queue) GetNumResults() (int, int) {
++	q.finish()
++	<-q.done
++	q.mu.Lock()
++	defer q.mu.Unlock()
++	return len(q.results), len(q.errors)
++}
++
++// finish signals that no more items will be submitted. It is safe to call
++// multiple times; only the first call closes the items channel.
++func (q *Queue) finish() {
++	q.started.Do(q.run)
++	q.finished.Do(func() {
++		close(q.items)
++	})
++}
++
++// run starts the worker pool and a goroutine that signals completion once
++// every worker has finished.
++func (q *Queue) run() {
++	for i := 0; i < q.workerPoolSize; i++ {
++		q.wg.Add(1)
++		go q.worker()
++	}
++	go func() {
++		q.wg.Wait()
++		close(q.done)
++	}()
++}
++
++// worker consumes items from the queue until it is closed, invokes the
++// task for each item, and stores the result at its submission index.
++func (q *Queue) worker() {
++	defer q.wg.Done()
++	for qi := range q.items {
++		res, err := q.task(qi.item)
++		q.mu.Lock()
++		for len(q.results) <= qi.idx {
++			q.results = append(q.results, nil)
++			q.errors = append(q.errors, nil)
++		}
++		q.results[qi.idx] = res
++		q.errors[qi.idx] = err
++		q.mu.Unlock()
++	}
++}

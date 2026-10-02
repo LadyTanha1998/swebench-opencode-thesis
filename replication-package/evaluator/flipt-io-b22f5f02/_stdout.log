@@ -1,0 +1,199 @@
+Running selected tests: TestStore_Fetch TestParseReference TestStore_Fetch_InvalidMediaType TestStore_List TestStore_Copy TestFile TestStore_Build
+?   	go.flipt.io/flipt/cmd/flipt	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/config	0.140s [no tests to run]
+?   	go.flipt.io/flipt/config/migrations	[no test files]
+?   	go.flipt.io/flipt/internal/cache	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cache/memory	0.125s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cache/redis	0.169s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cleanup	0.123s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cmd	0.188s [no tests to run]
+?   	go.flipt.io/flipt/internal/common	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/config	0.120s [no tests to run]
+?   	go.flipt.io/flipt/internal/containers	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cue	0.096s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/ext	0.101s [no tests to run]
+?   	go.flipt.io/flipt/internal/gateway	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/gitfs	0.134s [no tests to run]
+?   	go.flipt.io/flipt/internal/info	[no test files]
+?   	go.flipt.io/flipt/internal/metrics	[no test files]
+=== RUN   TestParseReference
+=== RUN   TestParseReference/unexpected_scheme
+=== RUN   TestParseReference/invalid_local_reference
+=== RUN   TestParseReference/valid_local
+=== RUN   TestParseReference/valid_bare_local
+=== RUN   TestParseReference/valid_insecure_remote
+=== RUN   TestParseReference/valid_remote
+=== RUN   TestParseReference/valid_bare_remote
+--- PASS: TestParseReference (0.01s)
+    --- PASS: TestParseReference/unexpected_scheme (0.00s)
+    --- PASS: TestParseReference/invalid_local_reference (0.00s)
+    --- PASS: TestParseReference/valid_local (0.00s)
+    --- PASS: TestParseReference/valid_bare_local (0.00s)
+    --- PASS: TestParseReference/valid_insecure_remote (0.00s)
+    --- PASS: TestParseReference/valid_remote (0.00s)
+    --- PASS: TestParseReference/valid_bare_remote (0.00s)
+=== RUN   TestStore_Fetch_InvalidMediaType
+    file_test.go:120: test OCI directory /tmp/TestStore_Fetch_InvalidMediaType1173674496/001 testrepo
+    file_test.go:134: test OCI directory /tmp/TestStore_Fetch_InvalidMediaType1173674496/002 testrepo
+--- PASS: TestStore_Fetch_InvalidMediaType (0.08s)
+=== RUN   TestStore_Fetch
+    file_test.go:146: test OCI directory /tmp/TestStore_Fetch2912867955/001 testrepo
+=== RUN   TestStore_Fetch/IfNoMatch
+--- PASS: TestStore_Fetch (0.01s)
+    --- PASS: TestStore_Fetch/IfNoMatch (0.00s)
+=== RUN   TestStore_Build
+    file_test.go:203: test OCI directory /tmp/TestStore_Build4187156378/001 testrepo
+    logger.go:130: 2026-09-18T13:38:30.832Z	DEBUG	opening state file	{"path": "default.yml"}
+    logger.go:130: 2026-09-18T13:38:30.897Z	DEBUG	adding layer	{"digest": "8dad1f349533effa33435bcf33ffc44bc4fae2cdc873e4942b07de1d931480ee", "namespace": "default"}
+    logger.go:130: 2026-09-18T13:38:30.904Z	DEBUG	opening state file	{"path": "production.yml"}
+    logger.go:130: 2026-09-18T13:38:30.914Z	DEBUG	adding layer	{"digest": "ee25a3f6a4d77c1b81da5c2743df938ec3db20cf111807467585d85f283b7aa4", "namespace": "production"}
+--- PASS: TestStore_Build (0.10s)
+=== RUN   TestStore_List
+    file_test.go:231: test OCI directory /tmp/TestStore_List2750574306/001 testrepo
+    logger.go:130: 2026-09-18T13:38:30.920Z	DEBUG	opening state file	{"path": "default.yml"}
+    logger.go:130: 2026-09-18T13:38:30.924Z	DEBUG	adding layer	{"digest": "8dad1f349533effa33435bcf33ffc44bc4fae2cdc873e4942b07de1d931480ee", "namespace": "default"}
+    logger.go:130: 2026-09-18T13:38:30.925Z	DEBUG	opening state file	{"path": "production.yml"}
+    logger.go:130: 2026-09-18T13:38:30.929Z	DEBUG	adding layer	{"digest": "ee25a3f6a4d77c1b81da5c2743df938ec3db20cf111807467585d85f283b7aa4", "namespace": "production"}
+    file_test.go:249: bundle created digest: sha256:dffe8200d6ed7231c8887bd0ea585ca943a31212b1b311b48d068a4cfc8ba37d
+    logger.go:130: 2026-09-18T13:38:31.935Z	DEBUG	opening state file	{"path": "default.yml"}
+    logger.go:130: 2026-09-18T13:38:31.945Z	DEBUG	adding layer	{"digest": "8dad1f349533effa33435bcf33ffc44bc4fae2cdc873e4942b07de1d931480ee", "namespace": "default"}
+    logger.go:130: 2026-09-18T13:38:31.945Z	DEBUG	opening state file	{"path": "production.yml"}
+    logger.go:130: 2026-09-18T13:38:31.955Z	DEBUG	adding layer	{"digest": "ee25a3f6a4d77c1b81da5c2743df938ec3db20cf111807467585d85f283b7aa4", "namespace": "production"}
+    file_test.go:258: bundle created digest: sha256:7f2a1fd6d3a28c8ab047069f96002494db013618a6d49cc9e2659ef7bd3f7ab0
+--- PASS: TestStore_List (1.04s)
+=== RUN   TestStore_Copy
+    file_test.go:270: test OCI directory /tmp/TestStore_Copy2319240930/001 testrepo
+    logger.go:130: 2026-09-18T13:38:31.962Z	DEBUG	opening state file	{"path": "default.yml"}
+    logger.go:130: 2026-09-18T13:38:31.970Z	DEBUG	adding layer	{"digest": "8dad1f349533effa33435bcf33ffc44bc4fae2cdc873e4942b07de1d931480ee", "namespace": "default"}
+    logger.go:130: 2026-09-18T13:38:31.970Z	DEBUG	opening state file	{"path": "production.yml"}
+    logger.go:130: 2026-09-18T13:38:31.979Z	DEBUG	adding layer	{"digest": "ee25a3f6a4d77c1b81da5c2743df938ec3db20cf111807467585d85f283b7aa4", "namespace": "production"}
+=== RUN   TestStore_Copy/valid
+=== RUN   TestStore_Copy/invalid_source_(no_reference)
+=== RUN   TestStore_Copy/invalid_destination_(no_reference)
+--- PASS: TestStore_Copy (0.03s)
+    --- PASS: TestStore_Copy/valid (0.00s)
+    --- PASS: TestStore_Copy/invalid_source_(no_reference) (0.00s)
+    --- PASS: TestStore_Copy/invalid_destination_(no_reference) (0.00s)
+=== RUN   TestFile
+--- PASS: TestFile (0.00s)
+PASS
+ok  	go.flipt.io/flipt/internal/oci	1.470s
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/release	0.105s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/s3fs	0.132s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server	0.189s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit	0.138s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit/logfile	0.151s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit/template	0.130s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit/webhook	0.124s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/auth	0.149s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/auth/method	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/auth/method/github	0.144s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/auth/method/kubernetes	0.158s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/auth/method/kubernetes/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/auth/method/oidc	0.204s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/auth/method/oidc/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/auth/method/token	0.184s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/auth/public	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/evaluation	0.143s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/metadata	[no test files]
+?   	go.flipt.io/flipt/internal/server/metrics	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/middleware/grpc	0.178s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/otel	[no test files]
+?   	go.flipt.io/flipt/internal/storage	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/auth	0.143s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/auth/cache	0.157s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/auth/memory	0.142s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/auth/sql	0.187s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/auth/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/cache	0.179s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs	0.155s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/git	0.173s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/local	0.193s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/oci	0.189s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/s3	0.226s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/oplock	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/oplock/memory	0.080s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/oplock/sql	0.135s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/oplock/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/sql	0.148s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/sql/common	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/mysql	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/postgres	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/sqlite	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/telemetry	0.099s [no tests to run]
+?   	go.flipt.io/flipt/ui	[no test files]

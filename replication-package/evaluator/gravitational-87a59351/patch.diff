@@ -1,0 +1,151 @@
+diff --git a/lib/client/conntest/database.go b/lib/client/conntest/database.go
+index b54bc785ff..07aef1eaa3 100644
+--- a/lib/client/conntest/database.go
++++ b/lib/client/conntest/database.go
+@@ -419,6 +419,8 @@ func getDatabaseConnTester(protocol string) (databasePinger, error) {
+ 		return &database.PostgresPinger{}, nil
+ 	case defaults.ProtocolMySQL:
+ 		return &database.MySQLPinger{}, nil
++	case defaults.ProtocolSQLServer:
++		return &database.SQLServerPinger{}, nil
+ 	}
+ 	return nil, trace.NotImplemented("database protocol %q is not supported yet for testing connection", protocol)
+ }
+diff --git a/lib/client/conntest/database/sqlserver.go b/lib/client/conntest/database/sqlserver.go
+new file mode 100644
+index 0000000000..20e47c22aa
+--- /dev/null
++++ b/lib/client/conntest/database/sqlserver.go
+@@ -0,0 +1,132 @@
++/*
++Copyright 2023 Gravitational, Inc.
++
++Licensed under the Apache License, Version 2.0 (the "License");
++you may not use this file except in compliance with the License.
++You may obtain a copy of the License at
++
++    http://www.apache.org/licenses/LICENSE-2.0
++
++Unless required by applicable law or agreed to in writing, software
++distributed under the License is distributed on an "AS IS" BASIS,
++WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++See the License for the specific language governing permissions and
++limitations under the License.
++*/
++
++package database
++
++import (
++	"context"
++	"errors"
++	"strings"
++
++	"github.com/gravitational/trace"
++	mssql "github.com/microsoft/go-mssqldb"
++	"github.com/microsoft/go-mssqldb/msdsn"
++	"github.com/sirupsen/logrus"
++
++	"github.com/gravitational/teleport/lib/defaults"
++)
++
++// SQL Server error numbers used to identify specific connection/auth failures
++// during the connection test.
++//
++// https://learn.microsoft.com/en-us/sql/relational-databases/errors-events/mssqlserver-18456-database-engine-error
++// https://learn.microsoft.com/en-us/sql/relational-databases/errors-events/mssqlserver-4060-database-engine-error
++const (
++	// sqlServerLoginFailedErrorNumber is returned when login credentials are
++	// invalid (e.g. the login does not exist or the password is wrong).
++	sqlServerLoginFailedErrorNumber = 18456
++	// sqlServerCannotOpenDatabaseErrorNumber is returned when the specified
++	// database does not exist or the login does not have permission to access it.
++	sqlServerCannotOpenDatabaseErrorNumber = 4060
++)
++
++// SQLServerPinger implements the DatabasePinger interface for the SQL Server protocol.
++type SQLServerPinger struct{}
++
++// Ping connects to the database and issues a basic select statement to validate the connection.
++func (p *SQLServerPinger) Ping(ctx context.Context, params PingParams) error {
++	if err := params.CheckAndSetDefaults(defaults.ProtocolSQLServer); err != nil {
++		return trace.Wrap(err)
++	}
++
++	connector := mssql.NewConnectorConfig(msdsn.Config{
++		Host:       params.Host,
++		Port:       uint64(params.Port),
++		User:       params.Username,
++		Database:   params.DatabaseName,
++		Encryption: msdsn.EncryptionDisabled,
++		Protocols:  []string{"tcp"},
++	}, nil)
++
++	conn, err := connector.Connect(ctx)
++	if err != nil {
++		return trace.Wrap(err)
++	}
++
++	defer func() {
++		if err := conn.Close(); err != nil {
++			logrus.WithError(err).Info("Failed to close connection in SQLServerPinger.Ping")
++		}
++	}()
++
++	rows, err := conn.QueryContext(ctx, selectOneQuery, nil)
++	if err != nil {
++		return trace.Wrap(err)
++	}
++	defer func() {
++		if err := rows.Close(); err != nil {
++			logrus.WithError(err).Info("Failed to close rows in SQLServerPinger.Ping")
++		}
++	}()
++
++	return nil
++}
++
++// IsConnectionRefusedError checks whether the error is of type connection refused.
++func (p *SQLServerPinger) IsConnectionRefusedError(err error) bool {
++	if err == nil {
++		return false
++	}
++
++	var mssqlErr mssql.Error
++	if errors.As(err, &mssqlErr) {
++		// A SQL Server error was returned, so the server is reachable.
++		return false
++	}
++
++	errMsg := strings.ToLower(err.Error())
++	return strings.Contains(errMsg, "connection refused")
++}
++
++// IsInvalidDatabaseUserError checks whether the error is of type invalid database user.
++// This can happen when the user doesn't exist or the password is invalid.
++func (p *SQLServerPinger) IsInvalidDatabaseUserError(err error) bool {
++	if err == nil {
++		return false
++	}
++
++	var mssqlErr mssql.Error
++	if errors.As(err, &mssqlErr) {
++		return mssqlErr.SQLErrorNumber() == sqlServerLoginFailedErrorNumber
++	}
++
++	return false
++}
++
++// IsInvalidDatabaseNameError checks whether the error is of type invalid database name.
++// This can happen when the database doesn't exist.
++func (p *SQLServerPinger) IsInvalidDatabaseNameError(err error) bool {
++	if err == nil {
++		return false
++	}
++
++	var mssqlErr mssql.Error
++	if errors.As(err, &mssqlErr) {
++		return mssqlErr.SQLErrorNumber() == sqlServerCannotOpenDatabaseErrorNumber
++	}
++
++	return false
++}

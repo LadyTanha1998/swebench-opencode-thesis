@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "Build/Runtime Error: \u2718 [ERROR] [plugin sqlite-native-plugin] command \"npm exec\" failed with error code: 1",
+      "status": "ERROR"
+    },
+    {
+      "name": "Build/Runtime Error: \u2718 [ERROR] [plugin keytar-native-plugin] command \"npm exec\" failed with error code: 1",
+      "status": "ERROR"
+    },
+    {
+      "name": "Build/Runtime Error: Error: Build failed with 2 errors:",
+      "status": "ERROR"
+    },
+    {
+      "name": "Build/Runtime Error: error: command \"npm exec\" failed with error code: 1",
+      "status": "ERROR"
+    },
+    {
+      "name": "Build/Runtime Error: detail: Error: command \"npm exec\" failed with error code: 1",
+      "status": "ERROR"
+    },
+    {
+      "name": "Build/Runtime Error: text: 'command \"npm exec\" failed with error code: 1'",
+      "status": "ERROR"
+    }
+  ]
+}

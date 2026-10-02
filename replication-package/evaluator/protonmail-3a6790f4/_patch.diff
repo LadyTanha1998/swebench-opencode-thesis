@@ -1,0 +1,62 @@
+diff --git a/applications/drive/src/app/store/links/useLinksListing.tsx b/applications/drive/src/app/store/links/useLinksListing.tsx
+index 6e818920d..3f629834b 100644
+--- a/applications/drive/src/app/store/links/useLinksListing.tsx
++++ b/applications/drive/src/app/store/links/useLinksListing.tsx
+@@ -551,6 +551,20 @@ export function useLinksListingProvider() {
+         [linksState.getChildren]
+     );
+ 
++    /**
++     * getCachedChildrenCount returns the precise number of child links which
++     * are currently present in the cache for the given parent link. Unlike the
++     * count of `links` returned from getCachedChildren (which only contains
++     * already decrypted links), this count always reflects all cached children,
++     * even the ones which are not decrypted yet.
++     */
++    const getCachedChildrenCount = useCallback(
++        (shareId: string, parentLinkId: string, foldersOnly: boolean = false): number => {
++            return linksState.getChildrenCount(shareId, parentLinkId, foldersOnly);
++        },
++        [linksState.getChildrenCount]
++    );
++
+     const getCachedTrashed = useCallback(
+         (abortSignal: AbortSignal, shareId: string): { links: DecryptedLink[]; isDecrypting: boolean } => {
+             return getCachedLinksHelper(
+@@ -595,6 +609,7 @@ export function useLinksListingProvider() {
+         loadLinksSharedByLink,
+         loadLinks,
+         getCachedChildren,
++        getCachedChildrenCount,
+         getCachedTrashed,
+         getCachedSharedByLink,
+         getCachedLinks,
+diff --git a/applications/drive/src/app/store/links/useLinksState.tsx b/applications/drive/src/app/store/links/useLinksState.tsx
+index 61974dc5a..b62d726b3 100644
+--- a/applications/drive/src/app/store/links/useLinksState.tsx
++++ b/applications/drive/src/app/store/links/useLinksState.tsx
+@@ -87,6 +87,16 @@ export function useLinksStateProvider() {
+         [state]
+     );
+ 
++    // Returns a precise number of cached children of the given parent link.
++    // It counts all cached children, regardless whether they are decrypted
++    // yet or not.
++    const getChildrenCount = useCallback(
++        (shareId: string, parentLinkId: string, foldersOnly: boolean = false): number => {
++            return getChildren(shareId, parentLinkId, foldersOnly).length;
++        },
++        [getChildren]
++    );
++
+     const getAllShareLinks = (shareId: string): Link[] => {
+         return Object.values(state[shareId]?.links || []);
+     };
+@@ -115,6 +125,7 @@ export function useLinksStateProvider() {
+         setCachedThumbnail,
+         getLink,
+         getChildren,
++        getChildrenCount,
+         getTrashed,
+         getSharedByLink,
+     };

@@ -1,0 +1,170 @@
+Running selected tests: TestFormatConnectCommand/default_user_is_specified TestReadClusterFlag/TELEPORT_CLUSTER_set TestOptions/Invalid_key TestFailedLogin TestReadClusterFlag/TELEPORT_SITE_and_TELEPORT_CLUSTER_set _prefer_TELEPORT_CLUSTER TestKubeConfigUpdate/invalid_selected_cluster TestOptions/Incomplete_option TestKubeConfigUpdate/selected_cluster TestKubeConfigUpdate TestKubeConfigUpdate/no_tsh_path TestIdentityRead TestOptions/Forward_Agent_Yes TestOptions/Forward_Agent_InvalidValue TestMakeClient TestOptions/Equals_Sign_Delimited TestReadClusterFlag/nothing_set TestReadClusterFlag/TELEPORT_SITE_and_TELEPORT_CLUSTER_and_CLI_flag_is_set _prefer_CLI TestKubeConfigUpdate/no_kube_clusters TestRelogin TestOptions TestKubeConfigUpdate/no_selected_cluster TestFormatConnectCommand/default_user/database_are_specified TestFormatConnectCommand/default_database_is_specified TestFetchDatabaseCreds TestOptions/Forward_Agent_Local TestFormatConnectCommand/no_default_user/database_are_specified TestOptions/AddKeysToAgent_Invalid_Value TestOptions/Forward_Agent_No TestOIDCLogin TestReadClusterFlag TestFormatConnectCommand/unsupported_database_protocol TestOptions/Space_Delimited TestReadClusterFlag/TELEPORT_SITE_set TestFormatConnectCommand
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport	0.184s [no tests to run]
+?   	github.com/gravitational/teleport/dronegen	[no test files]
+?   	github.com/gravitational/teleport/examples/bench	[no test files]
+?   	github.com/gravitational/teleport/examples/jwt	[no test files]
+?   	github.com/gravitational/teleport/lib	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/asciitable	0.195s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/auth	0.454s [no tests to run]
+?   	github.com/gravitational/teleport/lib/auth/mocku2f	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/auth/native	0.299s [no tests to run]
+?   	github.com/gravitational/teleport/lib/auth/test	[no test files]
+?   	github.com/gravitational/teleport/lib/auth/testauthority	[no test files]
+?   	github.com/gravitational/teleport/lib/auth/u2f	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/backend	0.397s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/backend/lite	0.187s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/backend/memory	0.218s [no tests to run]
+?   	github.com/gravitational/teleport/lib/backend/test	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/benchmark	0.447s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/bpf	0.254s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/cache	0.331s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/config	0.646s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/defaults	0.664s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events	0.362s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/dynamoevents	0.344s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/firestoreevents	0.318s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/gcssessions	0.380s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/memsessions	0.241s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/s3sessions	0.547s [no tests to run]
+?   	github.com/gravitational/teleport/lib/events/test	[no test files]
+?   	github.com/gravitational/teleport/lib/fixtures	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/httplib	0.257s [no tests to run]
+?   	github.com/gravitational/teleport/lib/httplib/csrf	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/jwt	0.204s [no tests to run]
+?   	github.com/gravitational/teleport/lib/kube	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/kube/kubeconfig	0.332s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/kube/proxy	0.386s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/kube/utils	0.612s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/labels	0.321s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/limiter	0.396s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/modules	0.171s [no tests to run]
+PAM support not enabled, skipping tests
+ok  	github.com/gravitational/teleport/lib/pam	0.231s
+?   	github.com/gravitational/teleport/lib/plugin	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/reversetunnel	0.530s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/reversetunnel/track	0.169s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/secret	0.199s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/service	0.499s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/session	0.420s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/shell	0.287s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv	0.378s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/app	0.399s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/db	0.769s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/db/common	0.468s [no tests to run]
+?   	github.com/gravitational/teleport/lib/srv/db/mysql	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/db/mysql/protocol	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/db/postgres	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/forward	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/uacc	[no test files]
+?   	github.com/gravitational/teleport/lib/sshca	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/sshutils	0.256s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/sshutils/scp	0.318s [no tests to run]
+?   	github.com/gravitational/teleport/lib/system	[no test files]
+?   	github.com/gravitational/teleport/lib/teleagent	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/tlsca	0.187s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils	0.241s [no tests to run]
+?   	github.com/gravitational/teleport/lib/utils/agentconn	[no test files]
+?   	github.com/gravitational/teleport/lib/utils/interval	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/parse	0.280s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/proxy	0.193s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/socks	0.153s [no tests to run]
+?   	github.com/gravitational/teleport/lib/utils/testlog	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/workpool	0.060s [no tests to run]
+?   	github.com/gravitational/teleport/tool/tctl	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/tool/tctl/common	0.264s [no tests to run]
+?   	github.com/gravitational/teleport/tool/teleport	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/tool/teleport/common	0.266s [no tests to run]
+FAIL	github.com/gravitational/teleport/tool/tsh [build failed]
+FAIL

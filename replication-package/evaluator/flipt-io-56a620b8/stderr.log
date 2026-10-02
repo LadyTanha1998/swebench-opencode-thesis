@@ -1,0 +1,11 @@
+# go.flipt.io/flipt/internal/config
+internal/config/audit.go:70:10: undefined: WebhookSinkConfig
+# go.flipt.io/flipt/internal/server/audit/webhook [go.flipt.io/flipt/internal/server/audit/webhook.test]
+internal/server/audit/webhook/client_test.go:15:13: undefined: NewHTTPClient
+internal/server/audit/webhook/client_test.go:15:75: undefined: WithMaxBackoffDuration
+internal/server/audit/webhook/client_test.go:33:13: undefined: NewHTTPClient
+internal/server/audit/webhook/client_test.go:33:75: undefined: WithMaxBackoffDuration
+internal/server/audit/webhook/client_test.go:51:13: undefined: NewHTTPClient
+internal/server/audit/webhook/client_test.go:51:86: undefined: WithMaxBackoffDuration
+internal/server/audit/webhook/client_test.go:55:15: undefined: fliptSignatureHeader
+internal/server/audit/webhook/webhook_test.go:20:7: undefined: NewSink

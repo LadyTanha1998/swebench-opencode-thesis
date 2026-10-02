@@ -1,0 +1,251 @@
+Running selected tests: test/components/views/settings/tabs/user/SecurityUserSettingsTab-test.ts test/utils/pillify-test.ts test/utils/notifications-test.ts test/components/views/settings/AddPrivilegedUsers-test.ts test/SlidingSyncManager-test.ts test/utils/device/parseUserAgent-test.ts test/MatrixClientPeg-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+FAIL test/components/views/settings/tabs/user/SecurityUserSettingsTab-test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/views/dialogs/IndexedDBStoreErrorDialog' from 'src/utils/createMatrixClient.ts'
+
+    Require stack:
+      src/utils/createMatrixClient.ts
+      src/MatrixClientPeg.ts
+      src/settings/handlers/DeviceSettingsHandler.ts
+      src/settings/SettingsStore.ts
+      src/languageHandler.tsx
+      test/setup/setupLanguage.ts
+      test/setupTests.js
+
+      30 | import PlatformPeg from "../PlatformPeg";
+      31 | import Modal from "../Modal";
+    > 32 | import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+         | ^
+      33 |
+      34 | const localStorage = window.localStorage;
+      35 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (src/utils/createMatrixClient.ts:32:1)
+      at Object.require (src/MatrixClientPeg.ts:30:1)
+      at Object.require (src/settings/handlers/DeviceSettingsHandler.ts:19:1)
+      at Object.require (src/settings/SettingsStore.ts:21:1)
+      at Object.require (src/languageHandler.tsx:26:1)
+      at Object.require (test/setup/setupLanguage.ts:19:1)
+      at Object.require (test/setupTests.js:27:1)
+
+FAIL test/utils/pillify-test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/views/dialogs/IndexedDBStoreErrorDialog' from 'src/utils/createMatrixClient.ts'
+
+    Require stack:
+      src/utils/createMatrixClient.ts
+      src/MatrixClientPeg.ts
+      src/settings/handlers/DeviceSettingsHandler.ts
+      src/settings/SettingsStore.ts
+      src/languageHandler.tsx
+      test/setup/setupLanguage.ts
+      test/setupTests.js
+
+      30 | import PlatformPeg from "../PlatformPeg";
+      31 | import Modal from "../Modal";
+    > 32 | import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+         | ^
+      33 |
+      34 | const localStorage = window.localStorage;
+      35 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (src/utils/createMatrixClient.ts:32:1)
+      at Object.require (src/MatrixClientPeg.ts:30:1)
+      at Object.require (src/settings/handlers/DeviceSettingsHandler.ts:19:1)
+      at Object.require (src/settings/SettingsStore.ts:21:1)
+      at Object.require (src/languageHandler.tsx:26:1)
+      at Object.require (test/setup/setupLanguage.ts:19:1)
+      at Object.require (test/setupTests.js:27:1)
+
+FAIL test/components/views/settings/AddPrivilegedUsers-test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/views/dialogs/IndexedDBStoreErrorDialog' from 'src/utils/createMatrixClient.ts'
+
+    Require stack:
+      src/utils/createMatrixClient.ts
+      src/MatrixClientPeg.ts
+      src/settings/handlers/DeviceSettingsHandler.ts
+      src/settings/SettingsStore.ts
+      src/languageHandler.tsx
+      test/setup/setupLanguage.ts
+      test/setupTests.js
+
+      30 | import PlatformPeg from "../PlatformPeg";
+      31 | import Modal from "../Modal";
+    > 32 | import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+         | ^
+      33 |
+      34 | const localStorage = window.localStorage;
+      35 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (src/utils/createMatrixClient.ts:32:1)
+      at Object.require (src/MatrixClientPeg.ts:30:1)
+      at Object.require (src/settings/handlers/DeviceSettingsHandler.ts:19:1)
+      at Object.require (src/settings/SettingsStore.ts:21:1)
+      at Object.require (src/languageHandler.tsx:26:1)
+      at Object.require (test/setup/setupLanguage.ts:19:1)
+      at Object.require (test/setupTests.js:27:1)
+
+FAIL test/utils/notifications-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../components/views/dialogs/IndexedDBStoreErrorDialog' from 'src/utils/createMatrixClient.ts'
+
+    Require stack:
+      src/utils/createMatrixClient.ts
+      src/MatrixClientPeg.ts
+      src/settings/handlers/DeviceSettingsHandler.ts
+      src/settings/SettingsStore.ts
+      src/languageHandler.tsx
+      test/setup/setupLanguage.ts
+      test/setupTests.js
+
+      30 | import PlatformPeg from "../PlatformPeg";
+      31 | import Modal from "../Modal";
+    > 32 | import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+         | ^
+      33 |
+      34 | const localStorage = window.localStorage;
+      35 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (src/utils/createMatrixClient.ts:32:1)
+      at Object.require (src/MatrixClientPeg.ts:30:1)
+      at Object.require (src/settings/handlers/DeviceSettingsHandler.ts:19:1)
+      at Object.require (src/settings/SettingsStore.ts:21:1)
+      at Object.require (src/languageHandler.tsx:26:1)
+      at Object.require (test/setup/setupLanguage.ts:19:1)
+      at Object.require (test/setupTests.js:27:1)
+
+FAIL test/utils/device/parseUserAgent-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../components/views/dialogs/IndexedDBStoreErrorDialog' from 'src/utils/createMatrixClient.ts'
+
+    Require stack:
+      src/utils/createMatrixClient.ts
+      src/MatrixClientPeg.ts
+      src/settings/handlers/DeviceSettingsHandler.ts
+      src/settings/SettingsStore.ts
+      src/languageHandler.tsx
+      test/setup/setupLanguage.ts
+      test/setupTests.js
+
+      30 | import PlatformPeg from "../PlatformPeg";
+      31 | import Modal from "../Modal";
+    > 32 | import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+         | ^
+      33 |
+      34 | const localStorage = window.localStorage;
+      35 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (src/utils/createMatrixClient.ts:32:1)
+      at Object.require (src/MatrixClientPeg.ts:30:1)
+      at Object.require (src/settings/handlers/DeviceSettingsHandler.ts:19:1)
+      at Object.require (src/settings/SettingsStore.ts:21:1)
+      at Object.require (src/languageHandler.tsx:26:1)
+      at Object.require (test/setup/setupLanguage.ts:19:1)
+      at Object.require (test/setupTests.js:27:1)
+
+FAIL test/SlidingSyncManager-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../components/views/dialogs/IndexedDBStoreErrorDialog' from 'src/utils/createMatrixClient.ts'
+
+    Require stack:
+      src/utils/createMatrixClient.ts
+      src/MatrixClientPeg.ts
+      src/settings/handlers/DeviceSettingsHandler.ts
+      src/settings/SettingsStore.ts
+      src/languageHandler.tsx
+      test/setup/setupLanguage.ts
+      test/setupTests.js
+
+      30 | import PlatformPeg from "../PlatformPeg";
+      31 | import Modal from "../Modal";
+    > 32 | import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+         | ^
+      33 |
+      34 | const localStorage = window.localStorage;
+      35 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (src/utils/createMatrixClient.ts:32:1)
+      at Object.require (src/MatrixClientPeg.ts:30:1)
+      at Object.require (src/settings/handlers/DeviceSettingsHandler.ts:19:1)
+      at Object.require (src/settings/SettingsStore.ts:21:1)
+      at Object.require (src/languageHandler.tsx:26:1)
+      at Object.require (test/setup/setupLanguage.ts:19:1)
+      at Object.require (test/setupTests.js:27:1)
+
+FAIL test/MatrixClientPeg-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../components/views/dialogs/IndexedDBStoreErrorDialog' from 'src/utils/createMatrixClient.ts'
+
+    Require stack:
+      src/utils/createMatrixClient.ts
+      src/MatrixClientPeg.ts
+      src/settings/handlers/DeviceSettingsHandler.ts
+      src/settings/SettingsStore.ts
+      src/languageHandler.tsx
+      test/setup/setupLanguage.ts
+      test/setupTests.js
+
+      30 | import PlatformPeg from "../PlatformPeg";
+      31 | import Modal from "../Modal";
+    > 32 | import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+         | ^
+      33 |
+      34 | const localStorage = window.localStorage;
+      35 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (src/utils/createMatrixClient.ts:32:1)
+      at Object.require (src/MatrixClientPeg.ts:30:1)
+      at Object.require (src/settings/handlers/DeviceSettingsHandler.ts:19:1)
+      at Object.require (src/settings/SettingsStore.ts:21:1)
+      at Object.require (src/languageHandler.tsx:26:1)
+      at Object.require (test/setup/setupLanguage.ts:19:1)
+      at Object.require (test/setupTests.js:27:1)
+
+Test Suites: 7 failed, 7 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        43.515 s
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice

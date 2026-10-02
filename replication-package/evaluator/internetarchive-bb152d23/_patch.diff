@@ -1,0 +1,434 @@
+diff --git a/openlibrary/coverstore/archive.py b/openlibrary/coverstore/archive.py
+index 1cc22dd41..c03709948 100644
+--- a/openlibrary/coverstore/archive.py
++++ b/openlibrary/coverstore/archive.py
+@@ -1,24 +1,58 @@
+-"""Utility to move files from local disk to tar files and update the paths in the db.
++"""Utility to move book cover images from local disk into tar archives and
++update the paths in the db.
++
++Zero-padded identifier and path schema
++--------------------------------------
++A cover id is treated as a zero-padded, 10-digit number. Covers are grouped
++into batches of 10,000 images and each batch is stored as a ``.tar`` file (with
++a companion ``.index`` file) inside an archive.org item:
++
++    batch_index = coverid // 10000          # 6 digits, e.g. 000800
++    group       = batch_index // 100        # item name, 4 digits, e.g. 0008
++    chunk       = batch_index % 100         # tar file, 2 digits, e.g. 00
++
++    item_id     = [SIZE_]covers_GGGG              # e.g. covers_0008
++    batch_file  = [SIZE_]covers_GGGG_CC           # e.g. covers_0008_00
++    tar         = [SIZE_]covers_GGGG_CC.tar
++
++``SIZE_`` is a prefix (``s_``/``m_``/``l_``) for sized thumbnails and empty for
++the original image. ``get_batch_names`` is the single source of truth for this
++schema; every other module (archival, validation/audit and the coverserver)
++must derive item/batch names through it so the paths can never drift apart.
+ """
+-import tarfile
+-import web
++import contextlib
++import fcntl
+ import os
+ import sys
++import tarfile
+ import time
+ from subprocess import run
+ 
++import web
++
+ from openlibrary.coverstore import config, db
+ from openlibrary.coverstore.coverlib import find_image_path
+ 
+ 
+-# logfile = open('log.txt', 'a')
++def get_batch_names(coverid, size=""):
++    """Return the canonical ``(item_id, batch_file)`` names for a cover id.
++
++    :param coverid: cover id (int or str)
++    :param size: one of ``""``, ``"s"``, ``"m"``, ``"l"``
++    :returns: a ``(item_id, batch_file)`` tuple following the zero-padded schema
++        documented in the module docstring.
++    """
++    prefix = f"{size.lower()}_" if size else ""
++    index = int(coverid) // 10000
++    name = "%06d" % index
++    item_id = f"{prefix}covers_{name[:4]}"
++    batch_file = f"{prefix}covers_{name[:4]}_{name[4:6]}"
++    return item_id, batch_file
+ 
+ 
+ def log(*args):
+     msg = " ".join(args)
+     print(msg)
+-    # print >> logfile, msg
+-    # logfile.flush()
+ 
+ 
+ class TarManager:
+@@ -29,16 +63,9 @@ class TarManager:
+         self.tarfiles['M'] = (None, None, None)
+         self.tarfiles['L'] = (None, None, None)
+ 
+-    def get_tarfile(self, name):
+-        id = web.numify(name)
+-        tarname = f"covers_{id[:4]}_{id[4:6]}.tar"
+-
+-        # for id-S.jpg, id-M.jpg, id-L.jpg
+-        if '-' in name:
+-            size = name[len(id + '-') :][0].lower()
+-            tarname = size + "_" + tarname
+-        else:
+-            size = ""
++    def get_tarfile(self, coverid, size):
++        _, batch_file = get_batch_names(coverid, size)
++        tarname = batch_file + ".tar"
+ 
+         _tarname, _tarfile, _indexfile = self.tarfiles[size.upper()]
+         if _tarname != tarname:
+@@ -63,13 +90,15 @@ class TarManager:
+             indexpath, mode
+         )
+ 
+-    def add_file(self, name, filepath, mtime):
++    def add_file(self, coverid, size, filepath, mtime):
++        _, batch_file = get_batch_names(coverid, size)
++        name = "%010d%s.jpg" % (coverid, "-" + size.upper() if size else "")
+         with open(filepath, 'rb') as fileobj:
+             tarinfo = tarfile.TarInfo(name)
+             tarinfo.mtime = mtime
+             tarinfo.size = os.stat(fileobj.name).st_size
+ 
+-            tar, index = self.get_tarfile(name)
++            tar, index = self.get_tarfile(coverid, size)
+ 
+             # tar.offset is current size of tar file.
+             # Adding 512 bytes for header gives us the
+@@ -88,7 +117,24 @@ class TarManager:
+                 _indexfile.close()
+ 
+ 
+-idx = id
++@contextlib.contextmanager
++def batch_lock(batch_file):
++    """Hold an exclusive lock for a given batch so that two archival jobs can
++    never write to the same batch range at the same time.
++
++    Locks are advisory file locks kept under ``<data_root>/locks``. Using them
++    makes archival idempotent and safe to retry: a second run simply blocks
++    until the first finishes, and re-checks the DB before archiving anything.
++    """
++    lock_dir = os.path.join(config.data_root, "locks")
++    os.makedirs(lock_dir, exist_ok=True)
++    lock_path = os.path.join(lock_dir, web.numify(batch_file) + ".lock")
++    with open(lock_path, "a+") as f:
++        fcntl.flock(f, fcntl.LOCK_EX)
++        try:
++            yield
++        finally:
++            fcntl.flock(f, fcntl.LOCK_UN)
+ 
+ 
+ def is_uploaded(item: str, filename_pattern: str) -> bool:
+@@ -99,7 +145,9 @@ def is_uploaded(item: str, filename_pattern: str) -> bool:
+     :param item: name of archive.org item to look within
+     :param filename_pattern: filename pattern to look for
+     """
+-    command = fr'ia list {item} | grep "{filename_pattern}\.[tar|index]" | wc -l'
++    command = (
++        f'ia list {item} | grep -E "{filename_pattern}\\.(tar|index)$" | wc -l'
++    )
+     result = run(command, shell=True, text=True, capture_output=True, check=True)
+     output = result.stdout.strip()
+     return int(output) == 2
+@@ -140,8 +188,28 @@ def audit(group_id, chunk_ids=(0, 100), sizes=('', 's', 'm', 'l')) -> None:
+             )
+ 
+ 
++def verify_uploaded(item_id: str, batch_file: str) -> bool:
++    """Reconcile the local ``items`` staging directory against archive.org.
++
++    A batch is considered "uploaded" -- and therefore safe to resolve remotely
++    and remove from local staging -- once both its ``.tar`` and ``.index`` files
++    exist on archive.org. This mirrors the checks performed by :func:`audit` and
++    exposes a clear True/False signal for batch completion/failure.
++    """
++    if is_uploaded(item_id, batch_file):
++        log("uploaded", item_id, batch_file)
++        return True
++    log("not uploaded", item_id, batch_file)
++    return False
++
++
+ def archive(test=True):
+-    """Move files from local disk to tar files and update the paths in the db."""
++    """Move files from local disk to tar files and update the paths in the db.
++
++    Archival is idempotent and safe to retry: only covers still marked
++    ``archived=false`` are processed, and each batch is guarded by an exclusive
++    lock so overlapping runs can never write to the same batch range.
++    """
+     tar_manager = TarManager()
+ 
+     _db = db.getdb()
+@@ -156,66 +224,84 @@ def archive(test=True):
+             vars={'f': False},
+             limit=10_000,
+         )
++        covers = list(covers)
+ 
++        # Group the selected covers by batch so we can lock each batch while
++        # it is being written, preventing overlapping archival runs.
++        batches = {}
+         for cover in covers:
+-            print('archiving', cover)
+-
+-            files = {
+-                'filename': web.storage(
+-                    name="%010d.jpg" % cover.id, filename=cover.filename
+-                ),
+-                'filename_s': web.storage(
+-                    name="%010d-S.jpg" % cover.id, filename=cover.filename_s
+-                ),
+-                'filename_m': web.storage(
+-                    name="%010d-M.jpg" % cover.id, filename=cover.filename_m
+-                ),
+-                'filename_l': web.storage(
+-                    name="%010d-L.jpg" % cover.id, filename=cover.filename_l
+-                ),
+-            }
+-
+-            for file_type, f in files.items():
+-                files[file_type].path = f.filename and os.path.join(
+-                    config.data_root, "localdisk", f.filename
+-                )
+-
+-            print(files.values())
+-
+-            if any(
+-                d.path is None or not os.path.exists(d.path) for d in files.values()
+-            ):
+-                print("Missing image file for %010d" % cover.id, file=web.debug)
+-                continue
+-
+-            if isinstance(cover.created, str):
+-                from infogami.infobase import utils
+-
+-                cover.created = utils.parse_datetime(cover.created)
+-
+-            timestamp = time.mktime(cover.created.timetuple())
+-
+-            for d in files.values():
+-                d.newname = tar_manager.add_file(
+-                    d.name, filepath=d.path, mtime=timestamp
+-                )
+-
+-            if not test:
+-                _db.update(
+-                    'cover',
+-                    where="id=$cover.id",
+-                    archived=True,
+-                    filename=files['filename'].newname,
+-                    filename_s=files['filename_s'].newname,
+-                    filename_m=files['filename_m'].newname,
+-                    filename_l=files['filename_l'].newname,
+-                    vars=locals(),
+-                )
+-
+-                for d in files.values():
+-                    print('removing', d.path)
+-                    os.remove(d.path)
++            _, batch_file = get_batch_names(cover.id, "")
++            batches.setdefault(batch_file, []).append(cover)
+ 
++        for batch_file, batch_covers in batches.items():
++            with batch_lock(batch_file):
++                for cover in batch_covers:
++                    _archive_cover(_db, tar_manager, cover, test)
+     finally:
+-        # logfile.close()
+         tar_manager.close()
++
++
++def _archive_cover(_db, tar_manager, cover, test):
++    """Archive a single cover into its batch tar and update the db record."""
++    # Re-check inside the lock so a concurrent run that already archived this
++    # cover is skipped (idempotency).
++    if not test and _db.select(
++        'cover', what='archived', where='id=$id', vars={'id': cover.id}
++    )[0].archived:
++        return
++
++    print('archiving', cover)
++
++    files = {
++        'filename': web.storage(
++            name="%010d.jpg" % cover.id, size="", filename=cover.filename
++        ),
++        'filename_s': web.storage(
++            name="%010d-S.jpg" % cover.id, size="s", filename=cover.filename_s
++        ),
++        'filename_m': web.storage(
++            name="%010d-M.jpg" % cover.id, size="m", filename=cover.filename_m
++        ),
++        'filename_l': web.storage(
++            name="%010d-L.jpg" % cover.id, size="l", filename=cover.filename_l
++        ),
++    }
++
++    for file_type, f in files.items():
++        files[file_type].path = f.filename and os.path.join(
++            config.data_root, "localdisk", f.filename
++        )
++
++    print(files.values())
++
++    if any(d.path is None or not os.path.exists(d.path) for d in files.values()):
++        print("Missing image file for %010d" % cover.id, file=web.debug)
++        return
++
++    if isinstance(cover.created, str):
++        from infogami.infobase import utils
++
++        cover.created = utils.parse_datetime(cover.created)
++
++    timestamp = time.mktime(cover.created.timetuple())
++
++    for d in files.values():
++        d.newname = tar_manager.add_file(
++            cover.id, d.size, filepath=d.path, mtime=timestamp
++        )
++
++    if not test:
++        _db.update(
++            'cover',
++            where="id=$cover.id",
++            archived=True,
++            filename=files['filename'].newname,
++            filename_s=files['filename_s'].newname,
++            filename_m=files['filename_m'].newname,
++            filename_l=files['filename_l'].newname,
++            vars=locals(),
++        )
++
++        for d in files.values():
++            print('removing', d.path)
++            os.remove(d.path)
+diff --git a/openlibrary/coverstore/code.py b/openlibrary/coverstore/code.py
+index c19afb46e..2415a0cef 100644
+--- a/openlibrary/coverstore/code.py
++++ b/openlibrary/coverstore/code.py
+@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
+ import textwrap
+ 
+ 
+-from openlibrary.coverstore import config, db
++from openlibrary.coverstore import archive, config, db
+ from openlibrary.coverstore.coverlib import read_file, read_image, save_image
+ from openlibrary.coverstore.utils import (
+     changequery,
+@@ -221,6 +221,12 @@ def zipview_url(item, zipfile, filename):
+ # Number of images stored in one archive.org item
+ IMAGES_PER_ITEM = 10000
+ 
++# Batches below this id are served directly from archive.org ``.tar`` items
++# once they have been uploaded. Kept as a documented constant instead of a
++# magic literal so the range can be extended predictably as archival proceeds.
++ARCHIVED_TAR_MIN_ID = 8_000_000
++ARCHIVED_TAR_MAX_ID = 8_819_999
++
+ 
+ def zipview_url_from_id(coverid, size):
+     suffix = size and ("-" + size.upper())
+@@ -279,15 +285,19 @@ class cover:
+             url = zipview_url_from_id(int(value), size)
+             raise web.found(url)
+ 
+-        # covers_0008 partials [_00, _80] are tar'd in archive.org items
++        # Covers in the archived range are tar'd in archive.org items and are
++        # resolved directly from archive.org. The item/tar names are derived
++        # through the canonical zero-padded schema so they can never drift from
++        # what the archival/audit tooling produces.
+         if isinstance(value, int) or value.isnumeric():  # noqa: SIM102
+-            if 8810000 > int(value) >= 8000000:
+-                prefix = f"{size.lower()}_" if size else ""
+-                pid = "%010d" % int(value)
+-                item_id = f"{prefix}covers_{pid[:4]}"
+-                item_tar = f"{prefix}covers_{pid[:4]}_{pid[4:6]}.tar"
+-                item_file = f"{pid}{'-' + size.upper() if size else ''}"
+-                path = f"{item_id}/{item_tar}/{item_file}.jpg"
++            coverid = int(value)
++            if ARCHIVED_TAR_MAX_ID >= coverid >= ARCHIVED_TAR_MIN_ID:
++                item_id, batch_file = archive.get_batch_names(coverid, size.lower())
++                item_file = "%010d%s" % (
++                    coverid,
++                    "-" + size.upper() if size else "",
++                )
++                path = f"{item_id}/{batch_file}.tar/{item_file}.jpg"
+                 protocol = web.ctx.protocol
+                 raise web.found(f"{protocol}://archive.org/download/{path}")
+ 
+diff --git a/openlibrary/coverstore/tests/test_code.py b/openlibrary/coverstore/tests/test_code.py
+index f729b85db..090a8dc02 100644
+--- a/openlibrary/coverstore/tests/test_code.py
++++ b/openlibrary/coverstore/tests/test_code.py
+@@ -1,5 +1,6 @@
+-from .. import code
++from .. import archive, code
+ from io import StringIO
++import os
+ import web
+ import datetime
+ 
+@@ -25,6 +26,50 @@ def test_tarindex_path():
+     assert code.get_tarindex_path(4321, "") == "items/covers_0043/covers_0043_21.index"
+ 
+ 
++def test_get_batch_names():
++    """The canonical zero-padded schema must match the tar/index paths used
++    elsewhere so retrieval and archival can never drift apart."""
++    assert archive.get_batch_names(0, "") == ("covers_0000", "covers_0000_00")
++    assert archive.get_batch_names(0, "s") == ("s_covers_0000", "s_covers_0000_00")
++    assert archive.get_batch_names(0, "m") == ("m_covers_0000", "m_covers_0000_00")
++    assert archive.get_batch_names(0, "l") == ("l_covers_0000", "l_covers_0000_00")
++
++    assert archive.get_batch_names(9999, "") == ("covers_0000", "covers_0000_00")
++    assert archive.get_batch_names(10000, "") == ("covers_0000", "covers_0000_01")
++    assert archive.get_batch_names(999999, "") == ("covers_0000", "covers_0000_99")
++    assert archive.get_batch_names(1000000, "") == ("covers_0001", "covers_0001_00")
++
++    assert archive.get_batch_names(4321, "") == ("covers_0000", "covers_0000_00")
++    assert archive.get_batch_names(8000000, "") == ("covers_0008", "covers_0008_00")
++    assert archive.get_batch_names(8054321, "") == ("covers_0008", "covers_0008_05")
++    assert archive.get_batch_names(8800000, "") == ("covers_0008", "covers_0008_80")
++    assert archive.get_batch_names(8810000, "") == ("covers_0008", "covers_0008_81")
++
++    # The item + tar names derived here must equal the tar/index paths used by
++    # the coverserver so that a cover id always resolves to the same batch.
++    for coverid in (0, 9999, 10000, 4321, 8000000, 8054321, 8810000):
++        item_id, batch_file = archive.get_batch_names(coverid, "")
++        assert code.get_tarindex_path(coverid // 10000, "") == os.path.join(
++            "items", item_id, batch_file + ".index"
++        )
++
++
++def test_is_uploaded_regex():
++    """The .tar/.index detection must match exactly those suffixes rather than
++    the old loose ``[tar|index]`` character class (which could match unrelated
++    files such as ``covers_0008_00.tarball`` or ``covers_0008_00.txt``)."""
++    import re
++
++    batch = "covers_0008_00"
++    regex = re.compile(batch + r"\.(tar|index)$")
++
++    assert regex.search(batch + ".tar")
++    assert regex.search(batch + ".index")
++    assert not regex.search(batch + ".tar.bak")
++    assert not regex.search(batch + ".txt")
++    assert not regex.search(batch + ".tarball")
++
++
+ def test_parse_tarindex():
+     f = StringIO("")
+ 

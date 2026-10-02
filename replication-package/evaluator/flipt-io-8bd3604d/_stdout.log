@@ -1,0 +1,190 @@
+Running selected tests: TestExecuter_JSON_Failure TestExecuter_Execute TestConstructorWebhookTemplate TestWebhookClient TestExecuter_Execute_toJson_valid_Json TestLeveledLogger TestConstructorWebhookClient
+?   	go.flipt.io/flipt/cmd/flipt	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/config	0.330s [no tests to run]
+?   	go.flipt.io/flipt/config/migrations	[no test files]
+?   	go.flipt.io/flipt/internal/cache	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cache/memory	0.338s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cache/redis	0.363s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cleanup	0.333s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cmd	0.479s [no tests to run]
+?   	go.flipt.io/flipt/internal/cmd/cloud	[no test files]
+?   	go.flipt.io/flipt/internal/cmd/util	[no test files]
+?   	go.flipt.io/flipt/internal/common	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/config	0.354s [no tests to run]
+?   	go.flipt.io/flipt/internal/containers	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/ext	0.137s [no tests to run]
+?   	go.flipt.io/flipt/internal/gateway	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/gitfs	0.109s [no tests to run]
+?   	go.flipt.io/flipt/internal/info	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/metrics	0.373s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/oci	0.333s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/oci/ecr	0.249s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/release	0.248s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server	0.638s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/analytics	0.422s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/analytics/clickhouse	0.402s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/analytics/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit	0.165s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit/cloud	0.393s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit/kafka	0.453s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit/log	0.430s [no tests to run]
+FAIL	go.flipt.io/flipt/internal/server/audit/template [build failed]
+FAIL	go.flipt.io/flipt/internal/server/audit/webhook [build failed]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn	0.519s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/method	0.512s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/method/github	0.505s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/method/kubernetes	0.511s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/authn/method/kubernetes/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/method/oidc	0.409s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/authn/method/oidc/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/method/token	0.404s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/authn/middleware/common	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/middleware/grpc	3.284s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/middleware/http	0.406s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authn/public	0.475s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/authz	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authz/engine/bundle	0.556s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authz/engine/rego	0.468s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/authz/engine/rego/source	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authz/engine/rego/source/cloud	0.117s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/authz/engine/rego/source/filesystem	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/authz/middleware/grpc	0.222s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/evaluation	0.436s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/evaluation/data	0.406s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/metadata	[no test files]
+?   	go.flipt.io/flipt/internal/server/metrics	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/middleware/grpc	0.398s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/middleware/http	0.104s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/ofrep	0.437s [no tests to run]
+?   	go.flipt.io/flipt/internal/server/otel	[no test files]
+?   	go.flipt.io/flipt/internal/storage	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/authn	0.153s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/authn/cache	0.459s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/authn/memory	0.177s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/authn/sql	0.316s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/authn/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/cache	0.310s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs	0.186s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/git	0.186s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/local	0.165s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/object	0.289s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/oci	0.201s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/fs/store	[no test files]
+?   	go.flipt.io/flipt/internal/storage/oplock	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/oplock/memory	0.087s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/oplock/sql	0.399s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/oplock/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/sql	0.304s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/sql/common	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/mysql	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/postgres	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/sqlite	[no test files]
+?   	go.flipt.io/flipt/internal/storage/sql/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/telemetry	0.275s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/tracing	0.268s [no tests to run]
+?   	go.flipt.io/flipt/ui	[no test files]
+FAIL

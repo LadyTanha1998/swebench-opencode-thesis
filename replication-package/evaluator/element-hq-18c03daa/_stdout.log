@@ -1,0 +1,127 @@
+Running selected tests: test/components/structures/ThreadView-test.ts test/UserActivity-test.ts test/utils/beacon/timeline-test.ts test/audio/VoiceRecording-test.ts test/Markdown-test.ts test/HtmlUtils-test.ts test/components/structures/RightPanel-test.ts test/utils/FixedRollingArray-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/utils/FixedRollingArray-test.ts (51.012 s)
+  FixedRollingArray
+    ✓ should seed the array with the given value (7 ms)
+    ✓ should insert at the correct end (4 ms)
+    ✓ should roll over (12 ms)
+
+PASS test/UserActivity-test.ts (51.487 s)
+  UserActivity
+    ✓ should return the same shared instance (21 ms)
+    ✓ should consider user inactive if no activity (8 ms)
+    ✓ should consider user not active recently if no activity (6 ms)
+    ✓ should not consider user active after activity if no window focus (7 ms)
+    ✓ should consider user active shortly after activity (8 ms)
+    ✓ should consider user not active after 10s of no activity (4 ms)
+    ✓ should consider user passive after 10s of no activity (6 ms)
+    ✓ should not consider user passive after 10s if window un-focused (10 ms)
+    ✓ should not consider user passive after 3 mins (3 ms)
+    ✓ should extend timer on activity (3 ms)
+
+FAIL test/Markdown-test.ts (51.578 s)
+  Markdown parser test
+    fixing HTML links
+      ✓ tests that links with markdown empasis in them are getting properly HTML formatted (76 ms)
+      ✓ tests that links with autolinks are not touched at all and are still properly formatted (19 ms)
+      ✓ expects that links in codeblock are not modified (8 ms)
+      ✕ expects that links with emphasis are "escaped" correctly (41 ms)
+      ✓ expects that the link part will not be accidentally added to <strong> (2 ms)
+      ✓ expects that the link part will not be accidentally added to <strong> for multiline links (1 ms)
+      ✓ resumes applying formatting to the rest of a message after a link (1 ms)
+
+  ● Markdown parser test › fixing HTML links › expects that links with emphasis are "escaped" correctly
+
+    expect(received).toEqual(expected) // deep equality
+
+    Expected: "http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg<br />http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg<br />https://example.com/_test_test2_-test3<br />https://example.com/_test_test2_test3_<br />https://example.com/_test__test2_test3_<br />https://example.com/_test__test2__test3_<br />https://example.com/_test__test2_test3__<br />https://example.com/_test__test2"
+    Received: "http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg<br />http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg http://domain.xyz/foo/bar-_stuff-like-this_-in-it.jpg<br />https://example.com/_test_-test3<br />https://example.com/_test_<br />https://example.com/_test_<br />https://example.com/_test_<br />https://example.com/_test__<br />https://example.com/_test__test2"
+
+      144 |             /* eslint-enable max-len */
+      145 |             const md = new Markdown(testString);
+    > 146 |             expect(md.toHTML()).toEqual(expectedResult);
+          |                                 ^
+      147 |         });
+      148 |
+      149 |         it('expects that the link part will not be accidentally added to <strong>', () => {
+
+      at Object.toEqual (test/Markdown-test.ts:146:33)
+
+PASS test/audio/VoiceRecording-test.ts (51.896 s)
+  VoiceRecording
+    when recording
+      and there is an audio update and time left
+        ✓ should not call stop (29 ms)
+      and there is an audio update and time is up
+        ✓ should call stop (12 ms)
+      and the max length limit has been disabled
+        and there is an audio update and time left
+          ✓ should not call stop (3 ms)
+        and there is an audio update and time is up
+          ✓ should not call stop (3 ms)
+    when not recording
+      and there is an audio update and time left
+        ✓ should not call stop (2 ms)
+      and there is an audio update and time is up
+        ✓ should not call stop (3 ms)
+
+PASS test/HtmlUtils-test.tsx (53.255 s)
+  HtmlUtils
+    ✓ converts plain text topic to HTML (106 ms)
+    ✓ converts plain text topic with emoji to HTML (20 ms)
+    ✓ converts literal HTML topic to HTML (7 ms)
+    ✓ converts true HTML topic to HTML (17 ms)
+    ✓ converts true HTML topic with emoji to HTML (18 ms)
+
+PASS test/utils/beacon/timeline-test.ts (86.026 s)
+  shouldDisplayAsBeaconTile
+    ✓ returns true for a beacon with live property set to true (2 ms)
+    ✓ returns true for a redacted beacon (1 ms)
+    ✓ returns false for a beacon with live property set to false (1 ms)
+    ✓ returns false for a non beacon event (2 ms)
+
+(node:116) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/structures/ThreadView-test.tsx (91.171 s)
+  ThreadView
+    ✓ sends a message with the correct fallback (768 ms)
+    ✓ sends a message with the correct fallback (249 ms)
+    ✓ sets the correct thread in the room view store (132 ms)
+
+(node:115) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/structures/RightPanel-test.tsx (93.275 s)
+  RightPanel
+    ✓ navigates from room summary to member list (285 ms)
+    ✓ renders info from only one room during room changes (37 ms)
+
+Test Suites: 1 failed, 7 passed, 8 total
+Tests:       1 failed, 39 passed, 40 total
+Snapshots:   0 total
+Time:        95.287 s

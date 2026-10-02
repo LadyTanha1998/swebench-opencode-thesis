@@ -1,0 +1,143 @@
+FAIL hooks/assistant/assistantUpsellConfig.test.ts (247.155 s)
+  getAssistantUpsellConfig
+    ✕ should return undefined if the user is a sub user (9 ms)
+    ✕ should return free user config if the user is free without a subscription
+    ✕ should return paid config with yearly and monthly cycles if the user is paid with monthly billing
+    ✕ should return paid config with only yearly cycle if the user is paid with yearly billing (1 ms)
+    ✕ should return paid config with only two years if the user is paid with two years billing (2 ms)
+    ✕ should return paid config if the user is paid with family plan (4 ms)
+    ✕ should return multi config with max members if the user has member but no MaxAI (1 ms)
+    ✕ should return multi config with max AI if the user has member and MaxAI
+    ✕ should return multi config with all existing if the user has member and MaxAI (3 ms)
+
+  ● getAssistantUpsellConfig › should return undefined if the user is a sub user
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      23 |             isSubUser: true,
+      24 |         } as unknown as UserModel;
+    > 25 |         const selectedPlan = new SelectedPlan({}, PLANS_MAP, CYCLE.MONTHLY, 'EUR');
+         |                              ^
+      26 |
+      27 |         const config = getAssistantUpsellConfig('upsellRef', user, false, selectedPlan);
+      28 |
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:25:30)
+
+  ● getAssistantUpsellConfig › should return free user config if the user is free without a subscription
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      34 |             isPaid: false,
+      35 |         } as unknown as UserModel;
+    > 36 |         const selectedPlan = new SelectedPlan({}, PLANS_MAP, CYCLE.MONTHLY, 'EUR');
+         |                              ^
+      37 |         const config = getAssistantUpsellConfig('upsellRef', user, false, selectedPlan);
+      38 |
+      39 |         expect(config).toEqual({
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:36:30)
+
+  ● getAssistantUpsellConfig › should return paid config with yearly and monthly cycles if the user is paid with monthly billing
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      50 |             isPaid: true,
+      51 |         } as unknown as UserModel;
+    > 52 |         const selectedPlan = new SelectedPlan({ [PLANS.MAIL]: 1 }, PLANS_MAP, CYCLE.MONTHLY, 'EUR');
+         |                              ^
+      53 |         const config = getAssistantUpsellConfig('upsellRef', user, false, selectedPlan);
+      54 |
+      55 |         expect(config).toEqual({
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:52:30)
+
+  ● getAssistantUpsellConfig › should return paid config with only yearly cycle if the user is paid with yearly billing
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      67 |             isPaid: true,
+      68 |         } as unknown as UserModel;
+    > 69 |         const selectedPlan = new SelectedPlan({ [PLANS.MAIL]: 1 }, PLANS_MAP, CYCLE.YEARLY, 'EUR');
+         |                              ^
+      70 |
+      71 |         const config = getAssistantUpsellConfig('upsellRef', user, false, selectedPlan);
+      72 |
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:69:30)
+
+  ● getAssistantUpsellConfig › should return paid config with only two years if the user is paid with two years billing
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      86 |         } as unknown as UserModel;
+      87 |
+    > 88 |         const selectedPlan = new SelectedPlan({ [PLANS.MAIL]: 1 }, PLANS_MAP, CYCLE.TWO_YEARS, 'EUR');
+         |                              ^
+      89 |
+      90 |         const config = getAssistantUpsellConfig('upsellRef', user, false, selectedPlan);
+      91 |
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:88:30)
+
+  ● getAssistantUpsellConfig › should return paid config if the user is paid with family plan
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      106 |         } as unknown as UserModel;
+      107 |
+    > 108 |         const selectedPlan = new SelectedPlan(
+          |                              ^
+      109 |             {
+      110 |                 [PLANS.FAMILY]: 1,
+      111 |             },
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:108:30)
+
+  ● getAssistantUpsellConfig › should return multi config with max members if the user has member but no MaxAI
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      133 |         } as unknown as UserModel;
+      134 |
+    > 135 |         const selectedPlan = new SelectedPlan(
+          |                              ^
+      136 |             {
+      137 |                 [PLANS.MAIL_PRO]: 1,
+      138 |                 [ADDON_NAMES.MEMBER_MAIL_PRO]: 4,
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:135:30)
+
+  ● getAssistantUpsellConfig › should return multi config with max AI if the user has member and MaxAI
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      161 |         } as unknown as UserModel;
+      162 |
+    > 163 |         const selectedPlan = new SelectedPlan(
+          |                              ^
+      164 |             {
+      165 |                 [PLANS.MAIL_PRO]: 1,
+      166 |                 [ADDON_NAMES.MEMBER_MAIL_PRO]: 4,
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:163:30)
+
+  ● getAssistantUpsellConfig › should return multi config with all existing if the user has member and MaxAI
+
+    TypeError: _core.SelectedPlan is not a constructor
+
+      190 |         } as unknown as UserModel;
+      191 |
+    > 192 |         const selectedPlan = new SelectedPlan(
+          |                              ^
+      193 |             {
+      194 |                 [PLANS.MAIL_PRO]: 1,
+      195 |                 [ADDON_NAMES.IP_VPN_BUSINESS]: 2,
+
+      at Object.<anonymous> (hooks/assistant/assistantUpsellConfig.test.ts:192:30)
+
+Test Suites: 1 failed, 1 total
+Tests:       9 failed, 9 total
+Snapshots:   0 total
+Time:        249.049 s
+Ran all test suites matching /packages\/components\/hooks\/assistant\/assistantUpsellConfig.test.ts/i.

@@ -1,0 +1,63 @@
+diff --git a/lib/utils/parse/parse.go b/lib/utils/parse/parse.go
+index ce84239a52..4e49b7c638 100644
+--- a/lib/utils/parse/parse.go
++++ b/lib/utils/parse/parse.go
+@@ -44,6 +44,14 @@ type Expression struct {
+ 	suffix string
+ 	// transform is an optional transformer for the variable.
+ 	transform transformer
++	// literal is a string literal expression, e.g. "foo". When set, the
++	// expression is a literal and returns its value directly on interpolation.
++	literal string
++}
++
++// IsLiteral reports whether the expression is a string literal, e.g. "foo".
++func (p *Expression) IsLiteral() bool {
++	return p.literal != ""
+ }
+ 
+ // emailLocalTransformer extracts local part of the email.
+@@ -79,6 +87,10 @@ func (p *Expression) Name() string {
+ // returns trace.NotFound in case if the trait is not found, nil in case of
+ // success and BadParameter error otherwise
+ func (p *Expression) Interpolate(traits map[string][]string) ([]string, error) {
++	if p.IsLiteral() {
++		return []string{p.prefix + p.literal + p.suffix}, nil
++	}
++
+ 	values, ok := traits[p.variable]
+ 	if !ok {
+ 		return nil, trace.NotFound("variable is not found")
+@@ -137,6 +149,15 @@ func RoleVariable(variable string) (*Expression, error) {
+ 		return nil, trace.Wrap(err)
+ 	}
+ 
++	// if the expression is a string literal, e.g. "foo", return it directly
++	if result.literal != nil {
++		return &Expression{
++			prefix:  strings.TrimLeftFunc(prefix, unicode.IsSpace),
++			literal: *result.literal,
++			suffix:  strings.TrimRightFunc(suffix, unicode.IsSpace),
++		}, nil
++	}
++
+ 	// the variable must have two parts the prefix and the variable name itself
+ 	if len(result.parts) != 2 {
+ 		return nil, trace.NotFound("no variable found: %v", variable)
+@@ -167,6 +188,7 @@ type transformer interface {
+ type walkResult struct {
+ 	parts     []string
+ 	transform transformer
++	literal   *string
+ }
+ 
+ // walk will walk the ast tree and gather all the variable parts into a slice and return it.
+@@ -239,7 +261,7 @@ func walk(node ast.Node) (*walkResult, error) {
+ 		if err != nil {
+ 			return nil, err
+ 		}
+-		return &walkResult{parts: []string{value}}, nil
++		return &walkResult{parts: []string{value}, literal: &value}, nil
+ 	default:
+ 		return nil, trace.BadParameter("unknown node type: %T", n)
+ 	}

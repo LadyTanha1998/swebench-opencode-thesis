@@ -1,0 +1,156 @@
+diff --git a/cmd/flipt/server.go b/cmd/flipt/server.go
+index 65222081..49ed8133 100644
+--- a/cmd/flipt/server.go
++++ b/cmd/flipt/server.go
+@@ -40,6 +40,10 @@ func fliptServer(logger *zap.Logger, cfg *config.Config) (*server.Server, func()
+ 		store = mysql.NewStore(db, builder, logger)
+ 	}
+ 
++	if cfg.Storage.IsReadOnly() {
++		store = storage.NewReadOnlyStore(store)
++	}
++
+ 	return server.New(logger, store), func() { _ = db.Close() }, nil
+ }
+ 
+diff --git a/internal/storage/readonly.go b/internal/storage/readonly.go
+new file mode 100644
+index 00000000..c6f8eaf8
+--- /dev/null
++++ b/internal/storage/readonly.go
+@@ -0,0 +1,135 @@
++package storage
++
++import (
++	"context"
++	"errors"
++
++	flipt "go.flipt.io/flipt/rpc/flipt"
++)
++
++// ErrReadOnly is returned when a write operation is attempted against a
++// read-only store.
++var ErrReadOnly = errors.New("read-only mode")
++
++var _ Store = (*ReadOnlyStore)(nil)
++
++// ReadOnlyStore wraps a Store and prevents any write operations from being
++// performed against the underlying store. All read operations are delegated
++// to the wrapped store.
++type ReadOnlyStore struct {
++	Store
++}
++
++// NewReadOnlyStore returns a Store which only allows read operations to be
++// performed against the wrapped store.
++func NewReadOnlyStore(store Store) *ReadOnlyStore {
++	return &ReadOnlyStore{Store: store}
++}
++
++func (s *ReadOnlyStore) String() string {
++	return s.Store.String()
++}
++
++func (s *ReadOnlyStore) CreateNamespace(context.Context, *flipt.CreateNamespaceRequest) (*flipt.Namespace, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateNamespace(context.Context, *flipt.UpdateNamespaceRequest) (*flipt.Namespace, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteNamespace(context.Context, *flipt.DeleteNamespaceRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) CreateFlag(context.Context, *flipt.CreateFlagRequest) (*flipt.Flag, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateFlag(context.Context, *flipt.UpdateFlagRequest) (*flipt.Flag, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteFlag(context.Context, *flipt.DeleteFlagRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) CreateVariant(context.Context, *flipt.CreateVariantRequest) (*flipt.Variant, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateVariant(context.Context, *flipt.UpdateVariantRequest) (*flipt.Variant, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteVariant(context.Context, *flipt.DeleteVariantRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) CreateSegment(context.Context, *flipt.CreateSegmentRequest) (*flipt.Segment, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateSegment(context.Context, *flipt.UpdateSegmentRequest) (*flipt.Segment, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteSegment(context.Context, *flipt.DeleteSegmentRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) CreateConstraint(context.Context, *flipt.CreateConstraintRequest) (*flipt.Constraint, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateConstraint(context.Context, *flipt.UpdateConstraintRequest) (*flipt.Constraint, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteConstraint(context.Context, *flipt.DeleteConstraintRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) CreateRule(context.Context, *flipt.CreateRuleRequest) (*flipt.Rule, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateRule(context.Context, *flipt.UpdateRuleRequest) (*flipt.Rule, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteRule(context.Context, *flipt.DeleteRuleRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) OrderRules(context.Context, *flipt.OrderRulesRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) CreateDistribution(context.Context, *flipt.CreateDistributionRequest) (*flipt.Distribution, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateDistribution(context.Context, *flipt.UpdateDistributionRequest) (*flipt.Distribution, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteDistribution(context.Context, *flipt.DeleteDistributionRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) CreateRollout(context.Context, *flipt.CreateRolloutRequest) (*flipt.Rollout, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) UpdateRollout(context.Context, *flipt.UpdateRolloutRequest) (*flipt.Rollout, error) {
++	return nil, ErrReadOnly
++}
++
++func (s *ReadOnlyStore) DeleteRollout(context.Context, *flipt.DeleteRolloutRequest) error {
++	return ErrReadOnly
++}
++
++func (s *ReadOnlyStore) OrderRollouts(context.Context, *flipt.OrderRolloutsRequest) error {
++	return ErrReadOnly
++}

@@ -1,0 +1,129 @@
+Running selected tests: test/PosthogAnalytics-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+npx browserslist@latest --update-db
+
+Why you should do it regularly:
+https://github.com/browserslist/browserslist#browsers-data-updating
+FAIL test/PosthogAnalytics-test.ts (23.875 s)
+  PosthogAnalytics
+    Initialisation
+      ✕ Should not initialise if config is not set (14 ms)
+      ✕ Should initialise if config is set (4 ms)
+      ✕ Should force anonymous if DNT is enabled (2 ms)
+    Tracking
+      ✕ Should pass track() to posthog (1 ms)
+      ✕ Should pass trackRoomEvent to posthog (19 ms)
+      ✓ Should silently not track if not inititalised (1 ms)
+      ✓ Should not track non-anonymous messages if anonymous (1 ms)
+      ✓ Should pseudonymise a location of a known screen (14 ms)
+      ✓ Should anonymise a location of a known screen (1 ms)
+      ✓ Should pseudonymise a location of an unknown screen (11 ms)
+      ✓ Should anonymise a location of an unknown screen (2 ms)
+      ✕ Should identify the user to posthog if pseudonymous (1 ms)
+      ✕ Should not identify the user to posthog if anonymous (5 ms)
+
+  ● PosthogAnalytics › Initialisation › Should not initialise if config is not set
+
+    TypeError: analytics.isEnabled is not a function
+
+      51 |             jest.spyOn(SdkConfig, "get").mockReturnValue({});
+      52 |             await analytics.init(Anonymity.Pseudonymous);
+    > 53 |             expect(analytics.isEnabled()).toBe(false);
+         |                              ^
+      54 |         });
+      55 | 
+      56 |         it("Should initialise if config is set", async () => {
+
+      at Object.<anonymous> (test/PosthogAnalytics-test.ts:53:30)
+
+  ● PosthogAnalytics › Initialisation › Should initialise if config is set
+
+    TypeError: analytics.isEnabled is not a function
+
+      63 |             await analytics.init(Anonymity.Pseudonymous);
+      64 |             expect(analytics.isInitialised()).toBe(true);
+    > 65 |             expect(analytics.isEnabled()).toBe(true);
+         |                              ^
+      66 |         });
+      67 | 
+      68 |         it("Should force anonymous if DNT is enabled", async () => {
+
+      at Object.<anonymous> (test/PosthogAnalytics-test.ts:65:30)
+
+  ● PosthogAnalytics › Initialisation › Should force anonymous if DNT is enabled
+
+    TypeError: analytics.getAnonymity is not a function
+
+      69 |             navigator.doNotTrack = "1";
+      70 |             await analytics.init(Anonymity.Pseudonymous);
+    > 71 |             expect(analytics.getAnonymity()).toBe(Anonymity.Anonymous);
+         |                              ^
+      72 |         });
+      73 |     });
+      74 | 
+
+      at Object.<anonymous> (test/PosthogAnalytics-test.ts:71:30)
+
+  ● PosthogAnalytics › Tracking › Should pass track() to posthog
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+      89 |                 foo: "bar",
+      90 |             });
+    > 91 |             expect(fakePosthog.capture.mock.calls[0][0]).toBe("jest_test_event");
+         |                    ^
+      92 |             expect(fakePosthog.capture.mock.calls[0][1]).toEqual({ foo: "bar" });
+      93 |         });
+      94 | 
+
+      at Object.<anonymous> (test/PosthogAnalytics-test.ts:91:20)
+
+  ● PosthogAnalytics › Tracking › Should pass trackRoomEvent to posthog
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+       99 |                 foo: "bar",
+      100 |             });
+    > 101 |             expect(fakePosthog.capture.mock.calls[0][0]).toBe("jest_test_event");
+          |                    ^
+      102 |             expect(fakePosthog.capture.mock.calls[0][1]).toEqual({
+      103 |                 foo: "bar",
+      104 |                 hashedRoomId: "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049",
+
+      at Object.<anonymous> (test/PosthogAnalytics-test.ts:101:20)
+
+  ● PosthogAnalytics › Tracking › Should identify the user to posthog if pseudonymous
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+      154 |             await analytics.init(Anonymity.Pseudonymous);
+      155 |             await analytics.identifyUser("foo");
+    > 156 |             expect(fakePosthog.identify.mock.calls[0][0])
+          |                    ^
+      157 |                 .toBe("2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae");
+      158 |         });
+      159 | 
+
+      at Object.<anonymous> (test/PosthogAnalytics-test.ts:156:20)
+
+  ● PosthogAnalytics › Tracking › Should not identify the user to posthog if anonymous
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      161 |             await analytics.init(Anonymity.Anonymous);
+      162 |             await analytics.identifyUser("foo");
+    > 163 |             expect(fakePosthog.identify.mock.calls.length).toBe(0);
+          |                                                            ^
+      164 |         });
+      165 |     });
+      166 | });
+
+      at Object.<anonymous> (test/PosthogAnalytics-test.ts:163:60)
+
+Test Suites: 1 failed, 1 total
+Tests:       7 failed, 6 passed, 13 total
+Snapshots:   0 total
+Time:        24.524 s

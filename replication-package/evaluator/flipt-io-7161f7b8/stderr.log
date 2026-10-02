@@ -1,0 +1,3 @@
+# go.flipt.io/flipt/cmd/flipt
+cmd/flipt/main.go:217:6: err redeclared in this block
+	cmd/flipt/main.go:197:7: other declaration of err

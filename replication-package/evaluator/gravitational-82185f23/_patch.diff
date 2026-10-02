@@ -1,0 +1,18 @@
+diff --git a/lib/kube/kubeconfig/kubeconfig.go b/lib/kube/kubeconfig/kubeconfig.go
+index 0961ba6f1d..f9c10d6280 100644
+--- a/lib/kube/kubeconfig/kubeconfig.go
++++ b/lib/kube/kubeconfig/kubeconfig.go
+@@ -176,7 +176,12 @@ func Update(path string, v Values) error {
+ 			if _, ok := config.Contexts[contextName]; !ok {
+ 				return trace.BadParameter("can't switch kubeconfig context to cluster %q, run 'tsh kube ls' to see available clusters", v.Exec.SelectCluster)
+ 			}
+-			config.CurrentContext = contextName
++			// Only update current context if it's already one of the contexts
++			// managed by Teleport. Otherwise, the user may have selected a
++			// non-Teleport context and we shouldn't hijack it.
++			if config.CurrentContext == "" || strings.HasPrefix(config.CurrentContext, v.TeleportClusterName+"-") {
++				config.CurrentContext = contextName
++			}
+ 		}
+ 	} else {
+ 		// Called when generating an identity file, use plaintext credentials.

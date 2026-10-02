@@ -1,0 +1,21 @@
+FAIL components/drawer/views/SecurityCenter/PassAliases/PassAliases.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@proton/components/components/drawer/views/SecurityCenter/PassAliases/usePassAliasesProviderSetup' from 'components/drawer/views/SecurityCenter/PassAliases/PassAliases.test.tsx'
+
+      14 |     PassBridgeProvider: ({ children }: { children: ReactNode }) => children,
+      15 | }));
+    > 16 | jest.mock('@proton/components/components/drawer/views/SecurityCenter/PassAliases/usePassAliasesProviderSetup', () => ({
+         |      ^
+      17 |     __esModule: true,
+      18 |     usePassAliasesSetup: () => {},
+      19 | }));
+
+      at Resolver._throwModNotFoundError (../../node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.mock (components/drawer/views/SecurityCenter/PassAliases/PassAliases.test.tsx:16:6)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        3.473 s
+Ran all test suites matching /components\/drawer\/views\/SecurityCenter\/PassAliases\/PassAliases.test.ts/i.

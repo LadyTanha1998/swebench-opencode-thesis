@@ -1,0 +1,44 @@
+diff --git a/applications/drive/src/app/store/_devices/useDevicesListing.tsx b/applications/drive/src/app/store/_devices/useDevicesListing.tsx
+index e98926b49..3f47b431b 100644
+--- a/applications/drive/src/app/store/_devices/useDevicesListing.tsx
++++ b/applications/drive/src/app/store/_devices/useDevicesListing.tsx
+@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
+ import { useLoading } from '@proton/components/hooks';
+ 
+ import { sendErrorReport } from '../../utils/errorHandling';
++import { useLink } from '../_links';
+ import { useVolumesState } from '../_volumes';
+ import { DevicesState } from './interface';
+ import useDevicesApi from './useDevicesApi';
+@@ -11,6 +12,7 @@ import useDevicesFeatureFlag from './useDevicesFeatureFlag';
+ export function useDevicesListingProvider() {
+     const devicesApi = useDevicesApi();
+     const volumesState = useVolumesState();
++    const { getLink } = useLink();
+     const [state, setState] = useState<DevicesState>({});
+     const [isLoading, withLoading] = useLoading();
+ 
+@@ -21,6 +23,23 @@ export function useDevicesListingProvider() {
+             Object.values(devices).forEach(({ volumeId, shareId }) => {
+                 volumesState.setVolumeShareIds(volumeId, [shareId]);
+             });
++
++            // Devices with an empty name need to resolve the display name
++            // from the root link of their share.
++            const signal = abortSignal || new AbortController().signal;
++            await Promise.all(
++                Object.values(devices).map(async (device) => {
++                    if (device.name) {
++                        return;
++                    }
++                    const link = await getLink(signal, device.shareId, device.linkId);
++                    devices[device.id] = {
++                        ...device,
++                        name: link.name,
++                    };
++                })
++            );
++
+             setState(devices);
+         }
+     };

@@ -1,0 +1,185 @@
+diff --git a/config/flipt.schema.cue b/config/flipt.schema.cue
+index fbeb88bc..4ca0de0c 100644
+--- a/config/flipt.schema.cue
++++ b/config/flipt.schema.cue
+@@ -145,6 +145,8 @@ import "strings"
+ 			repository:      string
+ 			ref?:            string | *"main"
+ 			poll_interval?:  =~#duration | *"30s"
++			ca_bundle?:      string
++			insecure_skip_tls_verify?: bool | *false
+ 			authentication?: ({
+ 				basic: {
+ 					username: string
+diff --git a/config/flipt.schema.json b/config/flipt.schema.json
+index b6d872ce..2dbcaefe 100644
+--- a/config/flipt.schema.json
++++ b/config/flipt.schema.json
+@@ -528,6 +528,13 @@
+               ],
+               "default": "30s"
+             },
++            "ca_bundle": {
++              "type": "string"
++            },
++            "insecure_skip_tls_verify": {
++              "type": "boolean",
++              "default": false
++            },
+             "authentication": {
+               "oneOf": [
+                 {
+diff --git a/internal/cmd/grpc.go b/internal/cmd/grpc.go
+index 279bf2c5..7a76f37b 100644
+--- a/internal/cmd/grpc.go
++++ b/internal/cmd/grpc.go
+@@ -157,6 +157,8 @@ func NewGRPCServer(
+ 		opts := []containers.Option[git.Source]{
+ 			git.WithRef(cfg.Storage.Git.Ref),
+ 			git.WithPollInterval(cfg.Storage.Git.PollInterval),
++			git.WithCAFile(cfg.Storage.Git.CABundlePath),
++			git.WithInsecureSkipTLSVerify(cfg.Storage.Git.InsecureSkipTLSVerify),
+ 		}
+ 
+ 		auth := cfg.Storage.Git.Authentication
+diff --git a/internal/config/storage.go b/internal/config/storage.go
+index 1dc3ef28..76c653b5 100644
+--- a/internal/config/storage.go
++++ b/internal/config/storage.go
+@@ -132,6 +132,15 @@ type Git struct {
+ 	Ref            string         `json:"ref,omitempty" mapstructure:"ref" yaml:"ref,omitempty"`
+ 	PollInterval   time.Duration  `json:"pollInterval,omitempty" mapstructure:"poll_interval" yaml:"poll_interval,omitempty"`
+ 	Authentication Authentication `json:"-" mapstructure:"authentication,omitempty" yaml:"-"`
++	// CABundlePath is a path to a PEM encoded CA bundle file which is used to
++	// verify the TLS certificate presented by the git server.
++	// This is useful when connecting to a git server (e.g. on-prem GitLab)
++	// which uses a self-signed certificate signed by a private CA.
++	CABundlePath string `json:"caBundlePath,omitempty" mapstructure:"ca_bundle" yaml:"ca_bundle,omitempty"`
++	// InsecureSkipTLSVerify disables TLS certificate verification against the
++	// git server. This should only be used for testing and is not recommended
++	// for production deployments.
++	InsecureSkipTLSVerify bool `json:"insecureSkipTLSVerify,omitempty" mapstructure:"insecure_skip_tls_verify" yaml:"insecure_skip_tls_verify,omitempty"`
+ }
+ 
+ // Object contains configuration of readonly object storage.
+diff --git a/internal/storage/fs/git/source.go b/internal/storage/fs/git/source.go
+index 6596daf0..1287944e 100644
+--- a/internal/storage/fs/git/source.go
++++ b/internal/storage/fs/git/source.go
+@@ -2,15 +2,21 @@ package git
+ 
+ import (
+ 	"context"
++	"crypto/tls"
++	"crypto/x509"
+ 	"errors"
+ 	"fmt"
+ 	"io/fs"
++	"net/http"
++	"os"
+ 	"time"
+ 
+ 	"github.com/go-git/go-git/v5"
+ 	"github.com/go-git/go-git/v5/config"
+ 	"github.com/go-git/go-git/v5/plumbing"
+ 	"github.com/go-git/go-git/v5/plumbing/transport"
++	"github.com/go-git/go-git/v5/plumbing/transport/client"
++	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
+ 	"github.com/go-git/go-git/v5/storage/memory"
+ 	"go.flipt.io/flipt/internal/containers"
+ 	"go.flipt.io/flipt/internal/gitfs"
+@@ -31,6 +37,9 @@ type Source struct {
+ 	hash     plumbing.Hash
+ 	interval time.Duration
+ 	auth     transport.AuthMethod
++
++	caBundlePath          string
++	insecureSkipTLSVerify bool
+ }
+ 
+ // WithRef configures the target reference to be used when fetching
+@@ -64,6 +73,25 @@ func WithAuth(auth transport.AuthMethod) containers.Option[Source] {
+ 	}
+ }
+ 
++// WithCAFile returns an option which configures a PEM encoded CA bundle
++// file used to verify the TLS certificate presented by the git server.
++// This is useful when connecting to a git server (e.g. on-prem GitLab)
++// which uses a self-signed certificate signed by a private CA.
++func WithCAFile(path string) containers.Option[Source] {
++	return func(s *Source) {
++		s.caBundlePath = path
++	}
++}
++
++// WithInsecureSkipTLSVerify returns an option which disables TLS certificate
++// verification against the git server. This should only be used for testing
++// and is not recommended for production deployments.
++func WithInsecureSkipTLSVerify(skip bool) containers.Option[Source] {
++	return func(s *Source) {
++		s.insecureSkipTLSVerify = skip
++	}
++}
++
+ // NewSource constructs and configures a Source.
+ // The source uses the connection and credential details provided to build
+ // fs.FS implementations around a target git repository.
+@@ -82,6 +110,10 @@ func NewSource(logger *zap.Logger, url string, opts ...containers.Option[Source]
+ 	}
+ 	source.logger = source.logger.With(field)
+ 
++	if err := source.configureTransport(); err != nil {
++		return nil, err
++	}
++
+ 	source.repo, err = git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+ 		Auth: source.auth,
+ 		URL:  source.url,
+@@ -93,6 +125,47 @@ func NewSource(logger *zap.Logger, url string, opts ...containers.Option[Source]
+ 	return source, nil
+ }
+ 
++// configureTransport installs a custom HTTPS transport when additional TLS
++// configuration (a CA bundle or skipping verification) has been supplied for
++// the git source. This is required to support connecting to servers which use
++// self-signed certificates signed by a private CA.
++func (s *Source) configureTransport() error {
++	if s.caBundlePath == "" && !s.insecureSkipTLSVerify {
++		return nil
++	}
++
++	tlsConfig := &tls.Config{}
++	if s.caBundlePath != "" {
++		caBundle, err := os.ReadFile(s.caBundlePath)
++		if err != nil {
++			return fmt.Errorf("reading CA bundle: %w", err)
++		}
++
++		rootCAs, err := x509.SystemCertPool()
++		if err != nil || rootCAs == nil {
++			rootCAs = x509.NewCertPool()
++		}
++
++		if ok := rootCAs.AppendCertsFromPEM(caBundle); !ok {
++			return errors.New("no valid certificates found in CA bundle")
++		}
++
++		tlsConfig.RootCAs = rootCAs
++	}
++
++	if s.insecureSkipTLSVerify {
++		// nolint:gosec
++		tlsConfig.InsecureSkipVerify = true
++	}
++
++	transport := http.DefaultTransport.(*http.Transport).Clone()
++	transport.TLSClientConfig = tlsConfig
++
++	client.InstallProtocol("https", githttp.NewClient(&http.Client{Transport: transport}))
++
++	return nil
++}
++
+ // Get builds a new store snapshot based on the configure Git remote and reference.
+ func (s *Source) Get(context.Context) (_ *storagefs.StoreSnapshot, err error) {
+ 	var fs fs.FS

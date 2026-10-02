@@ -1,0 +1,176 @@
+diff --git a/detector/wordpress.go b/detector/wordpress.go
+index 0aabcdb..b1da77a 100644
+--- a/detector/wordpress.go
++++ b/detector/wordpress.go
+@@ -61,7 +61,7 @@ func detectWordPressCves(r *models.ScanResult, cnf *c.WpScanConf) (int, error) {
+ 			fmt.Sprintf("Failed to get WordPress core version."))
+ 	}
+ 	url := fmt.Sprintf("https://wpscan.com/api/v3/wordpresses/%s", ver)
+-	wpVinfos, err := wpscan(url, ver, cnf.Token)
++	wpVinfos, err := wpscan(url, models.WPCore, cnf.Token)
+ 	if err != nil {
+ 		return 0, err
+ 	}
+diff --git a/models/scanresults.go b/models/scanresults.go
+index f22c1bb..ca07d51 100644
+--- a/models/scanresults.go
++++ b/models/scanresults.go
+@@ -82,54 +82,48 @@ type Kernel struct {
+ 	RebootRequired bool   `json:"rebootRequired"`
+ }
+ 
+-// FilterByCvssOver is filter function.
+-func (r ScanResult) FilterByCvssOver(over float64) ScanResult {
+-	filtered := r.ScannedCves.Find(func(v VulnInfo) bool {
+-		if over <= v.MaxCvssScore().Value.Score {
++// FilterByCvssOver is filter function operating on the CVE collection.
++func (v VulnInfos) FilterByCvssOver(over float64) VulnInfos {
++	return v.Find(func(vv VulnInfo) bool {
++		if over <= vv.MaxCvssScore().Value.Score {
+ 			return true
+ 		}
+ 		return false
+ 	})
+-	r.ScannedCves = filtered
+-	return r
+ }
+ 
+-// FilterIgnoreCves is filter function.
+-func (r ScanResult) FilterIgnoreCves(ignoreCves []string) ScanResult {
+-	filtered := r.ScannedCves.Find(func(v VulnInfo) bool {
++// FilterIgnoreCves is filter function operating on the CVE collection.
++func (v VulnInfos) FilterIgnoreCves(ignoreCves []string) VulnInfos {
++	return v.Find(func(vv VulnInfo) bool {
+ 		for _, c := range ignoreCves {
+-			if v.CveID == c {
++			if vv.CveID == c {
+ 				return false
+ 			}
+ 		}
+ 		return true
+ 	})
+-	r.ScannedCves = filtered
+-	return r
+ }
+ 
+-// FilterUnfixed is filter function.
+-func (r ScanResult) FilterUnfixed(ignoreUnfixed bool) ScanResult {
++// FilterUnfixed is filter function operating on the CVE collection.
++func (v VulnInfos) FilterUnfixed(ignoreUnfixed bool) VulnInfos {
+ 	if !ignoreUnfixed {
+-		return r
++		return v
+ 	}
+-	filtered := r.ScannedCves.Find(func(v VulnInfo) bool {
++	return v.Find(func(vv VulnInfo) bool {
+ 		// Report cves detected by CPE because Vuls can't know 'fixed' or 'unfixed'
+-		if len(v.CpeURIs) != 0 {
++		if len(vv.CpeURIs) != 0 {
+ 			return true
+ 		}
+ 		NotFixedAll := true
+-		for _, p := range v.AffectedPackages {
++		for _, p := range vv.AffectedPackages {
+ 			NotFixedAll = NotFixedAll && p.NotFixedYet
+ 		}
+ 		return !NotFixedAll
+ 	})
+-	r.ScannedCves = filtered
+-	return r
+ }
+ 
+-// FilterIgnorePkgs is filter function.
+-func (r ScanResult) FilterIgnorePkgs(ignorePkgsRegexps []string) ScanResult {
++// FilterIgnorePkgs is filter function operating on the CVE collection.
++func (v VulnInfos) FilterIgnorePkgs(ignorePkgsRegexps []string) VulnInfos {
+ 	regexps := []*regexp.Regexp{}
+ 	for _, pkgRegexp := range ignorePkgsRegexps {
+ 		re, err := regexp.Compile(pkgRegexp)
+@@ -141,14 +135,14 @@ func (r ScanResult) FilterIgnorePkgs(ignorePkgsRegexps []string) ScanResult {
+ 		}
+ 	}
+ 	if len(regexps) == 0 {
+-		return r
++		return v
+ 	}
+ 
+-	filtered := r.ScannedCves.Find(func(v VulnInfo) bool {
+-		if len(v.AffectedPackages) == 0 {
++	return v.Find(func(vv VulnInfo) bool {
++		if len(vv.AffectedPackages) == 0 {
+ 			return true
+ 		}
+-		for _, p := range v.AffectedPackages {
++		for _, p := range vv.AffectedPackages {
+ 			match := false
+ 			for _, re := range regexps {
+ 				if re.MatchString(p.Name) {
+@@ -161,24 +155,21 @@ func (r ScanResult) FilterIgnorePkgs(ignorePkgsRegexps []string) ScanResult {
+ 		}
+ 		return false
+ 	})
+-
+-	r.ScannedCves = filtered
+-	return r
+ }
+ 
+-// FilterInactiveWordPressLibs is filter function.
+-func (r ScanResult) FilterInactiveWordPressLibs(detectInactive bool) ScanResult {
++// FilterInactiveWordPressLibs is filter function operating on the CVE collection.
++func (v VulnInfos) FilterInactiveWordPressLibs(pkgs WordPressPackages, detectInactive bool) VulnInfos {
+ 	if detectInactive {
+-		return r
++		return v
+ 	}
+ 
+-	filtered := r.ScannedCves.Find(func(v VulnInfo) bool {
+-		if len(v.WpPackageFixStats) == 0 {
++	return v.Find(func(vv VulnInfo) bool {
++		if len(vv.WpPackageFixStats) == 0 {
+ 			return true
+ 		}
+ 		// Ignore if all libs in this vulnInfo inactive
+-		for _, wp := range v.WpPackageFixStats {
+-			if p, ok := r.WordPressPackages.Find(wp.Name); ok {
++		for _, wp := range vv.WpPackageFixStats {
++			if p, ok := pkgs.Find(wp.Name); ok {
+ 				if p.Status != Inactive {
+ 					return true
+ 				}
+@@ -186,7 +177,35 @@ func (r ScanResult) FilterInactiveWordPressLibs(detectInactive bool) ScanResult
+ 		}
+ 		return false
+ 	})
+-	r.ScannedCves = filtered
++}
++
++// FilterByCvssOver is filter function.
++func (r ScanResult) FilterByCvssOver(over float64) ScanResult {
++	r.ScannedCves = r.ScannedCves.FilterByCvssOver(over)
++	return r
++}
++
++// FilterIgnoreCves is filter function.
++func (r ScanResult) FilterIgnoreCves(ignoreCves []string) ScanResult {
++	r.ScannedCves = r.ScannedCves.FilterIgnoreCves(ignoreCves)
++	return r
++}
++
++// FilterUnfixed is filter function.
++func (r ScanResult) FilterUnfixed(ignoreUnfixed bool) ScanResult {
++	r.ScannedCves = r.ScannedCves.FilterUnfixed(ignoreUnfixed)
++	return r
++}
++
++// FilterIgnorePkgs is filter function.
++func (r ScanResult) FilterIgnorePkgs(ignorePkgsRegexps []string) ScanResult {
++	r.ScannedCves = r.ScannedCves.FilterIgnorePkgs(ignorePkgsRegexps)
++	return r
++}
++
++// FilterInactiveWordPressLibs is filter function.
++func (r ScanResult) FilterInactiveWordPressLibs(detectInactive bool) ScanResult {
++	r.ScannedCves = r.ScannedCves.FilterInactiveWordPressLibs(r.WordPressPackages, detectInactive)
+ 	return r
+ }
+ 

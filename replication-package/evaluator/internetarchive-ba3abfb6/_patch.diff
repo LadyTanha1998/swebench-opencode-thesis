@@ -1,0 +1,105 @@
+diff --git a/openlibrary/catalog/add_book/__init__.py b/openlibrary/catalog/add_book/__init__.py
+index b3fa94583..8e97464f4 100644
+--- a/openlibrary/catalog/add_book/__init__.py
++++ b/openlibrary/catalog/add_book/__init__.py
+@@ -771,10 +771,15 @@ def validate_publication_year(publication_year: int, override: bool = False) ->
+         raise PublishedInFutureYear(publication_year)
+ 
+ 
+-def validate_record(rec: dict) -> None:
++def validate_record(rec: dict, override: bool = False) -> None:
+     """
+     Check the record for various issues.
+     Each check raises and error or returns None.
++
++    When override is True, the following validation checks are bypassed:
++        - Publication year being too far in the past or future.
++        - Publisher name indicating "Independently Published".
++        - Source requiring an ISBN, but the record lacking one.
+     """
+     required_fields = [
+         'title',
+@@ -784,16 +789,15 @@ def validate_record(rec: dict) -> None:
+         if not rec.get(field):
+             raise RequiredField(field)
+ 
+-    if publication_year := get_publication_year(rec.get('publish_date')):
++    if not override and (publication_year := get_publication_year(rec.get('publish_date'))):
+         validate_publication_year(publication_year)
+ 
+-    if is_independently_published(rec.get('publishers', [])):
++    if not override and is_independently_published(rec.get('publishers', [])):
+         raise IndependentlyPublished
+ 
+-    if needs_isbn_and_lacks_one(rec):
++    if not override and needs_isbn_and_lacks_one(rec):
+         raise SourceNeedsISBN
+ 
+-
+ def find_match(rec, edition_pool) -> str | None:
+     """Use rec to try to find an existing edition key that matches."""
+     match = find_quick_match(rec)
+@@ -925,7 +929,7 @@ def update_work_with_rec_data(
+     return need_work_save
+ 
+ 
+-def load(rec, account_key=None):
++def load(rec, account_key=None, override: bool = False):
+     """Given a record, tries to add/match that edition in the system.
+ 
+     Record is a dictionary containing all the metadata of the edition.
+@@ -935,10 +939,11 @@ def load(rec, account_key=None):
+         * source_records: list
+ 
+     :param dict rec: Edition record to add
++    :param bool override: If True, bypass certain validation checks
+     :rtype: dict
+     :return: a dict to be converted into a JSON HTTP response, same as load_data()
+     """
+-    validate_record(rec)
++    validate_record(rec, override)
+     normalize_import_record(rec)
+ 
+     # Resolve an edition if possible, or create and return one if not.
+diff --git a/openlibrary/plugins/importapi/code.py b/openlibrary/plugins/importapi/code.py
+index 7d875309e..d53c4ff35 100644
+--- a/openlibrary/plugins/importapi/code.py
++++ b/openlibrary/plugins/importapi/code.py
+@@ -128,6 +128,9 @@ class importapi:
+         if not can_write():
+             raise web.HTTPError('403 Forbidden')
+ 
++        i = web.input()
++        override_validation = i.get('override-validation') == 'true'
++
+         data = web.data()
+ 
+         try:
+@@ -151,7 +154,7 @@ class importapi:
+             return self.error('unknown-error', 'Failed to parse import data')
+ 
+         try:
+-            reply = add_book.load(edition)
++            reply = add_book.load(edition, override=override_validation)
+             # TODO: If any records have been created, return a 201, otherwise 200
+             return json.dumps(reply)
+         except add_book.RequiredField as e:
+diff --git a/package-lock.json b/package-lock.json
+index 2759d17b2..8d758f518 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -47,7 +47,7 @@
+         "jquery": "3.6.0",
+         "jquery-colorbox": "1.6.4",
+         "jquery-ui": "1.13.2",
+-        "jquery-ui-touch-punch": "^0.2.3",
++        "jquery-ui-touch-punch": "0.2.3",
+         "jquery-validation": "1.19.3",
+         "less": "4.1.3",
+         "less-loader": "7.3.0",
+diff --git a/vendor/infogami b/vendor/infogami
+--- a/vendor/infogami
++++ b/vendor/infogami
+@@ -1 +1 @@
+-Subproject commit c50a56933bbf0aec7a746a0cac2aefedb669cca4
++Subproject commit c50a56933bbf0aec7a746a0cac2aefedb669cca4-dirty

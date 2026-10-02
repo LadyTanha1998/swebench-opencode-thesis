@@ -1,0 +1,30 @@
+FAIL components/popper/utils.test.ts (81 MB heap size)
+  popper utils
+    fallback placements
+      ✓ should sort placements when given top-end (4 ms)
+      ✓ should sort placements when given top (2 ms)
+      ✓ should sort placements when given right (2 ms)
+      ✓ should sort placements when given left-start (3 ms)
+      ✓ should sort placements when given left-end (5 ms)
+    rtl placement
+      ✕ should get rtl placement (3 ms)
+
+  ● popper utils › rtl placement › should get rtl placement
+
+    TypeError: (0 , _utils.getInvertedRTLPlacement) is not a function
+
+      85 |     describe('rtl placement', () => {
+      86 |         test('should get rtl placement', () => {
+    > 87 |             expect(getInvertedRTLPlacement('top-start', true)).toEqual('top-end');
+         |                                           ^
+      88 |             expect(getInvertedRTLPlacement('top-end', true)).toEqual('top-start');
+      89 |             expect(getInvertedRTLPlacement('right-start', true)).toEqual('right-start');
+      90 |             expect(getInvertedRTLPlacement('right-end', true)).toEqual('right-end');
+
+      at Object.<anonymous> (components/popper/utils.test.ts:87:43)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 5 passed, 6 total
+Snapshots:   0 total
+Time:        254.27 s
+Ran all test suites matching /packages\/components\/components\/popper\/utils.test.ts/i.

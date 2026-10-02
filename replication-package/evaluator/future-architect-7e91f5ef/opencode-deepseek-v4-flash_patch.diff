@@ -1,0 +1,190 @@
+diff --git a/contrib/trivy/parser/v2/parser_test.go b/contrib/trivy/parser/v2/parser_test.go
+index fe3e28f..d34e97b 100644
+--- a/contrib/trivy/parser/v2/parser_test.go
++++ b/contrib/trivy/parser/v2/parser_test.go
+@@ -26,6 +26,10 @@ func TestParse(t *testing.T) {
+ 			vulnJSON: osAndLibTrivy,
+ 			expected: osAndLibSR,
+ 		},
++		"image releaseArch": {
++			vulnJSON: releaseArchTrivy,
++			expected: releaseArchSR,
++		},
+ 	}
+ 
+ 	for testcase, v := range cases {
+@@ -257,6 +261,16 @@ var redisSR = &models.ScanResult{
+ 		},
+ 	},
+ 	SrcPackages: models.SrcPackages{
++		"adduser": models.SrcPackage{
++			Name:        "adduser",
++			Version:     "3.118",
++			BinaryNames: []string{"adduser"},
++		},
++		"apt": models.SrcPackage{
++			Name:        "apt",
++			Version:     "1.8.2.3",
++			BinaryNames: []string{"apt"},
++		},
+ 		"util-linux": models.SrcPackage{
+ 			Name:        "util-linux",
+ 			Version:     "2.33.1-0.1",
+@@ -727,6 +741,123 @@ var osAndLibSR = &models.ScanResult{
+ 	},
+ }
+ 
++var releaseArchTrivy = []byte(`
++{
++  "SchemaVersion": 2,
++  "ArtifactName": "releasearch:latest",
++  "ArtifactType": "container_image",
++  "Metadata": {
++    "OS": {
++      "Family": "debian",
++      "Name": "10.10"
++    },
++    "ImageConfig": {
++      "architecture": "amd64"
++    }
++  },
++  "Results": [
++    {
++      "Target": "releasearch (debian 10.10)",
++      "Class": "os-pkgs",
++      "Type": "debian",
++      "Packages": [
++        {
++          "Name": "openssl",
++          "Version": "1.1.1d",
++          "Release": "0+deb10u7",
++          "Arch": "amd64",
++          "SrcName": "openssl",
++          "SrcVersion": "1.1.1d",
++          "SrcRelease": "0+deb10u7",
++          "SrcEpoch": 0,
++          "Layer": {}
++        },
++        {
++          "Name": "libssl1.1",
++          "Version": "1.1.1d",
++          "Release": "0+deb10u7",
++          "Arch": "amd64",
++          "SrcName": "openssl",
++          "SrcVersion": "1.1.1d",
++          "SrcRelease": "0+deb10u7",
++          "SrcEpoch": 0,
++          "Layer": {}
++        }
++      ],
++      "Vulnerabilities": [
++        {
++          "VulnerabilityID": "CVE-2021-3712",
++          "PkgName": "openssl",
++          "InstalledVersion": "1.1.1d-0+deb10u7",
++          "FixedVersion": "1.1.1d-0+deb10u8",
++          "Layer": {},
++          "Severity": "HIGH",
++          "References": []
++        }
++      ]
++    }
++  ]
++}`)
++var releaseArchSR = &models.ScanResult{
++	JSONVersion: 4,
++	ServerName:  "releasearch:latest",
++	Family:      "debian",
++	Release:     "10.10",
++	ScannedBy:   "trivy",
++	ScannedVia:  "trivy",
++	ScannedCves: models.VulnInfos{
++		"CVE-2021-3712": {
++			CveID: "CVE-2021-3712",
++			Confidences: models.Confidences{
++				models.Confidence{
++					Score:           100,
++					DetectionMethod: "TrivyMatch",
++				},
++			},
++			AffectedPackages: models.PackageFixStatuses{
++				models.PackageFixStatus{
++					Name:        "openssl",
++					NotFixedYet: false,
++					FixState:    "",
++					FixedIn:     "1.1.1d-0+deb10u8",
++				}},
++			CveContents: models.CveContents{
++				"trivy": []models.CveContent{{
++					Cvss3Severity: "HIGH",
++				}},
++			},
++			LibraryFixedIns: models.LibraryFixedIns{},
++		},
++	},
++	LibraryScanners: models.LibraryScanners{},
++	Packages: models.Packages{
++		"openssl": models.Package{
++			Name:    "openssl",
++			Version: "1.1.1d",
++			Release: "0+deb10u7",
++			Arch:    "amd64",
++		},
++		"libssl1.1": models.Package{
++			Name:    "libssl1.1",
++			Version: "1.1.1d",
++			Release: "0+deb10u7",
++			Arch:    "amd64",
++		},
++	},
++	SrcPackages: models.SrcPackages{
++		"openssl": models.SrcPackage{
++			Name:        "openssl",
++			Version:     "1.1.1d",
++			Arch:        "amd64",
++			BinaryNames: []string{"openssl", "libssl1.1"},
++		},
++	},
++	Optional: map[string]interface{}{
++		"TRIVY_IMAGE_NAME": "releasearch",
++		"TRIVY_IMAGE_TAG":  "latest",
++	},
++}
++
+ func TestParseError(t *testing.T) {
+ 	cases := map[string]struct {
+ 		vulnJSON []byte
+diff --git a/contrib/trivy/pkg/converter.go b/contrib/trivy/pkg/converter.go
+index 2a92a46..c92f613 100644
+--- a/contrib/trivy/pkg/converter.go
++++ b/contrib/trivy/pkg/converter.go
+@@ -114,18 +114,19 @@ func Convert(results types.Results) (result *models.ScanResult, err error) {
+ 				pkgs[p.Name] = models.Package{
+ 					Name:    p.Name,
+ 					Version: p.Version,
++					Release: p.Release,
++					Arch:    p.Arch,
+ 				}
+-				if p.Name != p.SrcName {
+-					if v, ok := srcPkgs[p.SrcName]; !ok {
+-						srcPkgs[p.SrcName] = models.SrcPackage{
+-							Name:        p.SrcName,
+-							Version:     p.SrcVersion,
+-							BinaryNames: []string{p.Name},
+-						}
+-					} else {
+-						v.AddBinaryName(p.Name)
+-						srcPkgs[p.SrcName] = v
++				if v, ok := srcPkgs[p.SrcName]; !ok {
++					srcPkgs[p.SrcName] = models.SrcPackage{
++						Name:        p.SrcName,
++						Version:     p.SrcVersion,
++						Arch:        p.Arch,
++						BinaryNames: []string{p.Name},
+ 					}
++				} else {
++					v.AddBinaryName(p.Name)
++					srcPkgs[p.SrcName] = v
+ 				}
+ 			}
+ 		} else if trivyResult.Class == types.ClassLangPkg {

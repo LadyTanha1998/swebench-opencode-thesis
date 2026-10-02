@@ -1,0 +1,9 @@
+go build github.com/gravitational/teleport/lib/auth/keystore: no non-test Go files in /app/lib/auth/keystore
+# github.com/gravitational/teleport/lib/auth
+lib/auth/keystore.go:144:3: cannot use nil as type tlsca.CertAuthority in return argument
+lib/auth/keystore.go:148:3: cannot use nil as type tlsca.CertAuthority in return argument
+lib/auth/keystore.go:150:2: cannot use tlsCA (type *tlsca.CertAuthority) as type tlsca.CertAuthority in return argument
+# github.com/gravitational/teleport/lib/auth [github.com/gravitational/teleport/lib/auth.test]
+lib/auth/keystore.go:144:3: cannot use nil as type tlsca.CertAuthority in return argument
+lib/auth/keystore.go:148:3: cannot use nil as type tlsca.CertAuthority in return argument
+lib/auth/keystore.go:150:2: cannot use tlsCA (type *tlsca.CertAuthority) as type tlsca.CertAuthority in return argument

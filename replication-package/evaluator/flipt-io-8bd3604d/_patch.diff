@@ -1,0 +1,77 @@
+diff --git a/internal/cmd/grpc.go b/internal/cmd/grpc.go
+index 30dd5b83..4f701682 100644
+--- a/internal/cmd/grpc.go
++++ b/internal/cmd/grpc.go
+@@ -384,6 +384,7 @@ func NewGRPCServer(
+ 
+ 	if cfg.Audit.Sinks.Webhook.Enabled {
+ 		httpClient := retryablehttp.NewClient()
++		httpClient.Logger = audit.NewRetryableLogger(logger)
+ 
+ 		if cfg.Audit.Sinks.Webhook.MaxBackoffDuration > 0 {
+ 			httpClient.RetryWaitMax = cfg.Audit.Sinks.Webhook.MaxBackoffDuration
+diff --git a/internal/server/audit/template/executer.go b/internal/server/audit/template/executer.go
+index 72f8b154..3df1c753 100644
+--- a/internal/server/audit/template/executer.go
++++ b/internal/server/audit/template/executer.go
+@@ -51,7 +51,7 @@ func NewWebhookTemplate(logger *zap.Logger, url, body string, headers map[string
+ 	}
+ 
+ 	httpClient := retryablehttp.NewClient()
+-	httpClient.Logger = logger
++	httpClient.Logger = audit.NewRetryableLogger(logger)
+ 	httpClient.RetryWaitMax = maxBackoffDuration
+ 
+ 	return &webhookTemplate{
+diff --git a/internal/server/audit/webhook/client.go b/internal/server/audit/webhook/client.go
+index c75bf697..6bc88a8a 100644
+--- a/internal/server/audit/webhook/client.go
++++ b/internal/server/audit/webhook/client.go
+@@ -41,6 +41,8 @@ func (w *webhookClient) signPayload(payload []byte) []byte {
+ 
+ // NewHTTPClient is the constructor for a HTTPClient.
+ func NewWebhookClient(logger *zap.Logger, url, signingSecret string, httpClient *retryablehttp.Client) Client {
++	httpClient.Logger = audit.NewRetryableLogger(logger)
++
+ 	return &webhookClient{
+ 		logger:        logger,
+ 		url:           url,
+diff --git a/internal/server/audit/logger.go b/internal/server/audit/logger.go
+new file mode 100644
+--- /dev/null
++++ b/internal/server/audit/logger.go
+@@ -0,0 +1,34 @@
++package audit
++
++import (
++	"github.com/hashicorp/go-retryablehttp"
++	"go.uber.org/zap"
++)
++
++// retryableLogger adapts a zap logger to the retryablehttp.LeveledLogger
++// interface so it can be passed to a retryablehttp client without panicking.
++type retryableLogger struct {
++	logger *zap.SugaredLogger
++}
++
++func (l *retryableLogger) Error(msg string, kv ...interface{}) {
++	l.logger.Errorw(msg, kv...)
++}
++
++func (l *retryableLogger) Info(msg string, kv ...interface{}) {
++	l.logger.Infow(msg, kv...)
++}
++
++func (l *retryableLogger) Debug(msg string, kv ...interface{}) {
++	l.logger.Debugw(msg, kv...)
++}
++
++func (l *retryableLogger) Warn(msg string, kv ...interface{}) {
++	l.logger.Warnw(msg, kv...)
++}
++
++// NewRetryableLogger wraps a zap logger so it can be used as the logger for a
++// retryablehttp client.
++func NewRetryableLogger(logger *zap.Logger) retryablehttp.LeveledLogger {
++	return &retryableLogger{logger: logger.Sugar()}
++}

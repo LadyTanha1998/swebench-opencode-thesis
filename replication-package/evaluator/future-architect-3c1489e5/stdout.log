@@ -1,0 +1,58 @@
+Running selected tests: TestLibraryScanners_Find/miss Test_parseListenPorts/asterisk Test_IsRaspbianPackage/nameRegExp Test_parseListenPorts/ipv6_loopback TestVulnInfo_AttackVector/2.0:A TestFilterIgnoreCveIDsContainer TestFilterIgnorePkgsContainer TestExcept TestPackage_FormatVersionFromTo/nfy TestLibraryScanners_Find TestVulnInfo_AttackVector/2.0:N TestPackage_FormatVersionFromTo/nfy3 TestSummaries TestFilterUnfixed TestMaxCvss3Scores Test_IsRaspbianPackage TestPackage_FormatVersionFromTo TestVulnInfo_AttackVector TestSortPackageStatues TestPackage_FormatVersionFromTo/nfy2 TestCvss2Scores TestCountGroupBySeverity TestFilterIgnoreCveIDs TestFindByBinName TestTitles Test_IsRaspbianPackage/debianPackage TestFilterByCvssOver TestSortByConfident Test_parseListenPorts TestMaxCvssScores TestVulnInfo_AttackVector/3.1:N TestAppendIfMissing TestMaxCvss2Scores TestFilterIgnorePkgs TestDistroAdvisories_AppendIfMissing/duplicate_no_append TestAddBinaryName Test_IsRaspbianPackage/verRegExp TestMergeNewVersion TestLibraryScanners_Find/single_file Test_IsRaspbianPackage/nameList TestIsDisplayUpdatableNum TestFormatMaxCvssScore TestVulnInfo_AttackVector/3.0:N TestCvss3Scores Test_parseListenPorts/empty TestDistroAdvisories_AppendIfMissing/append TestPackage_FormatVersionFromTo/fixed TestSourceLinks Test_parseListenPorts/normal TestDistroAdvisories_AppendIfMissing TestLibraryScanners_Find/multi_file TestPackage_FormatVersionFromTo/nfy#01 TestMerge TestToSortedSlice TestStorePackageStatuses TestVulnInfo_AttackVector/2.0:L
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/cache	0.146s [no tests to run]
+# github.com/mattn/go-sqlite3
+sqlite3-binding.c: In function 'sqlite3SelectNew':
+sqlite3-binding.c:128049:10: warning: function may return address of local variable [-Wreturn-local-addr]
+128049 |   return pNew;
+       |          ^~~~
+sqlite3-binding.c:128009:10: note: declared here
+128009 |   Select standin;
+       |          ^~~~~~~
+?   	github.com/future-architect/vuls/cmd/scanner	[no test files]
+?   	github.com/future-architect/vuls/cmd/vuls	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/config	0.076s [no tests to run]
+?   	github.com/future-architect/vuls/contrib/future-vuls/cmd	[no test files]
+?   	github.com/future-architect/vuls/contrib/owasp-dependency-check/parser	[no test files]
+?   	github.com/future-architect/vuls/contrib/trivy/cmd	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/contrib/trivy/parser	0.124s [no tests to run]
+?   	github.com/future-architect/vuls/cwe	[no test files]
+?   	github.com/future-architect/vuls/errof	[no test files]
+?   	github.com/future-architect/vuls/exploit	[no test files]
+?   	github.com/future-architect/vuls/github	[no test files]
+# github.com/future-architect/vuls/models [github.com/future-architect/vuls/models.test]
+models/vulninfos_test.go:576:13: not enough arguments in call to tt.in.Cvss2Scores
+	have ()
+	want (string)
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/gost	0.145s [no tests to run]
+?   	github.com/future-architect/vuls/libmanager	[no test files]
+FAIL	github.com/future-architect/vuls/models [build failed]
+?   	github.com/future-architect/vuls/msf	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/oval	0.164s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/report	0.215s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/saas	0.209s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/scan	0.160s [no tests to run]
+?   	github.com/future-architect/vuls/server	[no test files]
+?   	github.com/future-architect/vuls/subcmds	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/util	0.069s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/wordpress	0.097s [no tests to run]
+FAIL

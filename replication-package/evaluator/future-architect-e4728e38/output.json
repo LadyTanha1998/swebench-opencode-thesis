@@ -1,0 +1,8 @@
+{
+  "tests": [
+    {
+      "name": "TestCvss3Scores",
+      "status": "FAILED"
+    }
+  ]
+}

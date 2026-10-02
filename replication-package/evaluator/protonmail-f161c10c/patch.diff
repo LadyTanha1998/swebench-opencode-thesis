@@ -1,0 +1,39 @@
+diff --git a/packages/shared/lib/contacts/helpers/csvFormat.ts b/packages/shared/lib/contacts/helpers/csvFormat.ts
+index 2c021836a..5da4ae5e3 100644
+--- a/packages/shared/lib/contacts/helpers/csvFormat.ts
++++ b/packages/shared/lib/contacts/helpers/csvFormat.ts
+@@ -1,4 +1,4 @@
+-import { isValid, parseISO } from 'date-fns';
++import { isValid } from 'date-fns';
+ 
+ import capitalize from '@proton/utils/capitalize';
+ import isTruthy from '@proton/utils/isTruthy';
+@@ -591,7 +591,7 @@ const getFirstValue = (preVcards: PreVcardProperty[]): string =>
+ 
+ const getDateValue = (preVcards: PreVcardProperty[]) => {
+     const text = getFirstValue(preVcards);
+-    const date = parseISO(text);
++    const date = new Date(text);
+     return isValid(date) ? { date } : { text };
+ };
+ 
+diff --git a/packages/shared/lib/contacts/property.ts b/packages/shared/lib/contacts/property.ts
+index 481dfac41..a8ecfb05c 100644
+--- a/packages/shared/lib/contacts/property.ts
++++ b/packages/shared/lib/contacts/property.ts
+@@ -131,7 +131,7 @@ export const getType = (types: string | string[] = []): string => {
+  * Get a date from a VCardProperty<VCardDateOrText>.
+  * Returns the vCardProperty.date if present and valid
+  * Or tries to return the converted date from vCardProperty.text
+- * If none of the above, return today date
++ * If none of the above, return undefined
+  * @param vCardProperty birthday or anniversary vCardProperty
+  */
+ export const getDateFromVCardProperty = ({ value: { date, text } }: VCardProperty<VCardDateOrText>) => {
+@@ -145,5 +145,5 @@ export const getDateFromVCardProperty = ({ value: { date, text } }: VCardPropert
+         }
+     }
+ 
+-    return new Date();
++    return undefined;
+ };

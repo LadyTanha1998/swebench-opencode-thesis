@@ -1,0 +1,143 @@
+diff --git a/api/client/proto/authservice.pb.go b/api/client/proto/authservice.pb.go
+index 8127089708..3824178eca 100644
+--- a/api/client/proto/authservice.pb.go
++++ b/api/client/proto/authservice.pb.go
+@@ -4314,6 +4314,8 @@ type DatabaseCertRequest struct {
+ 	CSR []byte `protobuf:"bytes,1,opt,name=CSR,proto3" json:"csr"`
+ 	// ServerName is the SAN to include in the certificate.
+ 	ServerName string `protobuf:"bytes,2,opt,name=ServerName,proto3" json:"server_name"`
++	// ServerNames is a list of SANs to include in the certificate.
++	ServerNames []string `protobuf:"bytes,4,rep,name=ServerNames,proto3" json:"server_names"`
+ 	// TTL is the certificate validity period.
+ 	TTL                  Duration `protobuf:"varint,3,opt,name=TTL,proto3,casttype=Duration" json:"ttl"`
+ 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+@@ -4368,6 +4370,13 @@ func (m *DatabaseCertRequest) GetServerName() string {
+ 	return ""
+ }
+ 
++func (m *DatabaseCertRequest) GetServerNames() []string {
++	if m != nil {
++		return m.ServerNames
++	}
++	return nil
++}
++
+ func (m *DatabaseCertRequest) GetTTL() Duration {
+ 	if m != nil {
+ 		return m.TTL
+@@ -19294,6 +19303,15 @@ func (m *DatabaseCertRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+ 		i--
+ 		dAtA[i] = 0x18
+ 	}
++	if len(m.ServerNames) > 0 {
++		for iNdEx := len(m.ServerNames) - 1; iNdEx >= 0; iNdEx-- {
++			i -= len(m.ServerNames[iNdEx])
++			copy(dAtA[i:], m.ServerNames[iNdEx])
++			i = encodeVarintAuthservice(dAtA, i, uint64(len(m.ServerNames[iNdEx])))
++			i--
++			dAtA[i] = 0x22
++		}
++	}
+ 	if len(m.ServerName) > 0 {
+ 		i -= len(m.ServerName)
+ 		copy(dAtA[i:], m.ServerName)
+@@ -24459,6 +24477,12 @@ func (m *DatabaseCertRequest) Size() (n int) {
+ 	if l > 0 {
+ 		n += 1 + l + sovAuthservice(uint64(l))
+ 	}
++	if len(m.ServerNames) > 0 {
++		for _, s := range m.ServerNames {
++			l = len(s)
++			n += 1 + l + sovAuthservice(uint64(l))
++		}
++	}
+ 	if m.TTL != 0 {
+ 		n += 1 + sovAuthservice(uint64(m.TTL))
+ 	}
+@@ -34449,6 +34473,38 @@ func (m *DatabaseCertRequest) Unmarshal(dAtA []byte) error {
+ 			}
+ 			m.ServerName = string(dAtA[iNdEx:postIndex])
+ 			iNdEx = postIndex
++		case 4:
++			if wireType != 2 {
++				return fmt.Errorf("proto: wrong wireType = %d for field ServerNames", wireType)
++			}
++			var stringLen uint64
++			for shift := uint(0); ; shift += 7 {
++				if shift >= 64 {
++					return ErrIntOverflowAuthservice
++				}
++				if iNdEx >= l {
++					return io.ErrUnexpectedEOF
++				}
++				b := dAtA[iNdEx]
++				iNdEx++
++				stringLen |= uint64(b&0x7F) << shift
++				if b < 0x80 {
++					break
++				}
++			}
++			intStringLen := int(stringLen)
++			if intStringLen < 0 {
++				return ErrInvalidLengthAuthservice
++			}
++			postIndex := iNdEx + intStringLen
++			if postIndex < 0 {
++				return ErrInvalidLengthAuthservice
++			}
++			if postIndex > l {
++				return io.ErrUnexpectedEOF
++			}
++			m.ServerNames = append(m.ServerNames, string(dAtA[iNdEx:postIndex]))
++			iNdEx = postIndex
+ 		case 3:
+ 			if wireType != 0 {
+ 				return fmt.Errorf("proto: wrong wireType = %d for field TTL", wireType)
+diff --git a/api/client/proto/authservice.proto b/api/client/proto/authservice.proto
+index ae9b50354e..573ddb467d 100644
+--- a/api/client/proto/authservice.proto
++++ b/api/client/proto/authservice.proto
+@@ -688,6 +688,8 @@ message DatabaseCertRequest {
+     bytes CSR = 1 [ (gogoproto.jsontag) = "csr" ];
+     // ServerName is the SAN to include in the certificate.
+     string ServerName = 2 [ (gogoproto.jsontag) = "server_name" ];
++    // ServerNames is a list of SANs to include in the certificate.
++    repeated string ServerNames = 4 [ (gogoproto.jsontag) = "server_names" ];
+     // TTL is the certificate validity period.
+     int64 TTL = 3 [ (gogoproto.jsontag) = "ttl", (gogoproto.casttype) = "Duration" ];
+ }
+diff --git a/lib/auth/db.go b/lib/auth/db.go
+index 7919e28957..5af8c11730 100644
+--- a/lib/auth/db.go
++++ b/lib/auth/db.go
+@@ -63,10 +63,12 @@ func (s *Server) GenerateDatabaseCert(ctx context.Context, req *proto.DatabaseCe
+ 		Subject:   csr.Subject,
+ 		NotAfter:  s.clock.Now().UTC().Add(req.TTL.Get()),
+ 	}
+-	// Include provided server name as a SAN in the certificate, CommonName
++	// Include provided server name(s) as SANs in the certificate, CommonName
+ 	// has been deprecated since Go 1.15:
+ 	//   https://golang.org/doc/go1.15#commonname
+-	if req.ServerName != "" {
++	if len(req.ServerNames) != 0 {
++		certReq.DNSNames = req.ServerNames
++	} else if req.ServerName != "" {
+ 		certReq.DNSNames = []string{req.ServerName}
+ 	}
+ 	cert, err := tlsCA.GenerateCertificate(certReq)
+diff --git a/tool/tctl/common/auth_command.go b/tool/tctl/common/auth_command.go
+index 18edc147e9..648efdd7f0 100644
+--- a/tool/tctl/common/auth_command.go
++++ b/tool/tctl/common/auth_command.go
+@@ -432,8 +432,9 @@ func (a *AuthCommand) generateDatabaseKeysForKey(clusterAPI auth.ClientI, key *c
+ 			// Important to include server name as SAN since CommonName has
+ 			// been deprecated since Go 1.15:
+ 			//   https://golang.org/doc/go1.15#commonname
+-			ServerName: a.genHost,
+-			TTL:        proto.Duration(a.genTTL),
++			ServerName:  a.genHost,
++			ServerNames: strings.Split(a.genHost, ","),
++			TTL:         proto.Duration(a.genTTL),
+ 		})
+ 	if err != nil {
+ 		return trace.Wrap(err)

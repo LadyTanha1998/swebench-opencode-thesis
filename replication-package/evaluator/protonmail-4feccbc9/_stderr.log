@@ -1,0 +1,29 @@
+FAIL src/app/store/_links/extendedAttributes.test.ts (5.195 s)
+  extended attrbiutes
+    ✕ creates the struct from the folder (5 ms)
+    ✓ creates the struct from the file (7 ms)
+    ✓ parses the struct (16 ms)
+
+  ● extended attrbiutes › creates the struct from the folder
+
+    TypeError: Cannot read properties of undefined (reading 'getTime')
+
+      269 |
+      270 | function dateToIsoString(date: Date) {
+    > 271 |     const isDateValid = !Number.isNaN(date.getTime());
+          |                                            ^
+      272 |     return isDateValid ? date.toISOString() : undefined;
+      273 | }
+      274 |
+
+      at getTime (src/app/store/_links/extendedAttributes.ts:271:44)
+      at dateToIsoString (src/app/store/_links/extendedAttributes.ts:89:31)
+      at src/app/store/_links/extendedAttributes.test.ts:43:58
+          at Array.forEach (<anonymous>)
+      at Object.forEach (src/app/store/_links/extendedAttributes.test.ts:42:19)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 2 passed, 3 total
+Snapshots:   0 total
+Time:        7.75 s
+Ran all test suites matching /applications\/drive\/src\/app\/store\/_links\/extendedAttributes.test.ts/i.

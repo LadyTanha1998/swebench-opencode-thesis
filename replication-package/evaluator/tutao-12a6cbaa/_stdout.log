@@ -1,0 +1,101 @@
+Running all tests...
+Starting test execution...
+Build > Packages
+$ npm run build-packages
+
+> tutanota@3.98.4 build-packages
+> npm run build -ws
+
+
+> @tutao/licc@3.98.4 build
+> tsc -b
+
+
+> @tutao/tutanota-crypto@3.98.4 build
+> tsc -b
+
+
+> @tutao/tutanota-test-utils@3.98.4 build
+> tsc -b
+
+
+> @tutao/tutanota-usagetests@3.98.4 build
+> tsc -b
+
+
+> @tutao/tutanota-utils@3.98.4 build
+> tsc -b
+
+Build > Packages took 19878 ms
+Build > Types
+$ npx tsc --incremental true --noEmit true
+Build > Types took 35419 ms
+Build > Assets
+Generating browser tests at "build/test.html"
+Build > Assets took 11 ms
+Build > Esbuild
+Using slow method to resolve dependency version. Add a postinstall script to dump 'npm list' into node_modules/.npm-deps-resolved to speed things up.
+Using slow method to resolve dependency version. Add a postinstall script to dump 'npm list' into node_modules/.npm-deps-resolved to speed things up.
+Compiling better-sqlite3 for linux...
+Compiling keytar for linux...
+gyp
+info it worked if it ends with ok
+gyp info it worked if it ends with ok
+gyp info
+using node-gyp@9.0.0
+gyp info
+gyp
+using node-gyp@9.0.0
+gyp
+
+info using node@16.20.2 | linux | x64
+info using node@16.20.2 | linux | x64
+gyp
+info find Python using Python version 3.9.2 found at "/usr/bin/python3"
+gyp info find Python using Python version 3.9.2 found at "/usr/bin/python3"
+gyp
+http GET https://nodejs.org/download/release/v16.20.2/node-v16.20.2-headers.tar.gz
+gyp http GET https://nodejs.org/download/release/v16.20.2/node-v16.20.2-headers.tar.gz
+gyp
+WARN install got an error, rolling back install
+gyp
+
+WARN install got an error, rolling back install
+gyp
+gyp
+ERR! configure error
+
+
+ERR! configure error
+gyp ERR! stack FetchError: request to https://nodejs.org/download/release/v16.20.2/node-v16.20.2-headers.tar.gz failed, reason: getaddrinfo EAI_AGAIN nodejs.org
+gyp ERR! stack     at ClientRequest.<anonymous> (/app/node_modules/minipass-fetch/lib/index.js:130:14)
+gyp ERR! stack     at ClientRequest.emit (node:events:513:28)
+gyp ERR! stack     at TLSSocket.socketErrorListener (node:_http_client:494:9)
+gyp ERR! stack     at TLSSocket.emit (node:events:525:35)
+gyp ERR! stack     at emitErrorNT (node:internal/streams/destroy:157:8)
+gyp ERR! stack     at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+gyp ERR! stack     at processTicksAndRejections (node:internal/process/task_queues:83:21)
+gyp ERR! stack FetchError: request to https://nodejs.org/download/release/v16.20.2/node-v16.20.2-headers.tar.gz failed, reason: getaddrinfo EAI_AGAIN nodejs.org
+gyp ERR!
+stack     at ClientRequest.<anonymous> (/app/node_modules/minipass-fetch/lib/index.js:130:14)
+gyp ERR! stack     at ClientRequest.emit (node:events:513:28)
+gyp ERR! stack     at TLSSocket.socketErrorListener (node:_http_client:494:9)
+gyp ERR! stack     at TLSSocket.emit (node:events:525:35)
+gyp ERR! stack     at emitErrorNT (node:internal/streams/destroy:157:8)
+gyp ERR! stack     at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+gyp
+ERR! stack     at processTicksAndRejections (node:internal/process/task_queues:83:21)
+gyp ERR! System Linux 6.10.14-linuxkit
+gyp ERR! System Linux 6.10.14-linuxkit
+gyp ERR! command "/usr/local/bin/node" "/app/node_modules/.bin/node-gyp" "rebuild" "--release" "--build-from-source" "--arch=x64"
+gyp ERR! cwd /app/node_modules/better-sqlite3
+gyp ERR! node -v v16.20.2
+gyp ERR! node-gyp -v v9.0.0
+gyp ERR! not ok
+gyp ERR! command
+"/usr/local/bin/node" "/app/node_modules/.bin/node-gyp" "rebuild" "--release" "--build-from-source" "--arch=x64"
+gyp ERR! cwd /app/node_modules/keytar
+gyp ERR! node -v v16.20.2
+gyp ERR! node-gyp -v v9.0.0
+gyp ERR! not ok
+All tests completed.

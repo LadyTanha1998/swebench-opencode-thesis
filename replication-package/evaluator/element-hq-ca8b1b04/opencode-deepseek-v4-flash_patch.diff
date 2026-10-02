@@ -1,0 +1,47 @@
+diff --git a/src/voice-broadcast/components/VoiceBroadcastBody.tsx b/src/voice-broadcast/components/VoiceBroadcastBody.tsx
+index 3bd0dd6ed1..2808696022 100644
+--- a/src/voice-broadcast/components/VoiceBroadcastBody.tsx
++++ b/src/voice-broadcast/components/VoiceBroadcastBody.tsx
+@@ -15,28 +15,21 @@ limitations under the License.
+ */
+ 
+ import React from "react";
+-import { MatrixEvent } from "matrix-js-sdk/src/matrix";
+ 
+ import {
+     VoiceBroadcastRecordingBody,
+     VoiceBroadcastRecordingsStore,
+     shouldDisplayAsVoiceBroadcastRecordingTile,
+-    VoiceBroadcastInfoEventType,
+     VoiceBroadcastPlaybacksStore,
+     VoiceBroadcastPlaybackBody,
+-    VoiceBroadcastInfoState,
+ } from "..";
++import { useVoiceBroadcastInfo } from "../hooks/useVoiceBroadcastInfo";
+ import { IBodyProps } from "../../components/views/messages/IBodyProps";
+ import { MatrixClientPeg } from "../../MatrixClientPeg";
+-import { getReferenceRelationsForEvent } from "../../events";
+ 
+ export const VoiceBroadcastBody: React.FC<IBodyProps> = ({ mxEvent }) => {
+     const client = MatrixClientPeg.get();
+-    const relations = getReferenceRelationsForEvent(mxEvent, VoiceBroadcastInfoEventType, client);
+-    const relatedEvents = relations?.getRelations();
+-    const state = !relatedEvents?.find((event: MatrixEvent) => {
+-        return event.getContent()?.state === VoiceBroadcastInfoState.Stopped;
+-    }) ? VoiceBroadcastInfoState.Started : VoiceBroadcastInfoState.Stopped;
++    const state = useVoiceBroadcastInfo(mxEvent, client);
+ 
+     if (shouldDisplayAsVoiceBroadcastRecordingTile(state, client, mxEvent)) {
+         const recording = VoiceBroadcastRecordingsStore.instance().getByInfoEvent(mxEvent, client);
+diff --git a/src/voice-broadcast/index.ts b/src/voice-broadcast/index.ts
+index 7262382b0c..9d2adb6425 100644
+--- a/src/voice-broadcast/index.ts
++++ b/src/voice-broadcast/index.ts
+@@ -32,6 +32,7 @@ export * from "./components/atoms/VoiceBroadcastHeader";
+ export * from "./components/molecules/VoiceBroadcastPlaybackBody";
+ export * from "./components/molecules/VoiceBroadcastRecordingBody";
+ export * from "./components/molecules/VoiceBroadcastRecordingPip";
++export * from "./hooks/useVoiceBroadcastInfo";
+ export * from "./hooks/useVoiceBroadcastRecording";
+ export * from "./stores/VoiceBroadcastPlaybacksStore";
+ export * from "./stores/VoiceBroadcastRecordingsStore";

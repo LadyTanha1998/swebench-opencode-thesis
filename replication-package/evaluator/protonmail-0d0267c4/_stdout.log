@@ -1,0 +1,11 @@
+Running selected tests: applications/drive/src/app/store/_shares/shareUrl.test.ts src/app/store/_shares/shareUrl.test.ts
+Running test file in proton-drive workspace: applications/drive/src/app/store/_shares/shareUrl.test.ts
+Running test file in proton-mail workspace: src/app/store/_shares/shareUrl.test.ts
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In /app/applications/mail
+  878 files checked.
+  testMatch: **/__tests__/**/*.[jt]s?(x), **/?(*.)+(spec|test).[tj]s?(x) - 119 matches
+  testPathIgnorePatterns: /node_modules/ - 878 matches
+  testRegex:  - 0 matches
+Pattern: src/app/store/_shares/shareUrl.test.ts - 0 matches

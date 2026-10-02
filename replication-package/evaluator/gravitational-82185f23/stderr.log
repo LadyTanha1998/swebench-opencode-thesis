@@ -1,0 +1,8 @@
+# github.com/gravitational/teleport/tool/tsh [github.com/gravitational/teleport/tool/tsh.test]
+tool/tsh/tsh_test.go:674:19: undefined: kubernetesStatus
+tool/tsh/tsh_test.go:684:17: undefined: kubernetesStatus
+tool/tsh/tsh_test.go:708:17: undefined: kubernetesStatus
+tool/tsh/tsh_test.go:732:17: undefined: kubernetesStatus
+tool/tsh/tsh_test.go:749:17: undefined: kubernetesStatus
+tool/tsh/tsh_test.go:769:17: undefined: kubernetesStatus
+tool/tsh/tsh_test.go:786:19: undefined: buildKubeConfigUpdate

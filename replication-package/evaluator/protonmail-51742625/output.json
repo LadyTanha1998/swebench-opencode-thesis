@@ -1,0 +1,48 @@
+{
+  "tests": [
+    {
+      "name": "helpers/url.test.ts | should detect that same hostname is a subDomain",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that domain is a subDomain",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that domain is not a subDomain",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should give the correct hostname",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that the url is a mailto link",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that the url is not a mailto link",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that the url is not external",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that the url is external",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that the mailto link is not external",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that the url is proton internal",
+      "status": "PASSED"
+    },
+    {
+      "name": "helpers/url.test.ts | should detect that the url is not proton internal",
+      "status": "PASSED"
+    }
+  ]
+}

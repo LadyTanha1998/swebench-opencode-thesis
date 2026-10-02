@@ -1,0 +1,448 @@
+diff --git a/lib/devicetrust/devicetrust.go b/lib/devicetrust/devicetrust.go
+new file mode 100644
+index 000000000..f1cf38d6a
+--- /dev/null
++++ b/lib/devicetrust/devicetrust.go
+@@ -0,0 +1,333 @@
++// Copyright 2022 Gravitational, Inc
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++// Package devicetrust provides the client-side of the Device Trust feature.
++//
++// Device Trust allows a client to establish endpoint trust with Teleport via
++// OS-native device data and credentials. A trusted endpoint participates in
++// the device enrollment and authentication ceremonies, where its machine
++// identity is validated through signed challenges.
++//
++// The client relies on NativeDevice hooks to interact with the underlying
++// operating system, collecting device data and managing device credentials.
++// The hooks are an extension point that allows the ceremonies to be simulated
++// and validated in isolation, without requiring an enterprise server
++// implementation.
++package devicetrust
++
++import (
++	"context"
++	"crypto"
++	"crypto/ecdsa"
++	"crypto/rand"
++	"crypto/x509"
++	"errors"
++	"fmt"
++	"sync"
++
++	devicepb "github.com/gravitational/teleport/api/gen/proto/go/teleport/devicetrust/v1"
++	"github.com/gravitational/trace"
++)
++
++// NativeDevice is the set of OS-native device hooks used by DeviceTrustClient.
++//
++// Implementations are expected to interact with the underlying operating
++// system, collecting device data and managing the device credential used to
++// authenticate the endpoint. The interface is the extension point that allows
++// the device enrollment and authentication flows to be simulated and validated
++// in isolation.
++type NativeDevice interface {
++	// CollectDeviceData collects and returns OS-native device data.
++	CollectDeviceData(ctx context.Context) (*devicepb.DeviceCollectedData, error)
++
++	// GetDeviceCredential returns the device private key and credential ID.
++	// The credential is used to sign enrollment and authentication challenges.
++	GetDeviceCredential() (crypto.PrivateKey, string, error)
++}
++
++// DeviceTrustClient is a client for the Device Trust feature.
++//
++// The client is responsible for collecting device data and performing the
++// device enrollment and authentication ceremonies. It does not require an
++// enterprise server implementation to be exercised: the ceremonies are
++// performed over the DeviceTrustService RPCs and the native hooks can be
++// simulated.
++type DeviceTrustClient struct {
++	clients devicepb.DeviceTrustServiceClient
++	native  NativeDevice
++
++	// authenticateMu serializes authentication ceremonies, as concurrent
++	// ceremonies over the same client would otherwise interfere with each
++	// other's stream state.
++	authenticateMu sync.Mutex
++}
++
++// NewDeviceTrustClient creates a new DeviceTrustClient.
++//
++// If no native device is provided, a default implementation backed by the
++// underlying operating system is used.
++func NewDeviceTrustClient(clients devicepb.DeviceTrustServiceClient, native ...NativeDevice) *DeviceTrustClient {
++	n := newDefaultNativeDevice()
++	if len(native) > 0 && native[0] != nil {
++		n = native[0]
++	}
++	return &DeviceTrustClient{
++		clients: clients,
++		native:  n,
++	}
++}
++
++// SetNativeDevice replaces the OS-native device hooks used by the client.
++//
++// It is primarily intended to allow the enrollment and authentication flows to
++// be simulated and validated in isolation (for example, in tests).
++func (c *DeviceTrustClient) SetNativeDevice(native NativeDevice) {
++	if native != nil {
++		c.native = native
++	}
++}
++
++// CollectDeviceData collects and returns device data via the native hooks.
++func (c *DeviceTrustClient) CollectDeviceData(ctx context.Context) (*devicepb.DeviceCollectedData, error) {
++	deviceData, err := c.native.CollectDeviceData(ctx)
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++	return deviceData, nil
++}
++
++// EnrollDevice performs a device enrollment ceremony.
++//
++// Enrollment is a two-step flow:
++//  1. The client sends the enrollment token, device data and the device
++//     public key.
++//  2. The server replies with a challenge, which the client signs using the
++//     device private key.
++//
++// A successful ceremony returns the enrolled device. See the EnrollDevice RPC
++// for reference.
++func (c *DeviceTrustClient) EnrollDevice(
++	ctx context.Context,
++	privateKey crypto.PrivateKey,
++	token string,
++	credentialID string,
++	collectDeviceData bool,
++) (*devicepb.Device, error) {
++	if c.clients == nil {
++		return nil, trace.Wrap(errors.New("client is nil"))
++	}
++	if privateKey == nil {
++		return nil, trace.Wrap(errors.New("private key is a required parameter"))
++	}
++
++	stream, err := c.clients.EnrollDevice(ctx)
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	// Send the device data and the enrollment token.
++	deviceData, err := c.collectDeviceData(collectDeviceData)
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	err = stream.Send(&devicepb.EnrollDeviceRequest{
++		Payload: &devicepb.EnrollDeviceRequest_Init{
++			Init: &devicepb.EnrollDeviceInit{
++				Token:        token,
++				CredentialId: credentialID,
++				DeviceData:   deviceData,
++				Macos:        macosPayloadFromPrivateKey(privateKey),
++			},
++		},
++	})
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	// Receive the challenge.
++	resp, err := stream.Recv()
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++	macosChallenge := resp.GetMacosChallenge()
++	if macosChallenge == nil {
++		return nil, trace.Wrap(errors.New("expected macOS enrollment challenge"))
++	}
++	if len(macosChallenge.GetChallenge()) == 0 {
++		return nil, trace.Wrap(errors.New("empty enrollment challenge"))
++	}
++
++	// Sign the challenge and send it back.
++	sig, err := signChallenge(privateKey, macosChallenge.GetChallenge())
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	err = stream.Send(&devicepb.EnrollDeviceRequest{
++		Payload: &devicepb.EnrollDeviceRequest_MacosChallengeResponse{
++			MacosChallengeResponse: &devicepb.MacOSEnrollChallengeResponse{
++				Signature: sig,
++			},
++		},
++	})
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	// Receive the enrollment success response.
++	resp, err = stream.Recv()
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++	success := resp.GetSuccess()
++	if success == nil {
++		return nil, trace.Wrap(errors.New("expected enrollment success response"))
++	}
++
++	return success.GetDevice(), nil
++}
++
++// AuthenticateDevice performs a device authentication ceremony.
++//
++// Authentication is a two-step flow:
++//  1. The client sends the user certificates to augment and the device data.
++//  2. The server replies with a challenge, which the client signs using the
++//     device private key.
++//  3. The server replies with the user certificates augmented with device
++//     extensions.
++//
++// See the AuthenticateDevice RPC for reference.
++func (c *DeviceTrustClient) AuthenticateDevice(
++	ctx context.Context,
++	privateKey crypto.PrivateKey,
++	credentialID string,
++	userCertificates *devicepb.UserCertificates,
++	collectDeviceData bool,
++) (*devicepb.UserCertificates, error) {
++	if c.clients == nil {
++		return nil, trace.Wrap(errors.New("client is nil"))
++	}
++	if privateKey == nil {
++		return nil, trace.Wrap(errors.New("private key is a required parameter"))
++	}
++	if userCertificates == nil {
++		return nil, trace.Wrap(errors.New("user certificates is a required parameter"))
++	}
++
++	// The authentication ceremony is performed over a bi-directional stream,
++	// which is not safe for concurrent use.
++	c.authenticateMu.Lock()
++	defer c.authenticateMu.Unlock()
++
++	stream, err := c.clients.AuthenticateDevice(ctx)
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	// Send the user certificates and the device data.
++	deviceData, err := c.collectDeviceData(collectDeviceData)
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	err = stream.Send(&devicepb.AuthenticateDeviceRequest{
++		Payload: &devicepb.AuthenticateDeviceRequest_Init{
++			Init: &devicepb.AuthenticateDeviceInit{
++				CredentialId:     credentialID,
++				DeviceData:       deviceData,
++				UserCertificates: userCertificates,
++			},
++		},
++	})
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	// Receive the challenge.
++	resp, err := stream.Recv()
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++	challenge := resp.GetChallenge()
++	if challenge == nil {
++		return nil, trace.Wrap(errors.New("expected authentication challenge"))
++	}
++	if len(challenge.GetChallenge()) == 0 {
++		return nil, trace.Wrap(errors.New("empty authentication challenge"))
++	}
++
++	// Sign the challenge and send it back.
++	sig, err := signChallenge(privateKey, challenge.GetChallenge())
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	err = stream.Send(&devicepb.AuthenticateDeviceRequest{
++		Payload: &devicepb.AuthenticateDeviceRequest_ChallengeResponse{
++			ChallengeResponse: &devicepb.AuthenticateDeviceChallengeResponse{
++				Signature: sig,
++			},
++		},
++	})
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	// Receive the augmented user certificates.
++	resp, err = stream.Recv()
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++	userCerts := resp.GetUserCertificates()
++	if userCerts == nil {
++		return nil, trace.Wrap(errors.New("expected user certificates response"))
++	}
++
++	return userCerts, nil
++}
++
++// collectDeviceData collects device data via the native hooks if requested.
++func (c *DeviceTrustClient) collectDeviceData(collect bool) (*devicepb.DeviceCollectedData, error) {
++	if !collect {
++		return nil, nil
++	}
++	return c.CollectDeviceData(context.Background())
++}
++
++// macosPayloadFromPrivateKey returns the macOS enrollment payload, containing
++// the device public key marshaled as a PKIX, ASN.1 DER.
++func macosPayloadFromPrivateKey(privateKey crypto.PrivateKey) *devicepb.MacOSEnrollPayload {
++	ecdsaKey, ok := privateKey.(*ecdsa.PrivateKey)
++	if !ok {
++		return nil
++	}
++	derBytes, err := x509.MarshalPKIXPublicKey(&ecdsaKey.PublicKey)
++	if err != nil {
++		return nil
++	}
++	return &devicepb.MacOSEnrollPayload{
++		PublicKeyDer: derBytes,
++	}
++}
++
++// signChallenge signs the challenge using the given private key.
++func signChallenge(privateKey crypto.PrivateKey, challenge []byte) ([]byte, error) {
++	switch k := privateKey.(type) {
++	case *ecdsa.PrivateKey:
++		return ecdsa.SignASN1(rand.Reader, k, challenge)
++	default:
++		return nil, trace.Wrap(fmt.Errorf("unsupported private key type %T", privateKey))
++	}
++}
+\ No newline at end of file
+diff --git a/lib/devicetrust/os_linux.go b/lib/devicetrust/os_linux.go
+new file mode 100644
+index 000000000..23fdcc9a5
+--- /dev/null
++++ b/lib/devicetrust/os_linux.go
+@@ -0,0 +1,50 @@
++// Copyright 2022 Gravitational, Inc
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++//go:build linux
++
++package devicetrust
++
++import (
++	"context"
++	"crypto"
++	"errors"
++
++	devicepb "github.com/gravitational/teleport/api/gen/proto/go/teleport/devicetrust/v1"
++	"github.com/gravitational/trace"
++	"google.golang.org/protobuf/types/known/timestamppb"
++)
++
++// osNative is the default Linux NativeDevice implementation.
++type osNative struct{}
++
++// newDefaultNativeDevice returns the default OS-native device hooks.
++func newDefaultNativeDevice() NativeDevice {
++	return osNative{}
++}
++
++// CollectDeviceData collects and returns Linux device data.
++func (osNative) CollectDeviceData(ctx context.Context) (*devicepb.DeviceCollectedData, error) {
++	return &devicepb.DeviceCollectedData{
++		CollectTime: timestamppb.Now(),
++		OsType:      devicepb.OSType_OS_TYPE_LINUX,
++	}, nil
++}
++
++// GetDeviceCredential returns the Linux device credential.
++//
++// Linux device credentials are not supported yet.
++func (osNative) GetDeviceCredential() (crypto.PrivateKey, string, error) {
++	return nil, "", trace.Wrap(errors.New("device credential retrieval is not supported on Linux"))
++}
+\ No newline at end of file
+diff --git a/lib/devicetrust/os_other.go b/lib/devicetrust/os_other.go
+new file mode 100644
+index 000000000..ac9d1c9bf
+--- /dev/null
++++ b/lib/devicetrust/os_other.go
+@@ -0,0 +1,44 @@
++// Copyright 2022 Gravitational, Inc
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++//go:build !linux
++
++package devicetrust
++
++import (
++	"context"
++	"crypto"
++	"errors"
++
++	devicepb "github.com/gravitational/teleport/api/gen/proto/go/teleport/devicetrust/v1"
++	"github.com/gravitational/trace"
++)
++
++// osNative is the default NativeDevice implementation for unsupported OSes.
++type osNative struct{}
++
++// newDefaultNativeDevice returns the default OS-native device hooks.
++func newDefaultNativeDevice() NativeDevice {
++	return osNative{}
++}
++
++// CollectDeviceData collects and returns device data.
++func (osNative) CollectDeviceData(ctx context.Context) (*devicepb.DeviceCollectedData, error) {
++	return nil, trace.Wrap(errors.New("device data collection is not supported on this OS"))
++}
++
++// GetDeviceCredential returns the device credential.
++func (osNative) GetDeviceCredential() (crypto.PrivateKey, string, error) {
++	return nil, "", trace.Wrap(errors.New("device credential retrieval is not supported on this OS"))
++}
+\ No newline at end of file

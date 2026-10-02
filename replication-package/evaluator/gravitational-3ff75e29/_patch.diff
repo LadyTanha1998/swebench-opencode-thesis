@@ -1,0 +1,45 @@
+diff --git a/lib/auth/grpcserver.go b/lib/auth/grpcserver.go
+index f46e83bb02..c9c2e62e41 100644
+--- a/lib/auth/grpcserver.go
++++ b/lib/auth/grpcserver.go
+@@ -1730,6 +1730,15 @@ func (g *GRPCServer) DeleteMFADevice(stream proto.AuthService_DeleteMFADeviceSer
+ 		if d.Metadata.Name != initReq.DeviceName && d.Id != initReq.DeviceName {
+ 			continue
+ 		}
++		// Refuse to delete the user's last MFA device if MFA is required.
++		if len(devs) == 1 {
++			if required, err := mfaRequired(ctx, auth); err != nil {
++				return trail.ToGRPC(err)
++			} else if required {
++				return trail.ToGRPC(trace.BadParameter(
++					"cannot delete the last remaining MFA device: multi-factor authentication is required for user %q and at least one device must be kept", user))
++			}
++		}
+ 		if err := auth.DeleteMFADevice(ctx, user, d.Id); err != nil {
+ 			return trail.ToGRPC(err)
+ 		}
+@@ -1763,6 +1772,24 @@ func (g *GRPCServer) DeleteMFADevice(stream proto.AuthService_DeleteMFADeviceSer
+ 	return trail.ToGRPC(trace.NotFound("MFA device %q does not exist", initReq.DeviceName))
+ }
+ 
++// mfaRequired reports whether the auth service's current security policy
++// requires every user to have at least one MFA device registered.
++func mfaRequired(ctx context.Context, auth *Server) (bool, error) {
++	apref, err := auth.GetAuthPreference()
++	if err != nil {
++		return false, trace.Wrap(err)
++	}
++	switch apref.GetSecondFactor() {
++	case constants.SecondFactorOn, constants.SecondFactorOTP, constants.SecondFactorU2F:
++		return true, nil
++	default:
++		// SecondFactorOptional only requires MFA for users who already have a
++		// device registered, so deleting the last device is allowed. SecondFactorOff
++		// does not require MFA at all.
++		return false, nil
++	}
++}
++
+ func deleteMFADeviceAuthChallenge(gctx *grpcContext, stream proto.AuthService_DeleteMFADeviceServer) error {
+ 	ctx := stream.Context()
+ 	auth := gctx.authServer

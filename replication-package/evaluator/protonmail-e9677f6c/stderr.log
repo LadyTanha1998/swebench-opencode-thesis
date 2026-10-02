@@ -1,0 +1,68 @@
+FAIL components/modalTwo/ModalTwo.test.tsx (156.683 s, 552 MB heap size)
+  ModalTwo rendering
+    ✓ should not render children when closed (57 ms)
+    ✓ should render children when open (72 ms)
+    ✓ should render children when going from closed to open (59 ms)
+    ✓ should not render children when going from open to closed (87 ms)
+    ✓ should only trigger mount once per render (218 ms)
+    ✓ should only trigger mount once per render if initially opened (112 ms)
+  ModalTwo Hotkeys
+    ✓ should close on esc (28 ms)
+    ✓ should not close on esc if disabled (28 ms)
+  ModalTwo GetByRole issue
+    ✕ Content should be selectable by role (151 ms)
+
+  ● ModalTwo GetByRole issue › Content should be selectable by role
+
+    TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Hello"
+
+    There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"modal-two modal-two--is-behind-backdrop"[39m
+        [36m>[39m
+          [36m<dialog[39m
+            [33maria-describedby[39m=[32m"modal-8-description"[39m
+            [33maria-labelledby[39m=[32m"modal-8"[39m
+            [33mclass[39m=[32m"modal-two-dialog outline-none"[39m
+            [33mdata-focus-root[39m=[32m"1"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"modal-two-dialog-container"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-busy[39m=[32m"false"[39m
+                [33mclass[39m=[32m"button button-outline-weak"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mHello[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</dialog>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      215 |         );
+      216 |
+    > 217 |         expect(screen.getByRole('button', { name: 'Hello' })).toBeVisible();
+          |                       ^
+      218 |     });
+      219 | });
+      220 |
+
+      at Object.getElementError (../../node_modules/@testing-library/dom/dist/config.js:40:19)
+      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:90:38
+      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:62:17
+      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:111:19
+      at Object.getByRole (components/modalTwo/ModalTwo.test.tsx:217:23)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 8 passed, 9 total
+Snapshots:   0 total
+Time:        158.978 s
+Ran all test suites matching /packages\/components\/components\/modalTwo\/ModalTwo.test.tsx/i.

@@ -1,0 +1,14 @@
+{
+  "status": "CLEAN",
+  "expected_base_commit": "358e13bf5748bba4418ffdcdd913bcbfdedc9d3f",
+  "observed_head_commit": "358e13bf5748bba4418ffdcdd913bcbfdedc9d3f",
+  "base_commit_mismatch": false,
+  "baseline_test_count": 141,
+  "modified_test_files": [],
+  "deleted_test_files": [],
+  "new_test_files": [],
+  "restored_test_files": [],
+  "restore_errors": [],
+  "evaluation_patch_path": "./outputs/corrected_prompt_remaining9_20260920/instance_flipt-io__flipt-86906cbfc3a5d3629a583f98e6301142f5f14bdb-v6bea0cc3a6fc532d7da914314f2944fc1cd04dee/run1/_docker_output/evaluation_patch.diff",
+  "evaluation_patch_length": 225836
+}

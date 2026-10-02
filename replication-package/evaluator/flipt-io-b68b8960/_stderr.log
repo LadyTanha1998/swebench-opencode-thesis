@@ -1,0 +1,3 @@
+# go.flipt.io/flipt/internal/storage
+internal/storage/storage.go:162:6: ReadOnlyStore redeclared in this block
+	internal/storage/readonly.go:19:6: other declaration of ReadOnlyStore

@@ -1,0 +1,53 @@
+Running selected tests: TestFormatMaxCvssScore TestSummaries TestExcept TestFilterIgnorePkgsContainer TestLibraryScanners_Find/miss TestCvss3Scores TestDistroAdvisories_AppendIfMissing/duplicate_no_append TestStorePackageStatueses TestVulnInfo_AttackVector/3.1:N TestPackage_FormatVersionFromTo/nfy2 TestToSortedSlice TestCvss2Scores TestFilterByCvssOver TestVulnInfo_AttackVector/2.0:L TestPackage_FormatVersionFromTo TestMerge TestDistroAdvisories_AppendIfMissing/append TestVendorLink TestPackage_FormatVersionFromTo/nfy3 TestTitles TestPackage_FormatVersionFromTo/nfy TestCountGroupBySeverity TestPackage_FormatVersionFromTo/fixed TestVulnInfo_AttackVector/3.0:N TestLibraryScanners_Find TestVulnInfo_AttackVector TestSortPackageStatues TestPackage_FormatVersionFromTo/nfy#01 TestFilterIgnoreCveIDsContainer TestFilterIgnoreCveIDs TestVulnInfo_AttackVector/2.0:N TestAppendIfMissing TestMergeNewVersion TestFilterUnfixed TestIsDisplayUpdatableNum TestSourceLinks TestLibraryScanners_Find/multi_file TestAddBinaryName TestMaxCvssScores TestFindByBinName TestSortByConfiden TestFilterIgnorePkgs TestMaxCvss2Scores TestDistroAdvisories_AppendIfMissing TestVulnInfo_AttackVector/2.0:A TestMaxCvss3Scores TestLibraryScanners_Find/single_file
+# github.com/future-architect/vuls/models [github.com/future-architect/vuls/models.test]
+models/library_test.go:91:40: too many arguments in call to tt.lss.Find
+	have (string, string)
+	want (string)
+# github.com/mattn/go-sqlite3
+sqlite3-binding.c: In function 'sqlite3SelectNew':
+sqlite3-binding.c:125322:10: warning: function may return address of local variable [-Wreturn-local-addr]
+125322 |   return pNew;
+       |          ^~~~
+sqlite3-binding.c:125282:10: note: declared here
+125282 |   Select standin;
+       |          ^~~~~~~
+?   	github.com/future-architect/vuls	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/cache	0.082s [no tests to run]
+?   	github.com/future-architect/vuls/commands	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/config	0.070s [no tests to run]
+?   	github.com/future-architect/vuls/contrib/future-vuls/cmd	[no test files]
+?   	github.com/future-architect/vuls/contrib/owasp-dependency-check/parser	[no test files]
+?   	github.com/future-architect/vuls/contrib/trivy/cmd	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/contrib/trivy/parser	0.089s [no tests to run]
+?   	github.com/future-architect/vuls/cwe	[no test files]
+?   	github.com/future-architect/vuls/errof	[no test files]
+?   	github.com/future-architect/vuls/exploit	[no test files]
+?   	github.com/future-architect/vuls/github	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/gost	0.113s [no tests to run]
+?   	github.com/future-architect/vuls/libmanager	[no test files]
+FAIL	github.com/future-architect/vuls/models [build failed]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/oval	0.087s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/report	0.144s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/scan	0.158s [no tests to run]
+?   	github.com/future-architect/vuls/server	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/util	0.076s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/future-architect/vuls/wordpress	0.080s [no tests to run]
+FAIL

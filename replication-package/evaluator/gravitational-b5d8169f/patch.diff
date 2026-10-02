@@ -1,0 +1,15 @@
+diff --git a/lib/services/role.go b/lib/services/role.go
+index bdb65081dd..08264aa17b 100644
+--- a/lib/services/role.go
++++ b/lib/services/role.go
+@@ -217,6 +217,10 @@ func NewOSSUserRole(name ...string) Role {
+ 				DatabaseLabels:   Labels{Wildcard: []string{Wildcard}},
+ 				DatabaseNames:    []string{teleport.TraitInternalDBNamesVariable},
+ 				DatabaseUsers:    []string{teleport.TraitInternalDBUsersVariable},
++				// Allow access to all remote clusters (leaf clusters), to
++				// preserve the ability of OSS users to connect to leaf
++				// clusters after the migration to the ossuser role.
++				ClusterLabels: Labels{Wildcard: []string{Wildcard}},
+ 				Rules: []Rule{
+ 					NewRule(KindEvent, RO()),
+ 					NewRule(KindSession, RO()),

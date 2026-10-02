@@ -1,0 +1,103 @@
+diff --git a/models/packages.go b/models/packages.go
+index 2967094..0a9d419 100644
+--- a/models/packages.go
++++ b/models/packages.go
+@@ -64,11 +64,24 @@ func (ps Packages) FindOne(f func(Package) bool) (string, Package, bool) {
+ 
+ // FindByFQPN search a package by Fully-Qualified-Package-Name
+ func (ps Packages) FindByFQPN(nameVerRel string) (*Package, error) {
++	// Search by FQPN
+ 	for _, p := range ps {
+ 		if nameVerRel == p.FQPN() {
+ 			return &p, nil
+ 		}
+ 	}
++
++	// Search by package name
++	// When multiple versions or architectures of the same package are
++	// installed, Packages (keyed by package name) can only retain one of
++	// them. Fall back to a name based lookup so that the process is still
++	// associated with the installed package instead of emitting spurious
++	// "Failed to find the package" warnings.
++	for _, p := range ps {
++		if strings.HasPrefix(nameVerRel, p.Name+"-") {
++			return &p, nil
++		}
++	}
+ 	return nil, xerrors.Errorf("Failed to find the package: %s", nameVerRel)
+ }
+ 
+diff --git a/models/packages_test.go b/models/packages_test.go
+index a452dd8..c8673fd 100644
+--- a/models/packages_test.go
++++ b/models/packages_test.go
+@@ -176,6 +176,69 @@ func TestFindByBinName(t *testing.T) {
+ 	}
+ }
+ 
++func TestFindByFQPN(t *testing.T) {
++	var tests = []struct {
++		name     string
++		ps       Packages
++		query    string
++		expected *Package
++		ok       bool
++	}{
++		{
++			name: "exact match",
++			ps: Packages{
++				"libgcc": {Name: "libgcc", Version: "4.8.5", Release: "39.el7", Arch: "x86_64"},
++			},
++			query:    "libgcc-4.8.5-39.el7",
++			expected: &Package{Name: "libgcc", Version: "4.8.5", Release: "39.el7", Arch: "x86_64"},
++			ok:       true,
++		},
++		{
++			name: "multi-arch falls back to name",
++			ps: Packages{
++				"glibc": {Name: "glibc", Version: "2.17", Release: "317.el7", Arch: "i686"},
++			},
++			query: "glibc-2.17-317.el7",
++			expected: &Package{
++				Name:    "glibc",
++				Version: "2.17",
++				Release: "317.el7",
++				Arch:    "i686",
++			},
++			ok: true,
++		},
++		{
++			name: "multi-version falls back to name",
++			ps: Packages{
++				"kernel": {Name: "kernel", Version: "4.18.0", Release: "193.el8", Arch: "x86_64"},
++			},
++			query:    "kernel-4.18.0-477.10.1.el8",
++			expected: &Package{Name: "kernel", Version: "4.18.0", Release: "193.el8", Arch: "x86_64"},
++			ok:       true,
++		},
++		{
++			name: "not found",
++			ps: Packages{
++				"libgcc": {Name: "libgcc", Version: "4.8.5", Release: "39.el7", Arch: "x86_64"},
++			},
++			query: "unknown-1.0-1",
++			ok:    false,
++		},
++	}
++
++	for i, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			act, err := tt.ps.FindByFQPN(tt.query)
++			if tt.ok != (err == nil) {
++				t.Errorf("[%d] expected ok=%v, actual err=%v", i, tt.ok, err)
++			}
++			if act != nil && !reflect.DeepEqual(*tt.expected, *act) {
++				t.Errorf("[%d] expected %#v, actual %#v", i, tt.expected, act)
++			}
++		})
++	}
++}
++
+ func TestPackage_FormatVersionFromTo(t *testing.T) {
+ 	type fields struct {
+ 		Name             string

@@ -1,0 +1,11 @@
+# go.flipt.io/flipt/internal/config [go.flipt.io/flipt/internal/config.test]
+internal/config/config_test.go:756:7: unknown field BundlesDirectory in struct literal of type OCI
+# go.flipt.io/flipt/internal/oci [go.flipt.io/flipt/internal/oci.test]
+internal/oci/file_test.go:127:47: cannot use dir (variable of type string) as containers.Option[StoreOptions] value in argument to NewStore
+internal/oci/file_test.go:138:46: cannot use dir (variable of type string) as containers.Option[StoreOptions] value in argument to NewStore
+internal/oci/file_test.go:154:47: cannot use dir (variable of type string) as containers.Option[StoreOptions] value in argument to NewStore
+internal/oci/file_test.go:208:47: cannot use dir (variable of type string) as containers.Option[StoreOptions] value in argument to NewStore
+internal/oci/file_test.go:236:47: cannot use dir (variable of type string) as containers.Option[StoreOptions] value in argument to NewStore
+internal/oci/file_test.go:275:47: cannot use dir (variable of type string) as containers.Option[StoreOptions] value in argument to NewStore
+# go.flipt.io/flipt/internal/storage/fs/oci [go.flipt.io/flipt/internal/storage/fs/oci.test]
+internal/storage/fs/oci/source_test.go:94:56: cannot use dir (variable of type string) as containers.Option["go.flipt.io/flipt/internal/oci".StoreOptions] value in argument to fliptoci.NewStore

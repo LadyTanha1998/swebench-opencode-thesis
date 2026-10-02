@@ -1,0 +1,1471 @@
+Running selected tests: test/components/views/settings/Notifications-test.ts test/stores/widgets/WidgetPermissionStore-test.ts test/components/views/rooms/__snapshots__/RoomHeader-test.tsx.snap test/components/views/polls/pollHistory/PollListItemEnded-test.ts test/components/views/rooms/RoomHeader-test.tsx test/hooks/useProfileInfo-test.ts test/stores/room-list/algorithms/RecentAlgorithm-test.ts test/components/views/elements/AppTile-test.ts test/i18n-test/languageHandler-test.ts test/components/views/settings/devices/deleteDevices-test.ts test/utils/DateUtils-test.ts test/components/views/dialogs/CreateRoomDialog-test.ts test/editor/history-test.ts test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.ts test/voice-broadcast/components/molecules/VoiceBroadcastPlaybackBody-test.ts test/components/views/rooms/RoomHeader-test.ts test/components/structures/RightPanel-test.ts test/stores/RoomViewStore-test.ts test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts test/components/structures/auth/ForgotPassword-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/components/views/polls/pollHistory/PollListItemEnded-test.tsx (95.779 s)
+  <PollListItemEnded />
+    ✓ renders a poll with no responses (354 ms)
+    ✓ renders a poll with one winning answer (119 ms)
+    ✓ renders a poll with two winning answers (61 ms)
+    ✓ counts one unique vote per user (50 ms)
+    ✓ excludes malformed responses (46 ms)
+    ✓ updates on new responses (69 ms)
+
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:114) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:119) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/stores/RoomViewStore-test.ts (96.384 s)
+  RoomViewStore
+    ✓ can be used to view a room by ID and join (203 ms)
+    ✓ can auto-join a room (15 ms)
+    ✓ emits ActiveRoomChanged when the viewed room changes (19 ms)
+    ✓ invokes room activity listeners when the viewed room changes (28 ms)
+    ✓ can be used to view a room by alias and join (22 ms)
+    ✓ emits ViewRoomError if the alias lookup fails (21 ms)
+    ✓ emits JoinRoomError if joining the room fails (23 ms)
+    ✓ remembers the event being replied to when swapping rooms (17 ms)
+    ✓ swaps to the replied event room if it is not the current room (17 ms)
+    ✓ should ignore reply_to_event for Thread panels (110 ms)
+    ✓ Should respect reply_to_event for Room rendering context (9 ms)
+    ✓ Should respect reply_to_event for File rendering context (8 ms)
+    ✓ Should respect reply_to_event for Notification rendering context (22 ms)
+    ✓ removes the roomId on ViewHomePage (12 ms)
+    ✓ when viewing a call without a broadcast, it should not raise an error (8 ms)
+    ✓ should display an error message when the room is unreachable via the roomId (25 ms)
+    ✓ should display the generic error message when the roomId doesnt match (8 ms)
+    when listening to a voice broadcast
+      ✓ and viewing a call it should pause the current broadcast (14 ms)
+    when recording a voice broadcast
+      ✓ and trying to view a call, it should not actually view it and show the info dialog (15 ms)
+      and viewing a room with a broadcast
+        ✓ should continue recording (21 ms)
+        and stopping the recording
+          ✓ should view the broadcast (19 ms)
+    Sliding Sync
+      ✓ subscribes to the room (19 ms)
+      ✓ doesn't get stuck in a loop if you view rooms quickly (8 ms)
+
+(node:116) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:118) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:120) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/i18n-test/languageHandler-test.tsx (96.398 s)
+  languageHandler
+    when translations exist in language
+      ✓ translates a string to german (116 ms)
+      ✓ translates a basic string (41 ms)
+      ✓ handles plurals when count is 0 (40 ms)
+      ✓ handles plurals when count is 1 (37 ms)
+      ✓ handles plurals when count is not 1 (35 ms)
+      ✓ handles simple variable substitution (32 ms)
+      ✓ handles simple tag substitution (31 ms)
+      ✓ handles text in tags (31 ms)
+      ✓ handles variable substitution with React function component (37 ms)
+      ✓ handles variable substitution with react node (59 ms)
+      ✓ handles tag substitution with React function component (26 ms)
+      ✓ replacements in the wrong order (26 ms)
+      ✓ multiple replacements of the same variable (25 ms)
+      ✓ multiple replacements of the same tag (23 ms)
+    for a non-en language
+      pluralization
+        _t
+          ✓ translated correctly when plural string exists for count (26 ms)
+          ✓ falls back when plural string exists but not for for count (31 ms)
+          ✓ falls back when plural string does not exists at all (53 ms)
+        _tDom()
+          ✓ translated correctly when plural string exists for count (34 ms)
+          ✓ falls back when plural string exists but not for for count and translates with fallback locale, attributes fallback locale (35 ms)
+          ✓ falls back when plural string does not exists at all and translates with fallback locale, attributes fallback locale (33 ms)
+      when a translation string does not exist in active language
+        _t
+          ✓ translates a basic string and translates with fallback locale (25 ms)
+          ✓ handles plurals when count is 0 and translates with fallback locale (28 ms)
+          ✓ handles plurals when count is 1 and translates with fallback locale (37 ms)
+          ✓ handles plurals when count is not 1 and translates with fallback locale (29 ms)
+          ✓ handles simple variable substitution and translates with fallback locale (47 ms)
+          ✓ handles simple tag substitution and translates with fallback locale (19 ms)
+          ✓ handles text in tags and translates with fallback locale (25 ms)
+          ✓ handles variable substitution with React function component and translates with fallback locale (22 ms)
+          ✓ handles variable substitution with react node and translates with fallback locale (26 ms)
+          ✓ handles tag substitution with React function component and translates with fallback locale (22 ms)
+        _tDom()
+          ✓ translates a basic string and translates with fallback locale, attributes fallback locale (27 ms)
+          ✓ handles plurals when count is 0 and translates with fallback locale, attributes fallback locale (27 ms)
+          ✓ handles plurals when count is 1 and translates with fallback locale, attributes fallback locale (38 ms)
+          ✓ handles plurals when count is not 1 and translates with fallback locale, attributes fallback locale (25 ms)
+          ✓ handles simple variable substitution and translates with fallback locale, attributes fallback locale (27 ms)
+          ✓ handles simple tag substitution and translates with fallback locale, attributes fallback locale (36 ms)
+          ✓ handles text in tags and translates with fallback locale, attributes fallback locale (32 ms)
+          ✓ handles variable substitution with React function component and translates with fallback locale, attributes fallback locale (22 ms)
+          ✓ handles variable substitution with react node and translates with fallback locale, attributes fallback locale (27 ms)
+          ✓ handles tag substitution with React function component and translates with fallback locale, attributes fallback locale (26 ms)
+    when languages dont load
+      ✓ _t (17 ms)
+      ✓ _tDom (1 ms)
+
+(node:120) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Event.relationsCreated listeners added to [MatrixEvent]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:120) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Event.beforeRedaction listeners added to [MatrixEvent]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/voice-broadcast/components/molecules/VoiceBroadcastPlaybackBody-test.tsx (97.338 s)
+  VoiceBroadcastPlaybackBody
+    ✓ when there is a broadcast without sender, it should raise an error (125 ms)
+    when rendering a buffering voice broadcast
+      ✓ should render as expected (307 ms)
+    when rendering a playing broadcast
+      ✓ should render as expected (56 ms)
+      and being in the middle of the playback
+        and clicking 30s backward
+          ✓ should seek 30s backward (365 ms)
+        and clicking 30s forward
+          ✓ should seek 30s forward (164 ms)
+      and clicking the room name
+        ✓ should not view the room (90 ms)
+    when rendering a playing broadcast in pip mode
+      ✓ should render as expected (62 ms)
+      and clicking the room name
+        ✓ should view the room (96 ms)
+    when rendering a stopped broadcast
+      ✓ should render as expected (23 ms)
+      and clicking the play button
+        ✓ should toggle the recording (65 ms)
+      and the times update
+        ✓ should render the times (65 ms)
+    when rendering an error broadcast
+      ✓ should render as expected (23 ms)
+    when rendering a pause/not-live broadcast
+      ✓ should render as expected (32 ms)
+    when rendering a playing/live broadcast
+      ✓ should render as expected (38 ms)
+
+PASS test/editor/history-test.ts
+  editor/history
+    ✓ push, then undo (5 ms)
+    ✓ push, undo, then redo (2 ms)
+    ✓ push, undo, push, ensure you can`t redo (1 ms)
+    ✓ not every keystroke stores a history step (2 ms)
+    ✓ history step is added at word boundary (3 ms)
+    ✓ keystroke that didn't add a step can undo (3 ms)
+    ✓ undo after keystroke that didn't add a step is able to redo (1 ms)
+    ✓ overwriting text always stores a step (1 ms)
+
+FAIL test/components/views/settings/Notifications-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=114) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:366:23)
+
+(node:115) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/utils/DateUtils-test.ts (27.175 s)
+  formatSeconds
+    ✓ correctly formats time with hours (6 ms)
+    ✓ correctly formats time without hours (1 ms)
+  formatRelativeTime
+    ✓ returns hour format for events created in the same day (2 ms)
+    ✓ returns month and day for events created less than 24h ago but on a different day (3 ms)
+    ✓ honours the hour format setting (2 ms)
+    ✓ returns month and day for events created in the current year (1 ms)
+    ✓ does not return a leading 0 for single digit days (1 ms)
+    ✓ appends the year for events created in previous years (1 ms)
+  formatDuration()
+    ✓ rounds up to nearest day when more than 24h - 40 hours formats to 2d (1 ms)
+    ✓ rounds down to nearest day when more than 24h - 26 hours formats to 1d (1 ms)
+    ✓ 24 hours formats to 1d (1 ms)
+    ✓ rounds to nearest hour when less than 24h - 23h formats to 23h (1 ms)
+    ✓ rounds to nearest hour when less than 24h - 6h and 10min formats to 6h
+    ✓ rounds to nearest hours when less than 24h formats to 2h
+    ✓ rounds to nearest minute when less than 1h - 59 minutes formats to 59m
+    ✓ rounds to nearest minute when less than 1h -  1 minute formats to 1m (1 ms)
+    ✓ rounds to nearest second when less than 1min - 59 seconds formats to 59s (1 ms)
+    ✓ rounds to 0 seconds when less than a second - 123ms formats to 0s
+  formatPreciseDuration
+    ✓ 3 days, 6 hours, 48 minutes, 59 seconds formats to 3d 6h 48m 59s (1 ms)
+    ✓ 6 hours, 48 minutes, 59 seconds formats to 6h 48m 59s (1 ms)
+    ✓ 48 minutes, 59 seconds formats to 48m 59s
+    ✓ 59 seconds formats to 59s (1 ms)
+    ✓ 0 seconds formats to 0s (1 ms)
+  formatFullDateNoDayISO
+    ✓ should return ISO format (12 ms)
+  formatDateForInput
+    ✓ should format 1993-11-01 (1 ms)
+    ✓ should format 1066-10-14
+    ✓ should format 0571-04-22 (1 ms)
+    ✓ should format 0062-02-05 (1 ms)
+  formatTimeLeft
+    ✓ should format 0 to 0s left (2 ms)
+    ✓ should format 23 to 23s left
+    ✓ should format 83 to 1m 23s left (1 ms)
+    ✓ should format 3600 to 1h 0m 0s left
+    ✓ should format 3623 to 1h 0m 23s left (1 ms)
+    ✓ should format 18443 to 5h 7m 23s left
+  formatLocalDateShort()
+    ✓ formats date correctly by locale (31 ms)
+
+PASS test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts (26.845 s)
+  VoiceBroadcastRecordingsStore
+    ✓ when setting a recording without info event Id, it should raise an error (66 ms)
+    when setting a current Voice Broadcast recording
+      ✓ should return it as current (7 ms)
+      ✓ should return it by id (6 ms)
+      ✓ should emit a CurrentChanged event (8 ms)
+      and setting the same again
+        ✓ should not emit a CurrentChanged event (9 ms)
+      and calling clearCurrent()
+        ✓ should clear the current recording (7 ms)
+        ✓ should emit a current changed event (42 ms)
+        ✓ and calling it again should work (5 ms)
+      and setting another recording and stopping the previous recording
+        ✓ should keep the current recording (7 ms)
+      and the recording stops
+        ✓ should clear the current recording (8 ms)
+    getByInfoEventId
+      when retrieving a known recording
+        ✓ should return the recording (5 ms)
+      when retrieving an unknown recording
+        ✓ should return the recording (4 ms)
+
+(node:120) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Thread.update listeners added to [Thread]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/stores/room-list/algorithms/RecentAlgorithm-test.ts (27.834 s)
+  RecentAlgorithm
+    getLastTs
+      ✓ returns the last ts (29 ms)
+      ✓ returns a fake ts for rooms without a timeline (6 ms)
+      ✓ works when not a member (10 ms)
+    sortRooms
+      ✓ orders rooms per last message ts (8 ms)
+      ✓ orders rooms without messages first (20 ms)
+      ✓ orders rooms based on thread replies too (33 ms)
+
+PASS test/hooks/useProfileInfo-test.tsx
+  useProfileInfo
+    ✓ should display user profile when searching (68 ms)
+    ✓ should work with empty queries (17 ms)
+    ✓ should treat invalid mxids as empty queries (27 ms)
+    ✓ should recover from a server exception (13 ms)
+    ✓ should be able to handle an empty result (28 ms)
+
+PASS test/components/views/settings/devices/deleteDevices-test.tsx
+  deleteDevices()
+    ✓ deletes devices and calls onFinished when interactive auth is not required (7 ms)
+    ✓ throws without opening auth dialog when delete fails with a non-401 status code (21 ms)
+    ✓ throws without opening auth dialog when delete fails without data.flows (2 ms)
+    ✓ opens interactive auth dialog when delete fails with 401 (9 ms)
+
+FAIL test/components/views/rooms/RoomHeader-test.tsx
+  Roomeader
+    ✕ renders with no props (40 ms)
+    ✓ renders the room header (9 ms)
+    ✓ display the out-of-band room name (7 ms)
+    ✕ renders the room topic (10 ms)
+    ✕ opens the room summary (65 ms)
+
+  ● Roomeader › renders with no props
+
+    expect(received).toMatchSnapshot()
+
+    Snapshot name: `Roomeader renders with no props 1`
+
+    - Snapshot  - 22
+    + Received  +  1
+
+    @@ -1,32 +1,11 @@
+      <DocumentFragment>
+        <header
+          class="mx_RoomHeader light-panel"
+        >
+    -     <span
+    -       class="mx_BaseAvatar"
+    -       role="presentation"
+    -     >
+    -       <span
+    -         aria-hidden="true"
+    -         class="mx_BaseAvatar_initial"
+    -         style="font-size: 26px; width: 40px; line-height: 40px;"
+    -       >
+    -         ?
+    -       </span>
+    -       <img
+    -         alt=""
+    -         aria-hidden="true"
+    -         class="mx_BaseAvatar_image"
+    -         data-testid="avatar-img"
+    -         loading="lazy"
+    -         src="data:image/png;base64,00"
+    -         style="width: 40px; height: 40px;"
+    -       />
+    -     </span>
+          <div
+    -       class="mx_RoomHeader_info"
+    +       class="mx_RoomHeader_wrapper"
+          >
+            <div
+              aria-level="1"
+              class="mx_RoomHeader_name"
+              dir="auto"
+
+      49 |     it("renders with no props", () => {
+      50 |         const { asFragment } = render(<RoomHeader />);
+    > 51 |         expect(asFragment()).toMatchSnapshot();
+         |                              ^
+      52 |     });
+      53 |
+      54 |     it("renders the room header", () => {
+
+      at Object.toMatchSnapshot (test/components/views/rooms/RoomHeader-test.tsx:51:30)
+
+  ● Roomeader › renders the room topic
+
+    expect(element).toHaveTextContent()
+
+    Expected element to have text content:
+      Hello World!
+    Received:
+      !1:example.org
+
+      84 |
+      85 |         const { container } = render(<RoomHeader room={room} />);
+    > 86 |         expect(container).toHaveTextContent(TOPIC);
+         |                           ^
+      87 |     });
+      88 |
+      89 |     it("opens the room summary", async () => {
+
+      at Object.toHaveTextContent (test/components/views/rooms/RoomHeader-test.tsx:86:27)
+
+  ● Roomeader › opens the room summary
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: {"phase": "RoomSummary"}
+
+    Number of calls: 0
+
+      91 |
+      92 |         await userEvent.click(container.firstChild! as Element);
+    > 93 |         expect(setCardSpy).toHaveBeenCalledWith({ phase: RightPanelPhases.RoomSummary });
+         |                            ^
+      94 |     });
+      95 | });
+      96 |
+
+      at Object.toHaveBeenCalledWith (test/components/views/rooms/RoomHeader-test.tsx:93:28)
+
+ › 1 snapshot failed.
+FAIL test/components/views/dialogs/CreateRoomDialog-test.tsx (127.629 s)
+  <CreateRoomDialog />
+    ✓ should default to private room (969 ms)
+    ✓ should use defaultName from props (441 ms)
+    for a private room
+      ✓ should use server .well-known default for encryption setting (526 ms)
+      ✓ should use server .well-known force_disable for encryption setting (451 ms)
+      ✓ should use defaultEncrypted prop (468 ms)
+      ✓ should use defaultEncrypted prop when it is false (388 ms)
+      ✓ should override defaultEncrypted when server .well-known forces disabled encryption (366 ms)
+      ✓ should override defaultEncrypted when server forces enabled encryption (486 ms)
+      ✓ should enable encryption toggle and disable field when server forces encryption (448 ms)
+      ✓ should warn when trying to create a room with an invalid form (1190 ms)
+      ✕ should create a private room (22069 ms)
+    for a knock room
+      ✓ should not have the option to create a knock room (614 ms)
+      ✓ should create a knock room (1865 ms)
+    for a public room
+      ✓ should set join rule to public defaultPublic is truthy (663 ms)
+      ✓ should not create a public room without an alias (823 ms)
+      ✓ should create a public room (546 ms)
+
+  ● <CreateRoomDialog /> › for a private room › should create a private room
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      188 |         });
+      189 |
+    > 190 |         it("should create a private room", async () => {
+          |         ^
+      191 |             const onFinished = jest.fn();
+      192 |             getComponent({ onFinished });
+      193 |             await flushPromises();
+
+      at it (test/components/views/dialogs/CreateRoomDialog-test.tsx:190:9)
+      at describe (test/components/views/dialogs/CreateRoomDialog-test.tsx:63:5)
+      at Object.describe (test/components/views/dialogs/CreateRoomDialog-test.tsx:25:1)
+
+FAIL test/components/structures/auth/ForgotPassword-test.tsx (129.686 s)
+  <ForgotPassword>
+    when starting a password reset flow
+      ✓ should show the email input and mention the homeserver (371 ms)
+      and updating the server config
+        ✓ should show the new homeserver server name (100 ms)
+      and clicking »Sign in instead«
+        ✓ should call onLoginClick() (352 ms)
+      and entering a non-email value
+        ✓ should show a message about the wrong format (370 ms)
+      and submitting an unknown email
+        ✓ should show an email not found message (491 ms)
+      and a connection error occurs
+        ✓ should show an info about that (409 ms)
+      and the server liveness check fails
+        ✓ should show the server error (442 ms)
+      and submitting an known email
+        ✓ should send the mail and show the check email view (473 ms)
+        and clicking »Re-enter email address«
+          ✓ go back to the email input (439 ms)
+        and clicking »Resend«
+          ✓ should should resend the mail and show the tooltip (557 ms)
+        and clicking »Next«
+          ✓ should show the password input view (488 ms)
+          and entering different passwords
+            ✕ should show an info about that (23377 ms)
+          and entering a new password
+            and submitting it running into rate limiting
+              ✓ should show the rate limit error message (1620 ms)
+            and confirm the email link and submitting the new password
+              ✓ should send the new password (once) (1150 ms)
+            and submitting it
+              ✕ should send the new password and show the click validation link dialog (1018 ms)
+              and dismissing the dialog by clicking the background
+                ✕ should close the dialog and show the password input (627 ms)
+              and dismissing the dialog
+                ✕ should close the dialog and show the password input (617 ms)
+              and clicking »Re-enter email address«
+                ✕ should close the dialog and go back to the email input (431 ms)
+              and validating the link from the mail
+                ✓ should display the confirm reset view and now show the dialog (443 ms)
+            and clicking »Sign out of all devices« and »Reset password«
+              ✕ should show the sign out warning dialog (450 ms)
+
+  ● <ForgotPassword> › when starting a password reset flow › and submitting an known email › and clicking »Next« › and entering different passwords › should show an info about that
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      250 |
+      251 |                 describe("and entering different passwords", () => {
+    > 252 |                     beforeEach(async () => {
+          |                     ^
+      253 |                         await typeIntoField("New Password", testPassword);
+      254 |                         await typeIntoField("Confirm new password", testPassword + "asd");
+      255 |                     });
+
+      at beforeEach (test/components/structures/auth/ForgotPassword-test.tsx:252:21)
+      at describe (test/components/structures/auth/ForgotPassword-test.tsx:251:17)
+      at describe (test/components/structures/auth/ForgotPassword-test.tsx:242:13)
+      at describe (test/components/structures/auth/ForgotPassword-test.tsx:196:9)
+      at describe (test/components/structures/auth/ForgotPassword-test.tsx:101:5)
+      at Object.describe (test/components/structures/auth/ForgotPassword-test.tsx:39:1)
+
+  ● <ForgotPassword> › when starting a password reset flow › and submitting an known email › and clicking »Next« › and entering a new password › and submitting it › should send the new password and show the click validation link dialog
+
+    TestingLibraryElementError: Unable to find an element with the text: Verify your email to continue. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx_Tooltip_wrapper"[39m
+      [36m/>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx_AuthPage"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_AuthPage_modal"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_AuthHeader"[39m
+            [36m>[39m
+              [36m<aside[39m
+                [33mclass[39m=[32m"mx_AuthHeaderLogo"[39m
+              [36m>[39m
+                [0mMatrix[0m
+              [36m</aside>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dropdown mx_AuthBody_language"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-describedby[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"listbox"[39m
+                  [33maria-label[39m=[32m"Language Dropdown"[39m
+                  [33maria-owns[39m=[32m"mx_LanguageDropdown_input"[39m
+                  [33mclass[39m=[32m"mx_AccessibleButton mx_Dropdown_input mx_no_textinput"[39m
+                  [33mrole[39m=[32m"button"[39m
+                  [33mtabindex[39m=[32m"0"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_Dropdown_option"[39m
+                    [33mid[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [0mEnglish[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_Dropdown_arrow"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"mx_AuthBody mx_AuthBody_forgot-password"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_AuthBody_lockIcon"[39m
+              [36m/>[39m
+              [36m<h1>[39m
+                [0mReset your password[0m
+              [36m</h1>[39m
+              [36m<form>[39m
+                [36m<fieldset[39m
+                  [33mdisabled[39m=[32m""[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_PassphraseField mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_25"[39m
+                        [33mlabel[39m=[32m"New Password"[39m
+                        [33mplaceholder[39m=[32m"New Password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_25"[39m
+                      [36m>[39m
+                        [0mNew Password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_26"[39m
+                        [33mlabel[39m=[32m"Confirm new password"[39m
+                        [33mplaceholder[39m=[32m"Confirm new password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_26"[39m
+                      [36m>[39m
+                        [0mConfirm new password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"mx_Checkbox mx_Checkbox_hasKind mx_Checkbox_kind_solid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mid[39m=[32m"checkbox_3Ua8p2czkI"[39m
+                        [33mtype[39m=[32m"checkbox"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"checkbox_3Ua8p2czkI"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"mx_Checkbox_background"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"mx_Checkbox_checkmark"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                        [36m<div>[39m
+                          [0mSign out of all devices[0m
+                        [36m</div>[39m
+                      [36m</label>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [0m[0m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"mx_Login_submit"[39m
+                    [33mtype[39m=[32m"submit"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Spinner"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33maria-label[39m=[32m"Loading…"[39m
+                        [33mclass[39m=[32m"mx_Spinner_icon"[39m
+                        [33mdata-testid[39m=[32m"spinner"[39m
+                        [33mrole[39m=[32m"progressbar"[39m
+                        [33mstyle[39m=[32m"width: 16px; height: 16px;"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                  [36m</button>[39m
+                [36m</fieldset>[39m
+              [36m</form>[39m
+            [36m</main>[39m
+          [36m</div>[39m
+          [36m<footer[39m
+            [33mclass[39m=[32m"mx_AuthFooter"[39m
+            [33mrole[39m=[32m"contentinfo"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mhref[39m=[32m"https://matrix.org"[39m
+              [33mrel[39m=[32m"noreferrer noopener"[39m
+              [33mtarget[39m=[32m"_blank"[39m
+            [36m>[39m
+              [0mpowered by Matrix[0m
+            [36m</a>[39m
+          [36m</footer>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      341 |                                 false,
+      342 |                             );
+    > 343 |                             expect(screen.getByText("Verify your email to continue")).toBeInTheDocument();
+          |                                           ^
+      344 |                             expect(screen.getByText(testEmail)).toBeInTheDocument();
+      345 |                         });
+      346 |
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (test/components/structures/auth/ForgotPassword-test.tsx:343:43)
+
+  ● <ForgotPassword> › when starting a password reset flow › and submitting an known email › and clicking »Next« › and entering a new password › and submitting it › and dismissing the dialog by clicking the background › should close the dialog and show the password input
+
+    TestingLibraryElementError: Unable to find an element by: [data-testid="dialog-background"]
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx_Tooltip_wrapper"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_Container"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_StaticContainer"[39m
+      [36m/>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx_AuthPage"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_AuthPage_modal"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_AuthHeader"[39m
+            [36m>[39m
+              [36m<aside[39m
+                [33mclass[39m=[32m"mx_AuthHeaderLogo"[39m
+              [36m>[39m
+                [0mMatrix[0m
+              [36m</aside>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dropdown mx_AuthBody_language"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-describedby[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"listbox"[39m
+                  [33maria-label[39m=[32m"Language Dropdown"[39m
+                  [33maria-owns[39m=[32m"mx_LanguageDropdown_input"[39m
+                  [33mclass[39m=[32m"mx_AccessibleButton mx_Dropdown_input mx_no_textinput"[39m
+                  [33mrole[39m=[32m"button"[39m
+                  [33mtabindex[39m=[32m"0"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_Dropdown_option"[39m
+                    [33mid[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [0mEnglish[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_Dropdown_arrow"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"mx_AuthBody mx_AuthBody_forgot-password"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_AuthBody_lockIcon"[39m
+              [36m/>[39m
+              [36m<h1>[39m
+                [0mReset your password[0m
+              [36m</h1>[39m
+              [36m<form>[39m
+                [36m<fieldset[39m
+                  [33mdisabled[39m=[32m""[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_PassphraseField mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_28"[39m
+                        [33mlabel[39m=[32m"New Password"[39m
+                        [33mplaceholder[39m=[32m"New Password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_28"[39m
+                      [36m>[39m
+                        [0mNew Password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_29"[39m
+                        [33mlabel[39m=[32m"Confirm new password"[39m
+                        [33mplaceholder[39m=[32m"Confirm new password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_29"[39m
+                      [36m>[39m
+                        [0mConfirm new password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"mx_Checkbox mx_Checkbox_hasKind mx_Checkbox_kind_solid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mid[39m=[32m"checkbox_U73IAzbCY3"[39m
+                        [33mtype[39m=[32m"checkbox"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"checkbox_U73IAzbCY3"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"mx_Checkbox_background"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"mx_Checkbox_checkmark"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                        [36m<div>[39m
+                          [0mSign out of all devices[0m
+                        [36m</div>[39m
+                      [36m</label>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [0m[0m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"mx_Login_submit"[39m
+                    [33mtype[39m=[32m"submit"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Spinner"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33maria-label[39m=[32m"Loading…"[39m
+                        [33mclass[39m=[32m"mx_Spinner_icon"[39m
+                        [33mdata-testid[39m=[32m"spinner"[39m
+                        [33mrole[39m=[32m"progressbar"[39m
+                        [33mstyle[39m=[32m"width: 16px; height: 16px;"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                  [36m</button>[39m
+                [36m</fieldset>[39m
+              [36m</form>[39m
+            [36m</main>[39m
+          [36m</div>[39m
+          [36m<footer[39m
+            [33mclass[39m=[32m"mx_AuthFooter"[39m
+            [33mrole[39m=[32m"contentinfo"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mhref[39m=[32m"https://matrix.org"[39m
+              [33mrel[39m=[32m"noreferrer noopener"[39m
+              [33mtarget[39m=[32m"_blank"[39m
+            [36m>[39m
+              [0mpowered by Matrix[0m
+            [36m</a>[39m
+          [36m</footer>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      348 |                             beforeEach(async () => {
+      349 |                                 await act(async () => {
+    > 350 |                                     await userEvent.click(screen.getByTestId("dialog-background"), { delay: null });
+          |                                                                  ^
+      351 |                                 });
+      352 |                                 await waitEnoughCyclesForModal({
+      353 |                                     useFakeTimers: true,
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at getByTestId (test/components/structures/auth/ForgotPassword-test.tsx:350:66)
+      at batchedUpdates$1 (node_modules/react-dom/cjs/react-dom.development.js:22380:12)
+      at act (node_modules/react-dom/cjs/react-dom-test-utils.development.js:1042:14)
+      at Object.<anonymous> (test/components/structures/auth/ForgotPassword-test.tsx:349:42)
+
+  ● <ForgotPassword> › when starting a password reset flow › and submitting an known email › and clicking »Next« › and entering a new password › and submitting it › and dismissing the dialog › should close the dialog and show the password input
+
+    TestingLibraryElementError: Unable to find a label with the text of: Close dialog
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx_Tooltip_wrapper"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_Container"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_StaticContainer"[39m
+      [36m/>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx_AuthPage"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_AuthPage_modal"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_AuthHeader"[39m
+            [36m>[39m
+              [36m<aside[39m
+                [33mclass[39m=[32m"mx_AuthHeaderLogo"[39m
+              [36m>[39m
+                [0mMatrix[0m
+              [36m</aside>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dropdown mx_AuthBody_language"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-describedby[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"listbox"[39m
+                  [33maria-label[39m=[32m"Language Dropdown"[39m
+                  [33maria-owns[39m=[32m"mx_LanguageDropdown_input"[39m
+                  [33mclass[39m=[32m"mx_AccessibleButton mx_Dropdown_input mx_no_textinput"[39m
+                  [33mrole[39m=[32m"button"[39m
+                  [33mtabindex[39m=[32m"0"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_Dropdown_option"[39m
+                    [33mid[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [0mEnglish[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_Dropdown_arrow"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"mx_AuthBody mx_AuthBody_forgot-password"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_AuthBody_lockIcon"[39m
+              [36m/>[39m
+              [36m<h1>[39m
+                [0mReset your password[0m
+              [36m</h1>[39m
+              [36m<form>[39m
+                [36m<fieldset[39m
+                  [33mdisabled[39m=[32m""[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_PassphraseField mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_31"[39m
+                        [33mlabel[39m=[32m"New Password"[39m
+                        [33mplaceholder[39m=[32m"New Password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_31"[39m
+                      [36m>[39m
+                        [0mNew Password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_32"[39m
+                        [33mlabel[39m=[32m"Confirm new password"[39m
+                        [33mplaceholder[39m=[32m"Confirm new password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_32"[39m
+                      [36m>[39m
+                        [0mConfirm new password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"mx_Checkbox mx_Checkbox_hasKind mx_Checkbox_kind_solid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mid[39m=[32m"checkbox_pdjo4KZA64"[39m
+                        [33mtype[39m=[32m"checkbox"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"checkbox_pdjo4KZA64"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"mx_Checkbox_background"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"mx_Checkbox_checkmark"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                        [36m<div>[39m
+                          [0mSign out of all devices[0m
+                        [36m</div>[39m
+                      [36m</label>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [0m[0m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"mx_Login_submit"[39m
+                    [33mtype[39m=[32m"submit"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Spinner"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33maria-label[39m=[32m"Loading…"[39m
+                        [33mclass[39m=[32m"mx_Spinner_icon"[39m
+                        [33mdata-testid[39m=[32m"spinner"[39m
+                        [33mrole[39m=[32m"progressbar"[39m
+                        [33mstyle[39m=[32m"width: 16px; height: 16px;"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                  [36m</button>[39m
+                [36m</fieldset>[39m
+              [36m</form>[39m
+            [36m</main>[39m
+          [36m</div>[39m
+          [36m<footer[39m
+            [33mclass[39m=[32m"mx_AuthFooter"[39m
+            [33mrole[39m=[32m"contentinfo"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mhref[39m=[32m"https://matrix.org"[39m
+              [33mrel[39m=[32m"noreferrer noopener"[39m
+              [33mtarget[39m=[32m"_blank"[39m
+            [36m>[39m
+              [0mpowered by Matrix[0m
+            [36m</a>[39m
+          [36m</footer>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      360 |                         describe("and dismissing the dialog", () => {
+      361 |                             beforeEach(async () => {
+    > 362 |                                 await click(screen.getByLabelText("Close dialog"));
+          |                                                    ^
+      363 |                                 await waitEnoughCyclesForModal({
+      364 |                                     useFakeTimers: true,
+      365 |                                 });
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at getAllByLabelText (node_modules/@testing-library/dom/dist/queries/label-text.js:103:38)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByLabelText (test/components/structures/auth/ForgotPassword-test.tsx:362:52)
+
+  ● <ForgotPassword> › when starting a password reset flow › and submitting an known email › and clicking »Next« › and entering a new password › and submitting it › and clicking »Re-enter email address« › should close the dialog and go back to the email input
+
+    TestingLibraryElementError: Unable to find an element with the text: Re-enter email address. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx_Tooltip_wrapper"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_Container"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_StaticContainer"[39m
+      [36m/>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx_AuthPage"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_AuthPage_modal"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_AuthHeader"[39m
+            [36m>[39m
+              [36m<aside[39m
+                [33mclass[39m=[32m"mx_AuthHeaderLogo"[39m
+              [36m>[39m
+                [0mMatrix[0m
+              [36m</aside>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dropdown mx_AuthBody_language"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-describedby[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"listbox"[39m
+                  [33maria-label[39m=[32m"Language Dropdown"[39m
+                  [33maria-owns[39m=[32m"mx_LanguageDropdown_input"[39m
+                  [33mclass[39m=[32m"mx_AccessibleButton mx_Dropdown_input mx_no_textinput"[39m
+                  [33mrole[39m=[32m"button"[39m
+                  [33mtabindex[39m=[32m"0"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_Dropdown_option"[39m
+                    [33mid[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [0mEnglish[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_Dropdown_arrow"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"mx_AuthBody mx_AuthBody_forgot-password"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_AuthBody_lockIcon"[39m
+              [36m/>[39m
+              [36m<h1>[39m
+                [0mReset your password[0m
+              [36m</h1>[39m
+              [36m<form>[39m
+                [36m<fieldset[39m
+                  [33mdisabled[39m=[32m""[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_PassphraseField mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_34"[39m
+                        [33mlabel[39m=[32m"New Password"[39m
+                        [33mplaceholder[39m=[32m"New Password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_34"[39m
+                      [36m>[39m
+                        [0mNew Password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_35"[39m
+                        [33mlabel[39m=[32m"Confirm new password"[39m
+                        [33mplaceholder[39m=[32m"Confirm new password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_35"[39m
+                      [36m>[39m
+                        [0mConfirm new password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"mx_Checkbox mx_Checkbox_hasKind mx_Checkbox_kind_solid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mid[39m=[32m"checkbox_EueAe4rBum"[39m
+                        [33mtype[39m=[32m"checkbox"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"checkbox_EueAe4rBum"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"mx_Checkbox_background"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"mx_Checkbox_checkmark"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                        [36m<div>[39m
+                          [0mSign out of all devices[0m
+                        [36m</div>[39m
+                      [36m</label>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [0m[0m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"mx_Login_submit"[39m
+                    [33mtype[39m=[32m"submit"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Spinner"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33maria-label[39m=[32m"Loading…"[39m
+                        [33mclass[39m=[32m"mx_Spinner_icon"[39m
+                        [33mdata-testid[39m=[32m"spinner"[39m
+                        [33mrole[39m=[32m"progressbar"[39m
+                        [33mstyle[39m=[32m"width: 16px; height: 16px;"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                  [36m</button>[39m
+                [36m</fieldset>[39m
+              [36m</form>[39m
+            [36m</main>[39m
+          [36m</div>[39m
+          [36m<footer[39m
+            [33mclass[39m=[32m"mx_AuthFooter"[39m
+            [33mrole[39m=[32m"contentinfo"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mhref[39m=[32m"https://matrix.org"[39m
+              [33mrel[39m=[32m"noreferrer noopener"[39m
+              [33mtarget[39m=[32m"_blank"[39m
+            [36m>[39m
+              [0mpowered by Matrix[0m
+            [36m</a>[39m
+          [36m</footer>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      371 |                         describe("and clicking »Re-enter email address«", () => {
+      372 |                             beforeEach(async () => {
+    > 373 |                                 await click(screen.getByText("Re-enter email address"));
+          |                                                    ^
+      374 |                                 await waitEnoughCyclesForModal({
+      375 |                                     useFakeTimers: true,
+      376 |                                 });
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (test/components/structures/auth/ForgotPassword-test.tsx:373:52)
+
+  ● <ForgotPassword> › when starting a password reset flow › and submitting an known email › and clicking »Next« › and entering a new password › and clicking »Sign out of all devices« and »Reset password« › should show the sign out warning dialog
+
+    TestingLibraryElementError: Unable to find an element with the text: Signing out your devices will delete the message encryption keys stored on them, making encrypted chat history unreadable.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx_Tooltip_wrapper"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_Container"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mid[39m=[32m"mx_Dialog_StaticContainer"[39m
+      [36m/>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx_AuthPage"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_AuthPage_modal"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_AuthHeader"[39m
+            [36m>[39m
+              [36m<aside[39m
+                [33mclass[39m=[32m"mx_AuthHeaderLogo"[39m
+              [36m>[39m
+                [0mMatrix[0m
+              [36m</aside>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dropdown mx_AuthBody_language"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-describedby[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"listbox"[39m
+                  [33maria-label[39m=[32m"Language Dropdown"[39m
+                  [33maria-owns[39m=[32m"mx_LanguageDropdown_input"[39m
+                  [33mclass[39m=[32m"mx_AccessibleButton mx_Dropdown_input mx_no_textinput"[39m
+                  [33mrole[39m=[32m"button"[39m
+                  [33mtabindex[39m=[32m"0"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_Dropdown_option"[39m
+                    [33mid[39m=[32m"mx_LanguageDropdown_value"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [0mEnglish[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_Dropdown_arrow"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"mx_AuthBody mx_AuthBody_forgot-password"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_AuthBody_lockIcon"[39m
+              [36m/>[39m
+              [36m<h1>[39m
+                [0mReset your password[0m
+              [36m</h1>[39m
+              [36m<form>[39m
+                [36m<fieldset>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_PassphraseField mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_40"[39m
+                        [33mlabel[39m=[32m"New Password"[39m
+                        [33mplaceholder[39m=[32m"New Password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_40"[39m
+                      [36m>[39m
+                        [0mNew Password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mautocomplete[39m=[32m"new-password"[39m
+                        [33mid[39m=[32m"mx_Field_41"[39m
+                        [33mlabel[39m=[32m"Confirm new password"[39m
+                        [33mplaceholder[39m=[32m"Confirm new password"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"cRaZyP4ssw0rd!"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_41"[39m
+                      [36m>[39m
+                        [0mConfirm new password[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_AuthBody_fieldRow"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"mx_Checkbox mx_Checkbox_hasKind mx_Checkbox_kind_solid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mid[39m=[32m"checkbox_6XQrfgefdI"[39m
+                        [33mtype[39m=[32m"checkbox"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"checkbox_6XQrfgefdI"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"mx_Checkbox_background"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"mx_Checkbox_checkmark"[39m
+                          [36m/>[39m
+                        [36m</div>[39m
+                        [36m<div>[39m
+                          [0mSign out of all devices[0m
+                        [36m</div>[39m
+                      [36m</label>[39m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [0m[0m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"mx_Login_submit"[39m
+                    [33mtype[39m=[32m"submit"[39m
+                  [36m>[39m
+                    [0mReset password[0m
+                  [36m</button>[39m
+                [36m</fieldset>[39m
+              [36m</form>[39m
+            [36m</main>[39m
+          [36m</div>[39m
+          [36m<footer[39m
+            [33mclass[39m=[32m"mx_AuthFooter"[39m
+            [33mrole[39m=[32m"contentinfo"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mhref[39m=[32m"https://matrix.org"[39m
+              [33mrel[39m=[32m"noreferrer noopener"[39m
+              [33mtarget[39m=[32m"_blank"[39m
+            [36m>[39m
+              [0mpowered by Matrix[0m
+            [36m</a>[39m
+          [36m</footer>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      413 |                         it("should show the sign out warning dialog", async () => {
+      414 |                             expect(
+    > 415 |                                 screen.getByText(
+          |                                        ^
+      416 |                                     "Signing out your devices will delete the message encryption keys stored on them, making encrypted chat history unreadable.",
+      417 |                                 ),
+      418 |                             ).toBeInTheDocument();
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (test/components/structures/auth/ForgotPassword-test.tsx:415:40)
+
+PASS test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx (132.563 s)
+  WysiwygComposer
+    ✓ Should have contentEditable at false when disabled (26564 ms)
+    Standard behavior
+      ✓ Should have contentEditable at true (633 ms)
+      ✓ Should have focus (231 ms)
+      ✓ Should call onChange handler (368 ms)
+      ✓ Should call onSend when Enter is pressed (216 ms)
+      ✓ Should not call onSend when Shift+Enter is pressed (321 ms)
+      ✓ Should not call onSend when ctrl+Enter is pressed (189 ms)
+      ✓ Should not call onSend when alt+Enter is pressed (238 ms)
+      ✓ Should not call onSend when meta+Enter is pressed (251 ms)
+    Mentions and commands
+      ✓ shows the autocomplete when text has @ prefix and autoselects the first item (507 ms)
+      ✓ pressing up and down arrows allows us to change the autocomplete selection (397 ms)
+      ✓ pressing enter selects the mention and inserts it into the composer as a link (513 ms)
+      ✓ pressing escape closes the autocomplete (346 ms)
+      ✓ typing with the autocomplete open still works as expected (362 ms)
+      ✓ clicking on a mention in the composer dispatches the correct action (385 ms)
+      ✓ selecting a mention without a href closes the autocomplete but does not insert a mention (401 ms)
+      ✓ selecting a room mention with a completionId uses client.getRoom (352 ms)
+      ✓ selecting a room mention without a completionId uses client.getRooms (370 ms)
+      ✓ selecting a command inserts the command (317 ms)
+      ✓ selecting an at-room completion inserts @room (344 ms)
+      ✓ allows a community completion to pass through (318 ms)
+    When settings require Ctrl+Enter to send
+      ✓ Should not call onSend when Enter is pressed (74 ms)
+      ✓ Should send a message when Ctrl+Enter is pressed (74 ms)
+    Keyboard navigation
+      In message creation
+        ✓ Should not moving when the composer is filled (69 ms)
+        ✓ Should moving when the composer is empty (63 ms)
+      In message editing
+        Moving up
+          ✓ Should not moving when caret is not at beginning of the text (110 ms)
+          ✓ Should not moving when the content has changed (171 ms)
+          ✓ Should moving up (466 ms)
+          ✓ Should moving up in list (122 ms)
+        Moving down
+          ✓ Should not moving when caret is not at the end of the text (81 ms)
+          ✓ Should not moving when the content has changed (102 ms)
+          ✓ Should moving down (98 ms)
+          ✓ Should moving down in list (114 ms)
+          ✓ Should close editing (95 ms)
+
+PASS test/components/structures/RightPanel-test.tsx (37.233 s)
+  RightPanel
+    ✓ navigates from room summary to member list (188 ms)
+    ✓ renders info from only one room during room changes (81 ms)
+
+(node:117) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/elements/AppTile-test.tsx (135.024 s)
+  AppTile
+    ✓ destroys non-persisted right panel widget on room change (200 ms)
+    ✓ distinguishes widgets with the same ID in different rooms (132 ms)
+    ✓ preserves non-persisted widget on container move (104 ms)
+    for a pinned widget
+      ✓ should render (39 ms)
+      ✓ should not display the »Popout widget« button (81 ms)
+      ✓ clicking 'minimise' should send the widget to the right (82 ms)
+      ✓ clicking 'maximise' should send the widget to the center (64 ms)
+      ✓ should render permission request (123 ms)
+      ✓ should not display 'Continue' button on permission load (103 ms)
+      for a maximised (centered) widget
+        ✓ clicking 'un-maximise' should send the widget to the top (56 ms)
+      with an existing widgetApi with requiresClient = false
+        ✓ should display the »Popout widget« button (107 ms)
+    for a persistent app
+      ✓ should render (20 ms)
+

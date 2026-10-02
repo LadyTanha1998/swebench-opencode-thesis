@@ -1,0 +1,17 @@
+{
+  "instance_id": "instance_future-architect__vuls-ef2be3d6ea4c0a13674aaab08b182eca4e2b9a17-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+  "run": 1,
+  "status": "opencode_error",
+  "elapsed_seconds": 710.0,
+  "patch_length": 0,
+  "session_id": null,
+  "tool_calls": [],
+  "reasoning": [],
+  "text_messages": [],
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "reasoning": 0,
+    "total": 0
+  }
+}

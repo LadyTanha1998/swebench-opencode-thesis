@@ -1,0 +1,425 @@
+diff --git a/openlibrary/plugins/books/dynlinks.py b/openlibrary/plugins/books/dynlinks.py
+index f9d38fc3b..7ee1c1e60 100644
+--- a/openlibrary/plugins/books/dynlinks.py
++++ b/openlibrary/plugins/books/dynlinks.py
+@@ -10,6 +10,7 @@ from openlibrary.core.models import Edition
+ from openlibrary.core.imports import ImportItem
+ 
+ from openlibrary.plugins.openlibrary.processors import urlsafe
++from openlibrary.plugins.upstream.table_of_contents import fix_table_of_contents
+ from openlibrary.core import helpers as h
+ from openlibrary.core import ia
+ 
+@@ -243,25 +244,6 @@ class DataProcessor:
+                 "comment": e.get("comment", ""),
+             }
+ 
+-        def format_table_of_contents(toc):
+-            # after openlibrary.plugins.upstream.models.get_table_of_contents
+-            def row(r):
+-                if isinstance(r, str):
+-                    level = 0
+-                    label = ""
+-                    title = r
+-                    pagenum = ""
+-                else:
+-                    level = h.safeint(r.get('level', '0'), 0)
+-                    label = r.get('label', '')
+-                    title = r.get('title', '')
+-                    pagenum = r.get('pagenum', '')
+-                r = {'level': level, 'label': label, 'title': title, 'pagenum': pagenum}
+-                return r
+-
+-            d = [row(r) for r in toc]
+-            return [row for row in d if any(row.values())]
+-
+         d = {
+             "url": get_url(doc),
+             "key": doc['key'],
+@@ -298,7 +280,7 @@ class DataProcessor:
+             "subject_times": get_subjects("subject_times", "time:"),
+             "excerpts": [format_excerpt(e) for e in w.get("excerpts", [])],
+             "notes": get_value(doc.get("notes", "")),
+-            "table_of_contents": format_table_of_contents(
++            "table_of_contents": fix_table_of_contents(
+                 doc.get("table_of_contents", [])
+             ),
+             "links": [
+diff --git a/openlibrary/plugins/ol_infobase.py b/openlibrary/plugins/ol_infobase.py
+index 427d13818..e41413ffe 100644
+--- a/openlibrary/plugins/ol_infobase.py
++++ b/openlibrary/plugins/ol_infobase.py
+@@ -15,6 +15,9 @@ import requests
+ import web
+ 
+ from infogami.infobase import cache, common, config, dbstore, server
++from openlibrary.plugins.upstream.table_of_contents import (
++    fix_table_of_contents as _fix_table_of_contents,
++)
+ from openlibrary.plugins.upstream.utils import strip_accents
+ 
+ from ..utils.isbn import isbn_10_to_isbn_13, isbn_13_to_isbn_10, normalize_isbn
+@@ -489,40 +492,9 @@ def _process_data(data):
+         return data
+ 
+ 
+-def safeint(value, default=0):
+-    """Convert the value to integer. Returns default, if the conversion fails."""
+-    try:
+-        return int(value)
+-    except Exception:
+-        return default
+-
+-
+ def fix_table_of_contents(table_of_contents):
+     """Some books have bad table_of_contents. This function converts them in to correct format."""
+-
+-    def row(r):
+-        if isinstance(r, str):
+-            level = 0
+-            label = ''
+-            title = web.safeunicode(r)
+-            pagenum = ''
+-        elif 'value' in r:
+-            level = 0
+-            label = ''
+-            title = web.safeunicode(r['value'])
+-            pagenum = ''
+-        elif isinstance(r, dict):
+-            level = safeint(r.get('level', '0'), 0)
+-            label = r.get('label', '')
+-            title = r.get('title', '')
+-            pagenum = r.get('pagenum', '')
+-        else:
+-            return {}
+-
+-        return {"level": level, "label": label, "title": title, "pagenum": pagenum}
+-
+-    d = [row(r) for r in table_of_contents]
+-    return [row for row in d if any(row.values())]
++    return _fix_table_of_contents(table_of_contents)
+ 
+ 
+ def process_json(key, json_str):
+diff --git a/openlibrary/plugins/upstream/merge_authors.py b/openlibrary/plugins/upstream/merge_authors.py
+index ba82c8953..1830e9cd8 100644
+--- a/openlibrary/plugins/upstream/merge_authors.py
++++ b/openlibrary/plugins/upstream/merge_authors.py
+@@ -12,6 +12,9 @@ from infogami.utils import delegate
+ from infogami.utils.view import render_template, safeint
+ from openlibrary.accounts import get_current_user
+ from openlibrary.plugins.upstream.edits import process_merge_request
++from openlibrary.plugins.upstream.table_of_contents import (
++    fix_table_of_contents as _fix_table_of_contents,
++)
+ from openlibrary.plugins.worksearch.code import top_books_from_author
+ from openlibrary.utils import uniq, dicthash
+ 
+@@ -207,28 +210,7 @@ def fix_table_of_contents(table_of_contents: list[str | dict]) -> list:
+     """
+     Some books have bad table_of_contents--convert them in to correct format.
+     """
+-
+-    def row(r):
+-        if isinstance(r, str):
+-            level = 0
+-            label = ""
+-            title = web.safeunicode(r)
+-            pagenum = ""
+-        elif 'value' in r:
+-            level = 0
+-            label = ""
+-            title = web.safeunicode(r['value'])
+-            pagenum = ""
+-        else:
+-            level = safeint(r.get('level', '0'), 0)
+-            label = r.get('label', '')
+-            title = r.get('title', '')
+-            pagenum = r.get('pagenum', '')
+-
+-        r = web.storage(level=level, label=label, title=title, pagenum=pagenum)
+-        return r
+-
+-    return [row for row in map(row, table_of_contents) if any(row.values())]
++    return _fix_table_of_contents(table_of_contents)
+ 
+ 
+ def get_many(keys: list[str]) -> list[dict]:
+diff --git a/openlibrary/plugins/upstream/models.py b/openlibrary/plugins/upstream/models.py
+index 617fac7c5..0f0dab161 100644
+--- a/openlibrary/plugins/upstream/models.py
++++ b/openlibrary/plugins/upstream/models.py
+@@ -17,8 +17,12 @@ from openlibrary.core import models, ia
+ from openlibrary.core.models import Image
+ from openlibrary.core import lending
+ 
+-from openlibrary.plugins.upstream.table_of_contents import TocEntry
+-from openlibrary.plugins.upstream.utils import MultiDict, parse_toc, get_edition_config
++from openlibrary.plugins.upstream.table_of_contents import (
++    TocEntry,
++    parse_toc,
++    to_toc_entries,
++)
++from openlibrary.plugins.upstream.utils import MultiDict, get_edition_config
+ from openlibrary.plugins.upstream import account
+ from openlibrary.plugins.upstream import borrow
+ from openlibrary.plugins.worksearch.code import works_by_author
+@@ -410,23 +414,10 @@ class Edition(models.Edition):
+             )
+ 
+     def get_toc_text(self):
+-        def format_row(r):
+-            return f"{'*' * r.level} {r.label} | {r.title} | {r.pagenum}"
+-
+-        return "\n".join(format_row(r) for r in self.get_table_of_contents())
++        return "\n".join(entry.to_markdown() for entry in self.get_table_of_contents())
+ 
+     def get_table_of_contents(self) -> list[TocEntry]:
+-        def row(r):
+-            if isinstance(r, str):
+-                return TocEntry(level=0, title=r)
+-            else:
+-                return TocEntry.from_dict(r)
+-
+-        return [
+-            toc_entry
+-            for r in self.table_of_contents
+-            if not (toc_entry := row(r)).is_empty()
+-        ]
++        return to_toc_entries(self.table_of_contents)
+ 
+     def set_toc_text(self, text):
+         self.table_of_contents = parse_toc(text)
+diff --git a/openlibrary/plugins/upstream/table_of_contents.py b/openlibrary/plugins/upstream/table_of_contents.py
+index c648cd7eb..8f9139e47 100644
+--- a/openlibrary/plugins/upstream/table_of_contents.py
++++ b/openlibrary/plugins/upstream/table_of_contents.py
+@@ -1,5 +1,10 @@
++from __future__ import annotations
++
++import re
+ from dataclasses import dataclass
+-from typing import TypedDict
++from typing import Any, Iterable, TypedDict
++
++import web
+ 
+ from openlibrary.core.models import ThingReferenceDict
+ 
+@@ -11,30 +16,135 @@ class AuthorRecord(TypedDict):
+ 
+ @dataclass
+ class TocEntry:
+-    level: int
+-    label: str | None = None
+-    title: str | None = None
+-    pagenum: str | None = None
+-
++    level: int = 0
++    label: str = ""
++    title: str = ""
++    pagenum: str = ""
+     authors: list[AuthorRecord] | None = None
+     subtitle: str | None = None
+     description: str | None = None
+ 
+-    @staticmethod
+-    def from_dict(d: dict) -> 'TocEntry':
+-        return TocEntry(
+-            level=d.get('level', 0),
+-            label=d.get('label'),
+-            title=d.get('title'),
+-            pagenum=d.get('pagenum'),
+-            authors=d.get('authors'),
+-            subtitle=d.get('subtitle'),
+-            description=d.get('description'),
++    @classmethod
++    def from_dict(cls, d: Any) -> TocEntry:
++        """Build a TocEntry from a raw TOC row.
++
++        Accepts plain strings, ``{"value": ...}`` wrappers (as produced by the
++        old ``/type/text`` format) and regular dicts. Malformed rows are safely
++        converted into empty entries so they can be ignored downstream.
++        """
++        if isinstance(d, str):
++            d = {"level": 0, "title": web.safeunicode(d)}
++        elif isinstance(d, dict) and "value" in d:
++            d = {"level": 0, "title": web.safeunicode(d["value"])}
++        elif not isinstance(d, dict):
++            d = {}
++
++        try:
++            level = int(d.get("level", 0))
++        except (TypeError, ValueError):
++            level = 0
++
++        return cls(
++            level=level,
++            label=d.get("label") or "",
++            title=d.get("title") or "",
++            pagenum=d.get("pagenum") or "",
++            authors=d.get("authors"),
++            subtitle=d.get("subtitle"),
++            description=d.get("description"),
+         )
+ 
++    def to_dict(self) -> dict:
++        """Serialize to the canonical internal representation."""
++        d: dict[str, Any] = {
++            "level": self.level,
++            "label": self.label,
++            "title": self.title,
++            "pagenum": self.pagenum,
++        }
++        if self.authors:
++            d["authors"] = self.authors
++        if self.subtitle:
++            d["subtitle"] = self.subtitle
++        if self.description:
++            d["description"] = self.description
++        return d
++
+     def is_empty(self) -> bool:
+-        return all(
+-            getattr(self, field) is None
+-            for field in self.__annotations__
+-            if field != 'level'
++        """Whether the entry carries no meaningful content."""
++        return not (
++            self.label
++            or self.title
++            or self.pagenum
++            or self.authors
++            or self.subtitle
++            or self.description
++        )
++
++    @classmethod
++    def parse(cls, line: str) -> TocEntry:
++        """Parse a single markdown TOC line into a TocEntry."""
++        RE_LEVEL = re.compile(r"(\**)(.*)")
++        level, text = RE_LEVEL.match(line.strip()).groups()
++
++        if "|" in text:
++            tokens = text.split("|", 2)
++            label, title, page = pad(tokens, 3, "")
++        else:
++            title = text
++            label = page = ""
++
++        return cls(
++            level=len(level),
++            label=label.strip(),
++            title=title.strip(),
++            pagenum=page.strip(),
+         )
++
++    def to_markdown(self) -> str:
++        """Render the entry back to a markdown line, omitting empty fields."""
++        body = " | ".join(p for p in (self.label, self.title, self.pagenum) if p)
++        return f"{'*' * self.level} {body}".strip()
++
++
++def pad(seq: list[Any], size: int, e: Any) -> list[Any]:
++    """Pad ``seq`` with ``e`` until it has length ``size``."""
++    seq = seq[:]
++    while len(seq) < size:
++        seq.append(e)
++    return seq
++
++
++def parse_toc(text: str | None) -> list[dict]:
++    """Parse a markdown table of contents into a list of canonical dicts.
++
++    Blank and empty/malformed lines are safely ignored.
++    """
++    if text is None:
++        return []
++    return [
++        entry.to_dict()
++        for line in text.splitlines()
++        if line.strip(" |")
++        if not (entry := TocEntry.parse(line)).is_empty()
++    ]
++
++
++def to_toc_entries(table_of_contents: Iterable[Any]) -> list[TocEntry]:
++    """Convert a raw table of contents (strings, dicts, ...) to TocEntry list.
++
++    Empty and malformed entries are safely ignored.
++    """
++    return [
++        entry for r in table_of_contents if not (entry := TocEntry.from_dict(r)).is_empty()
++    ]
++
++
++def fix_table_of_contents(table_of_contents: Iterable[Any]) -> list[dict]:
++    """Normalize a raw table of contents into canonical dicts.
++
++    Some books have bad table_of_contents data (strings, ``/type/text``
++    wrappers, missing fields). This converts them into the correct format while
++    preserving any extra fields (authors, subtitle, description).
++    """
++    return [entry.to_dict() for entry in to_toc_entries(table_of_contents)]
+diff --git a/openlibrary/plugins/upstream/utils.py b/openlibrary/plugins/upstream/utils.py
+index 46378b8e6..eae40c7aa 100644
+--- a/openlibrary/plugins/upstream/utils.py
++++ b/openlibrary/plugins/upstream/utils.py
+@@ -664,57 +664,6 @@ def set_share_links(
+         view_context.share_links = links
+ 
+ 
+-def pad(seq: list, size: int, e=None) -> list:
+-    """
+-    >>> pad([1, 2], 4, 0)
+-    [1, 2, 0, 0]
+-    """
+-    seq = seq[:]
+-    while len(seq) < size:
+-        seq.append(e)
+-    return seq
+-
+-
+-def parse_toc_row(line):
+-    """Parse one row of table of contents.
+-
+-    >>> def f(text):
+-    ...     d = parse_toc_row(text)
+-    ...     return (d['level'], d['label'], d['title'], d['pagenum'])
+-    ...
+-    >>> f("* chapter 1 | Welcome to the real world! | 2")
+-    (1, 'chapter 1', 'Welcome to the real world!', '2')
+-    >>> f("Welcome to the real world!")
+-    (0, '', 'Welcome to the real world!', '')
+-    >>> f("** | Welcome to the real world! | 2")
+-    (2, '', 'Welcome to the real world!', '2')
+-    >>> f("|Preface | 1")
+-    (0, '', 'Preface', '1')
+-    >>> f("1.1 | Apple")
+-    (0, '1.1', 'Apple', '')
+-    """
+-    RE_LEVEL = web.re_compile(r"(\**)(.*)")
+-    level, text = RE_LEVEL.match(line.strip()).groups()
+-
+-    if "|" in text:
+-        tokens = text.split("|", 2)
+-        label, title, page = pad(tokens, 3, '')
+-    else:
+-        title = text
+-        label = page = ""
+-
+-    return Storage(
+-        level=len(level), label=label.strip(), title=title.strip(), pagenum=page.strip()
+-    )
+-
+-
+-def parse_toc(text: str | None) -> list[Any]:
+-    """Parses each line of toc"""
+-    if text is None:
+-        return []
+-    return [parse_toc_row(line) for line in text.splitlines() if line.strip(" |")]
+-
+-
+ T = TypeVar('T')
+ 
+ 

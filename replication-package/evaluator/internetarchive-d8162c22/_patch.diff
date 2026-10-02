@@ -1,0 +1,208 @@
+diff --git a/openlibrary/catalog/utils/__init__.py b/openlibrary/catalog/utils/__init__.py
+index 2d6e840ed..bca73df11 100644
+--- a/openlibrary/catalog/utils/__init__.py
++++ b/openlibrary/catalog/utils/__init__.py
+@@ -341,12 +341,7 @@ def needs_isbn_and_lacks_one(rec: dict) -> bool:
+ 
+     def needs_isbn(rec: dict) -> bool:
+         # Exception for Amazon-specific ASINs, which often accompany ebooks
+-        if any(
+-            name == "amazon" and identifier.startswith("B")
+-            for record in rec.get("source_records", [])
+-            if record and ":" in record
+-            for name, identifier in [record.split(":", 1)]
+-        ):
++        if is_asin(find_asin(rec) or ""):
+             return False
+ 
+         return any(
+@@ -354,9 +349,6 @@ def needs_isbn_and_lacks_one(rec: dict) -> bool:
+             for record in rec.get('source_records', [])
+         )
+ 
+-    def has_isbn(rec: dict) -> bool:
+-        return any(rec.get('isbn_10', []) or rec.get('isbn_13', []))
+-
+     return needs_isbn(rec) and not has_isbn(rec)
+ 
+ 
+@@ -375,3 +367,59 @@ def get_missing_fields(rec: dict) -> list[str]:
+         'source_records',
+     ]
+     return [field for field in required_fields if rec.get(field) is None]
++
++
++def has_isbn(rec: dict) -> bool:
++    """Return True if the record contains at least one ISBN."""
++    return any(
++        rec.get('isbn_10', []) or rec.get('isbn_13', []) or rec.get('isbn', [])
++    )
++
++
++def is_asin(value: str) -> bool:
++    """
++    Return True if the given value is an Amazon ASIN that is not an ISBN.
++
++    Amazon-specific ASINs start with "B" and are 10 characters long. ISBN-10
++    values (which Amazon may also surface as "ASINs") start with a digit and are
++    therefore excluded.
++    """
++    return (
++        len(value) == 10
++        and value[0] == "B"
++        and value.isalnum()
++    )
++
++
++def find_asin(rec: dict) -> str | None:
++    """
++    Return the non-ISBN ASIN found in the record, if any.
++
++    The ASIN may be found within the ``identifiers.amazon`` list or within the
++    ``source_records`` list (e.g. ``amazon:B06XYHVXVJ``). If no non-ISBN ASIN is
++    present, return None.
++    """
++    # Check the source_records list first.
++    for source_record in rec.get('source_records', []):
++        if not isinstance(source_record, str) or ':' not in source_record:
++            continue
++        name, identifier = source_record.split(':', 1)
++        if name == 'amazon' and is_asin(identifier):
++            return identifier
++
++    # Fall back to the identifiers.amazon list.
++    for identifier in rec.get('identifiers', {}).get('amazon', []):
++        if is_asin(identifier):
++            return identifier
++
++    return None
++
++
++def is_asins_only(rec: dict) -> bool:
++    """
++    Return True if the record has no ISBN fields and contains only an ASIN.
++
++    This allows ASIN-only records to be distinguished from other records that
++    lack identifiers entirely.
++    """
++    return not has_isbn(rec) and bool(find_asin(rec))
+diff --git a/openlibrary/tests/catalog/test_utils.py b/openlibrary/tests/catalog/test_utils.py
+index 318090546..573a634de 100644
+--- a/openlibrary/tests/catalog/test_utils.py
++++ b/openlibrary/tests/catalog/test_utils.py
+@@ -3,9 +3,12 @@ import pytest
+ from datetime import datetime, timedelta
+ from openlibrary.catalog.utils import (
+     author_dates_match,
++    find_asin,
+     flip_name,
+     get_missing_fields,
+     get_publication_year,
++    is_asin,
++    is_asins_only,
+     is_independently_published,
+     is_promise_item,
+     match_with_bad_chars,
+@@ -323,6 +326,96 @@ def test_is_promise_item(rec, expected) -> None:
+     assert is_promise_item(rec) == expected
+ 
+ 
++@pytest.mark.parametrize(
++    'value, expected',
++    [
++        ("B06XYHVXVJ", True),
++        ("B0ABCDEFGH", True),
++        ("0747532699", False),  # ISBN-10, not a non-ISBN ASIN
++        ("1234567890", False),
++        ("B123", False),  # too short
++        ("B06XYHVXV", False),  # only 9 chars
++        ("B06XYHVXVJ123", False),  # too long
++        ("", False),
++        ("amazon:B06XYHVXVJ", False),  # not a bare value
++    ],
++)
++def test_is_asin(value, expected) -> None:
++    assert is_asin(value) == expected
++
++
++@pytest.mark.parametrize(
++    'name, rec, expected',
++    [
++        (
++            "ASIN found in source_records",
++            {'source_records': ['amazon:B06XYHVXVJ'], 'isbn_10': []},
++            "B06XYHVXVJ",
++        ),
++        (
++            "ASIN found in identifiers.amazon",
++            {
++                'source_records': ['promise:123'],
++                'identifiers': {'amazon': ['B06XYHVXVJ']},
++            },
++            "B06XYHVXVJ",
++        ),
++        (
++            "identifiers.amazon takes priority over ISBN-only source_records",
++            {
++                'source_records': ['amazon:0747532699'],
++                'identifiers': {'amazon': ['B06XYHVXVJ']},
++            },
++            "B06XYHVXVJ",
++        ),
++        (
++            "No ASIN when only an ISBN is present",
++            {'source_records': ['amazon:0747532699']},
++            None,
++        ),
++        (
++            "No ASIN when only a promise source is present",
++            {'source_records': ['promise:123:sku']},
++            None,
++        ),
++        ("No ASIN in an empty record", {}, None),
++    ],
++)
++def test_find_asin(name, rec, expected) -> None:
++    assert find_asin(rec) == expected, f"Test failed: {name}"
++
++
++@pytest.mark.parametrize(
++    'name, rec, expected',
++    [
++        (
++            "ASIN-only record",
++            {
++                'source_records': ['promise:123'],
++                'identifiers': {'amazon': ['B06XYHVXVJ']},
++            },
++            True,
++        ),
++        (
++            "Record with an ISBN is not ASIN-only",
++            {
++                'source_records': ['amazon:B06XYHVXVJ'],
++                'isbn_13': ['1234567890123'],
++            },
++            False,
++        ),
++        (
++            "Record with no identifiers is not ASIN-only",
++            {'source_records': ['promise:123']},
++            False,
++        ),
++        ("Empty record is not ASIN-only", {}, False),
++    ],
++)
++def test_is_asins_only(name, rec, expected) -> None:
++    assert is_asins_only(rec) == expected, f"Test failed: {name}"
++
++
+ @pytest.mark.parametrize(
+     'name, rec, expected',
+     [
+diff --git a/vendor/infogami b/vendor/infogami
+--- a/vendor/infogami
++++ b/vendor/infogami
+@@ -1 +1 @@
+-Subproject commit 3a6508785487728911252a9df53bcc5f44a4cde1
++Subproject commit 3a6508785487728911252a9df53bcc5f44a4cde1-dirty

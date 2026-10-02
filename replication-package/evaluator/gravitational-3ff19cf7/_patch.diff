@@ -1,0 +1,168 @@
+diff --git a/lib/multiplexer/multiplexer.go b/lib/multiplexer/multiplexer.go
+index 2cff65c8f8..fe64449d04 100644
+--- a/lib/multiplexer/multiplexer.go
++++ b/lib/multiplexer/multiplexer.go
+@@ -398,6 +398,10 @@ func detectProto(in []byte) (Protocol, error) {
+ 	// reader peeks only 3 bytes, slice the longer proxy prefix
+ 	case bytes.HasPrefix(in, proxyPrefix[:3]):
+ 		return ProtoProxy, nil
++	// proxy protocol v2 uses a binary signature that does not start
++	// with the "PRO" text prefix, detect it by its unique prefix
++	case bytes.HasPrefix(in, proxyV2Signature[:8]):
++		return ProtoProxy, nil
+ 	case bytes.HasPrefix(in, sshPrefix):
+ 		return ProtoSSH, nil
+ 	case bytes.HasPrefix(in, tlsPrefix):
+diff --git a/lib/multiplexer/proxyline.go b/lib/multiplexer/proxyline.go
+index a118b6c9fd..f5259b56e6 100644
+--- a/lib/multiplexer/proxyline.go
++++ b/lib/multiplexer/proxyline.go
+@@ -20,7 +20,10 @@ package multiplexer
+ 
+ import (
+ 	"bufio"
++	"bytes"
++	"encoding/binary"
+ 	"fmt"
++	"io"
+ 	"net"
+ 	"strconv"
+ 	"strings"
+@@ -40,6 +43,11 @@ const (
+ var (
+ 	proxyCRLF = "\r\n"
+ 	proxySep  = " "
++
++	// proxyV2Signature is the 12 byte signature that precedes every
++	// proxy protocol version 2 header.
++	// https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
++	proxyV2Signature = []byte{0x0D, 0x0A, 0x0D, 0x0A, 0x00, 0x0D, 0x0A, 0x51, 0x55, 0x49, 0x54, 0x0A}
+ )
+ 
+ // ProxyLine is HA Proxy protocol version 1
+@@ -56,8 +64,23 @@ func (p *ProxyLine) String() string {
+ 	return fmt.Sprintf("PROXY %s %s %s %d %d\r\n", p.Protocol, p.Source.IP.String(), p.Destination.IP.String(), p.Source.Port, p.Destination.Port)
+ }
+ 
+-// ReadProxyLine reads proxy line protocol from the reader
++// ReadProxyLine reads a proxy line protocol header from the reader.
++// It supports both version 1 (text) and version 2 (binary) of the
++// HAProxy proxy protocol and dispatches to the appropriate parser
++// based on the header signature.
+ func ReadProxyLine(reader *bufio.Reader) (*ProxyLine, error) {
++	prefix, err := reader.Peek(len(proxyV2Signature))
++	if err != nil {
++		return nil, trace.Wrap(err)
++	}
++	if bytes.HasPrefix(prefix, proxyV2Signature) {
++		return ReadProxyLineV2(reader)
++	}
++	return readProxyLineV1(reader)
++}
++
++// readProxyLineV1 reads a proxy protocol version 1 (text) header.
++func readProxyLineV1(reader *bufio.Reader) (*ProxyLine, error) {
+ 	line, err := reader.ReadString('\n')
+ 	if err != nil {
+ 		return nil, trace.Wrap(err)
+@@ -122,3 +145,100 @@ func parseIP(protocol string, addrString string) (net.IP, error) {
+ 	}
+ 	return addr, nil
+ }
++
++// Proxy protocol version 2 header command byte constants.
++const (
++	proxyV2CmdLocal  = 0x0
++	proxyV2CmdProxy  = 0x1
++	proxyV2FamUnspec = 0x0
++	proxyV2FamINET   = 0x1
++	proxyV2FamINET6  = 0x2
++)
++
++// ReadProxyLineV2 reads a proxy protocol version 2 (binary) header.
++// The header begins with a 12 byte signature followed by a version/command
++// byte, a family/protocol byte and a 2 byte length describing the size of
++// the address block that follows.
++// https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
++func ReadProxyLineV2(reader *bufio.Reader) (*ProxyLine, error) {
++	header := make([]byte, 16)
++	if _, err := io.ReadFull(reader, header); err != nil {
++		return nil, trace.Wrap(err)
++	}
++	if !bytes.Equal(header[:12], proxyV2Signature) {
++		return nil, trace.BadParameter("invalid proxy protocol v2 signature")
++	}
++	version := header[12] >> 4
++	if version != 2 {
++		return nil, trace.BadParameter("unsupported proxy protocol version %d", version)
++	}
++	command := header[12] & 0x0F
++	family := header[13] >> 4
++	length := int(binary.BigEndian.Uint16(header[14:16]))
++
++	// LOCAL command carries no address information, only consume the
++	// address block (if any) and return an empty proxy line.
++	if command != proxyV2CmdProxy {
++		if err := skipBytes(reader, length); err != nil {
++			return nil, trace.Wrap(err)
++		}
++		return &ProxyLine{Protocol: UNKNOWN}, nil
++	}
++
++	addr := make([]byte, length)
++	if _, err := io.ReadFull(reader, addr); err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	proto := UNKNOWN
++	var source, destination net.TCPAddr
++
++	switch family {
++	case proxyV2FamINET:
++		if length != 12 {
++			return nil, trace.BadParameter("invalid proxy protocol v2 IPv4 address block length %d", length)
++		}
++		proto = TCP4
++		source = net.TCPAddr{
++			IP:   net.IP(addr[0:4]),
++			Port: int(binary.BigEndian.Uint16(addr[8:10])),
++		}
++		destination = net.TCPAddr{
++			IP:   net.IP(addr[4:8]),
++			Port: int(binary.BigEndian.Uint16(addr[10:12])),
++		}
++	case proxyV2FamINET6:
++		if length != 36 {
++			return nil, trace.BadParameter("invalid proxy protocol v2 IPv6 address block length %d", length)
++		}
++		proto = TCP6
++		source = net.TCPAddr{
++			IP:   net.IP(addr[0:16]),
++			Port: int(binary.BigEndian.Uint16(addr[32:34])),
++		}
++		destination = net.TCPAddr{
++			IP:   net.IP(addr[16:32]),
++			Port: int(binary.BigEndian.Uint16(addr[34:36])),
++		}
++	default:
++		// UNSPEC, UNIX or unknown families are not supported, the
++		// address block has already been consumed so just return an
++		// empty proxy line.
++		return &ProxyLine{Protocol: UNKNOWN}, nil
++	}
++
++	return &ProxyLine{
++		Protocol:    proto,
++		Source:      source,
++		Destination: destination,
++	}, nil
++}
++
++func skipBytes(reader *bufio.Reader, n int) error {
++	if n == 0 {
++		return nil
++	}
++	buf := make([]byte, n)
++	_, err := io.ReadFull(reader, buf)
++	return trace.Wrap(err)
++}

@@ -1,0 +1,106 @@
+diff --git a/applications/mail/src/app/hooks/message/useLoadImages.ts b/applications/mail/src/app/hooks/message/useLoadImages.ts
+index 0716a952c..7100840b2 100644
+--- a/applications/mail/src/app/hooks/message/useLoadImages.ts
++++ b/applications/mail/src/app/hooks/message/useLoadImages.ts
+@@ -1,6 +1,6 @@
+ import { useCallback } from 'react';
+ 
+-import { useApi, useMailSettings } from '@proton/components';
++import { useApi, useAuthentication, useMailSettings } from '@proton/components';
+ import { WorkerDecryptionResult } from '@proton/crypto';
+ import { Attachment } from '@proton/shared/lib/interfaces/mail/Message';
+ 
+@@ -29,22 +29,25 @@ import { useGetMessage } from './useMessage';
+ export const useLoadRemoteImages = (localID: string) => {
+     const dispatch = useAppDispatch();
+     const api = useApi();
++    const authentication = useAuthentication();
+     const getMessage = useGetMessage();
+     const [mailSettings] = useMailSettings();
+ 
+     return useCallback(async () => {
+         const message = getMessage(localID) as MessageState;
+ 
++        const UID = authentication.getUID();
++
+         const handleLoadRemoteImagesProxy = (imagesToLoad: MessageRemoteImage[]) => {
+             const dispatchResult = imagesToLoad.map((image) => {
+-                return dispatch(loadRemoteProxy({ ID: localID, imageToLoad: image, api }));
++                return dispatch(loadRemoteProxy({ ID: localID, imageToLoad: image, api, UID }));
+             });
+             return dispatchResult as any as Promise<LoadRemoteResults[]>;
+         };
+ 
+         const handleLoadFakeImagesProxy = (imagesToLoad: MessageRemoteImage[]) => {
+             const dispatchResult = imagesToLoad.map((image) => {
+-                return dispatch(loadFakeProxy({ ID: localID, imageToLoad: image, api }));
++                return dispatch(loadFakeProxy({ ID: localID, imageToLoad: image, api, UID }));
+             });
+             return dispatchResult as any as Promise<LoadRemoteResults[]>;
+         };
+diff --git a/applications/mail/src/app/logic/messages/images/messagesImagesActions.ts b/applications/mail/src/app/logic/messages/images/messagesImagesActions.ts
+index 7fc3b182f..92be493b9 100644
+--- a/applications/mail/src/app/logic/messages/images/messagesImagesActions.ts
++++ b/applications/mail/src/app/logic/messages/images/messagesImagesActions.ts
+@@ -33,7 +33,7 @@ export const loadEmbedded = createAsyncThunk<LoadEmbeddedResults, LoadEmbeddedPa
+ 
+ export const loadRemoteProxy = createAsyncThunk<LoadRemoteResults, LoadRemoteParams>(
+     'messages/remote/load/proxy',
+-    async ({ imageToLoad, api }) => {
++    async ({ imageToLoad, api, UID }) => {
+         if (!imageToLoad.url) {
+             return { image: imageToLoad, error: 'No URL' };
+         }
+@@ -41,7 +41,7 @@ export const loadRemoteProxy = createAsyncThunk<LoadRemoteResults, LoadRemotePar
+         try {
+             const encodedImageUrl = encodeImageUri(imageToLoad.url);
+             const response: Response = await api({
+-                ...getImage(encodedImageUrl),
++                ...getImage(encodedImageUrl, 0, UID),
+                 output: 'raw',
+                 silence: true,
+             });
+@@ -74,7 +74,7 @@ export const loadRemoteProxy = createAsyncThunk<LoadRemoteResults, LoadRemotePar
+ 
+ export const loadFakeProxy = createAsyncThunk<LoadRemoteResults | undefined, LoadRemoteParams>(
+     'messages/remote/fake/proxy',
+-    async ({ imageToLoad, api }) => {
++    async ({ imageToLoad, api, UID }) => {
+         if (imageToLoad.tracker !== undefined) {
+             return;
+         }
+@@ -86,7 +86,7 @@ export const loadFakeProxy = createAsyncThunk<LoadRemoteResults | undefined, Loa
+         try {
+             const encodedImageUrl = encodeImageUri(imageToLoad.url);
+             const response: Response = await api({
+-                ...getImage(encodedImageUrl, 1),
++                ...getImage(encodedImageUrl, 1, UID),
+                 output: 'raw',
+                 silence: true,
+             });
+diff --git a/applications/mail/src/app/logic/messages/messagesTypes.ts b/applications/mail/src/app/logic/messages/messagesTypes.ts
+index 3ba560acd..03d987bb4 100644
+--- a/applications/mail/src/app/logic/messages/messagesTypes.ts
++++ b/applications/mail/src/app/logic/messages/messagesTypes.ts
+@@ -347,6 +347,7 @@ export interface LoadRemoteParams {
+     ID: string;
+     imageToLoad: MessageRemoteImage;
+     api: Api;
++    UID?: string;
+ }
+ 
+ export interface LoadRemoteResults {
+diff --git a/packages/shared/lib/api/images.ts b/packages/shared/lib/api/images.ts
+index 2f39dcb6a..99eebaf35 100644
+--- a/packages/shared/lib/api/images.ts
++++ b/packages/shared/lib/api/images.ts
+@@ -1,7 +1,7 @@
+-export const getImage = (Url: string, DryRun = 0) => ({
++export const getImage = (Url: string, DryRun = 0, UID?: string) => ({
+     method: 'get',
+     url: 'core/v4/images',
+-    params: { Url, DryRun },
++    params: { Url, DryRun, ...(UID ? { UID } : {}) },
+ });
+ 
+ export type SenderImageMode = 'light' | 'dark';

@@ -1,0 +1,28 @@
+diff --git a/models/utils.go b/models/utils.go
+index da6dde4..cb828b2 100644
+--- a/models/utils.go
++++ b/models/utils.go
+@@ -119,6 +119,13 @@ func ConvertNvdToModel(cveID string, nvds []cvedict.Nvd) ([]CveContent, []Exploi
+ 			c.Cvss3Severity = cvss3.BaseSeverity
+ 			m[cvss3.Source] = c
+ 		}
++		for _, cvss4 := range nvd.Cvss4 {
++			c := m[cvss4.Source]
++			c.Cvss40Score = cvss4.BaseScore
++			c.Cvss40Vector = cvss4.VectorString
++			c.Cvss40Severity = cvss4.BaseSeverity
++			m[cvss4.Source] = c
++		}
+ 
+ 		for source, cont := range m {
+ 			cves = append(cves, CveContent{
+@@ -131,6 +138,9 @@ func ConvertNvdToModel(cveID string, nvds []cvedict.Nvd) ([]CveContent, []Exploi
+ 				Cvss3Score:    cont.Cvss3Score,
+ 				Cvss3Vector:   cont.Cvss3Vector,
+ 				Cvss3Severity: cont.Cvss3Severity,
++				Cvss40Score:   cont.Cvss40Score,
++				Cvss40Vector:  cont.Cvss40Vector,
++				Cvss40Severity: cont.Cvss40Severity,
+ 				SourceLink:    fmt.Sprintf("https://nvd.nist.gov/vuln/detail/%s", cveID),
+ 				// Cpes:          cpes,
+ 				CweIDs:       cont.CweIDs,

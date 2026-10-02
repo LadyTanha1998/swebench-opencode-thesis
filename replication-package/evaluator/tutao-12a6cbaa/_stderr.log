@@ -1,0 +1,121 @@
+✘ [ERROR] [plugin sqlite-native-plugin] command "npm exec" failed with error code: 1
+
+  This error came from the "onStart" callback registered here:
+
+    ../node_modules/esbuild/lib/main.js:839:22:
+      839 │         let promise = setup({
+          ╵                       ^
+
+    at setup (file:///app/buildSrc/esbuildUtils.js:58:10)
+    at handlePlugins (/app/node_modules/esbuild/lib/main.js:839:23)
+    at Object.buildOrServe (/app/node_modules/esbuild/lib/main.js:1133:7)
+    at /app/node_modules/esbuild/lib/main.js:2074:17
+    at new Promise (<anonymous>)
+    at Object.build (/app/node_modules/esbuild/lib/main.js:2073:14)
+    at build (/app/node_modules/esbuild/lib/main.js:1923:51)
+    at file:///app/test/TestBuilder.js:37:9
+    at runStep (file:///app/buildSrc/buildUtils.js:165:8)
+
+✘ [ERROR] [plugin keytar-native-plugin] command "npm exec" failed with error code: 1
+
+  This error came from the "onStart" callback registered here:
+
+    ../node_modules/esbuild/lib/main.js:839:22:
+      839 │         let promise = setup({
+          ╵                       ^
+
+    at setup (file:///app/buildSrc/esbuildUtils.js:17:10)
+    at handlePlugins (/app/node_modules/esbuild/lib/main.js:839:23)
+    at Object.buildOrServe (/app/node_modules/esbuild/lib/main.js:1133:7)
+    at /app/node_modules/esbuild/lib/main.js:2074:17
+    at new Promise (<anonymous>)
+    at Object.build (/app/node_modules/esbuild/lib/main.js:2073:14)
+    at build (/app/node_modules/esbuild/lib/main.js:1923:51)
+    at file:///app/test/TestBuilder.js:37:9
+    at runStep (file:///app/buildSrc/buildUtils.js:165:8)
+
+/app/node_modules/esbuild/lib/main.js:1599
+  let error = new Error(`${text}${summary}`);
+              ^
+
+Error: Build failed with 2 errors:
+error: command "npm exec" failed with error code: 1
+error: command "npm exec" failed with error code: 1
+    at failureErrorWithLog (/app/node_modules/esbuild/lib/main.js:1599:15)
+    at /app/node_modules/esbuild/lib/main.js:1245:28
+    at runOnEndCallbacks (/app/node_modules/esbuild/lib/main.js:1030:63)
+    at buildResponseToResult (/app/node_modules/esbuild/lib/main.js:1243:7)
+    at /app/node_modules/esbuild/lib/main.js:1352:14
+    at /app/node_modules/esbuild/lib/main.js:662:9
+    at handleIncomingPacket (/app/node_modules/esbuild/lib/main.js:759:9)
+    at Socket.readFromStdout (/app/node_modules/esbuild/lib/main.js:629:7)
+    at Socket.emit (node:events:513:28)
+    at addChunk (node:internal/streams/readable:315:12) {
+  errors: [
+    {
+      detail: Error: command "npm exec" failed with error code: 1
+          at ChildProcess.<anonymous> (file:///app/buildSrc/nativeLibraryProvider.js:279:12)
+          at ChildProcess.emit (node:events:513:28)
+          at Process.ChildProcess._handle.onexit (node:internal/child_process:293:12),
+      location: null,
+      notes: [
+        {
+          location: {
+            column: 22,
+            file: '../node_modules/esbuild/lib/main.js',
+            length: 0,
+            line: 839,
+            lineText: '        let promise = setup({\n' +
+              '    at setup (file:///app/buildSrc/esbuildUtils.js:58:10)\n' +
+              '    at handlePlugins (/app/node_modules/esbuild/lib/main.js:839:23)\n' +
+              '    at Object.buildOrServe (/app/node_modules/esbuild/lib/main.js:1133:7)\n' +
+              '    at /app/node_modules/esbuild/lib/main.js:2074:17\n' +
+              '    at new Promise (<anonymous>)\n' +
+              '    at Object.build (/app/node_modules/esbuild/lib/main.js:2073:14)\n' +
+              '    at build (/app/node_modules/esbuild/lib/main.js:1923:51)\n' +
+              '    at file:///app/test/TestBuilder.js:37:9\n' +
+              '    at runStep (file:///app/buildSrc/buildUtils.js:165:8)',
+            namespace: 'file',
+            suggestion: ''
+          },
+          text: 'This error came from the "onStart" callback registered here:'
+        }
+      ],
+      pluginName: 'sqlite-native-plugin',
+      text: 'command "npm exec" failed with error code: 1'
+    },
+    {
+      detail: Error: command "npm exec" failed with error code: 1
+          at ChildProcess.<anonymous> (file:///app/buildSrc/nativeLibraryProvider.js:279:12)
+          at ChildProcess.emit (node:events:513:28)
+          at Process.ChildProcess._handle.onexit (node:internal/child_process:293:12),
+      location: null,
+      notes: [
+        {
+          location: {
+            column: 22,
+            file: '../node_modules/esbuild/lib/main.js',
+            length: 0,
+            line: 839,
+            lineText: '        let promise = setup({\n' +
+              '    at setup (file:///app/buildSrc/esbuildUtils.js:17:10)\n' +
+              '    at handlePlugins (/app/node_modules/esbuild/lib/main.js:839:23)\n' +
+              '    at Object.buildOrServe (/app/node_modules/esbuild/lib/main.js:1133:7)\n' +
+              '    at /app/node_modules/esbuild/lib/main.js:2074:17\n' +
+              '    at new Promise (<anonymous>)\n' +
+              '    at Object.build (/app/node_modules/esbuild/lib/main.js:2073:14)\n' +
+              '    at build (/app/node_modules/esbuild/lib/main.js:1923:51)\n' +
+              '    at file:///app/test/TestBuilder.js:37:9\n' +
+              '    at runStep (file:///app/buildSrc/buildUtils.js:165:8)',
+            namespace: 'file',
+            suggestion: ''
+          },
+          text: 'This error came from the "onStart" callback registered here:'
+        }
+      ],
+      pluginName: 'keytar-native-plugin',
+      text: 'command "npm exec" failed with error code: 1'
+    }
+  ],
+  warnings: []
+}

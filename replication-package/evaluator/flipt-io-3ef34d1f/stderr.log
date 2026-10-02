@@ -1,0 +1,6 @@
+# go.flipt.io/flipt/internal/storage/cache [go.flipt.io/flipt/internal/storage/cache.test]
+internal/storage/cache/cache_test.go:27:14: cachedStore.setJSON undefined (type *Store has no field or method setJSON)
+internal/storage/cache/cache_test.go:40:26: cachedStore.getJSON undefined (type *Store has no field or method getJSON)
+internal/storage/cache/cache_test.go:56:26: cachedStore.getJSON undefined (type *Store has no field or method getJSON)
+internal/storage/cache/cache_test.go:69:26: cachedStore.getProtobuf undefined (type *Store has no field or method getProtobuf)
+internal/storage/cache/cache_test.go:85:26: cachedStore.getProtobuf undefined (type *Store has no field or method getProtobuf)

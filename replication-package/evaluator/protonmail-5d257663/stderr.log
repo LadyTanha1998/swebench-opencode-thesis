@@ -1,0 +1,97 @@
+(node:73) V8: /app/node_modules/openpgp/dist/lightweight/openpgp.min.mjs:3448 Linking failure in asm.js: Unexpected stdlib member
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:73) V8: /app/node_modules/openpgp/dist/lightweight/openpgp.min.mjs:4496 Linking failure in asm.js: Unexpected stdlib member
+(node:73) V8: /app/node_modules/openpgp/dist/lightweight/openpgp.min.mjs:2541 Linking failure in asm.js: Unexpected stdlib member
+FAIL src/app/store/_uploads/worker/encryption.test.ts (101.777 s)
+  block generator
+    ✕ should generate all file blocks (10690 ms)
+    ✕ should generate thumbnail as first block (10940 ms)
+    ✕ should throw and log if there is a consistent encryption error (10807 ms)
+    ✕ should retry and log if there is an encryption error once (19122 ms)
+    ✕ should call the hasher correctly (10650 ms)
+
+  ● block generator › should generate all file blocks
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      39 |     };
+      40 |
+    > 41 |     it('should generate all file blocks', async () => {
+         |     ^
+      42 |         const lastBlockSize = 123;
+      43 |         const file = new File(['x'.repeat(2 * FILE_CHUNK_SIZE + lastBlockSize)], 'foo.txt');
+      44 |         const thumbnailData = undefined;
+
+      at it (src/app/store/_uploads/worker/encryption.test.ts:41:5)
+      at Object.describe (src/app/store/_uploads/worker/encryption.test.ts:14:1)
+
+  ● block generator › should generate thumbnail as first block
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      64 |     });
+      65 |
+    > 66 |     it('should generate thumbnail as first block', async () => {
+         |     ^
+      67 |         const file = new File(['x'.repeat(2 * FILE_CHUNK_SIZE)], 'foo.txt');
+      68 |         const thumbnailData = new Uint8Array([1, 2, 3, 3, 2, 1]);
+      69 |         const { addressPrivateKey, privateKey, sessionKey } = await setupPromise();
+
+      at it (src/app/store/_uploads/worker/encryption.test.ts:66:5)
+      at Object.describe (src/app/store/_uploads/worker/encryption.test.ts:14:1)
+
+  ● block generator › should throw and log if there is a consistent encryption error
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      85 |     });
+      86 |
+    > 87 |     it('should throw and log if there is a consistent encryption error', async () => {
+         |     ^
+      88 |         const lastBlockSize = 123;
+      89 |         const file = new File(['x'.repeat(2 * FILE_CHUNK_SIZE + lastBlockSize)], 'foo.txt');
+      90 |         const thumbnailData = undefined;
+
+      at it (src/app/store/_uploads/worker/encryption.test.ts:87:5)
+      at Object.describe (src/app/store/_uploads/worker/encryption.test.ts:14:1)
+
+  ● block generator › should retry and log if there is an encryption error once
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      119 |     });
+      120 |
+    > 121 |     it('should retry and log if there is an encryption error once', async () => {
+          |     ^
+      122 |         const lastBlockSize = 123;
+      123 |         const file = new File(['x'.repeat(2 * FILE_CHUNK_SIZE + lastBlockSize)], 'foo.txt');
+      124 |         const thumbnailData = undefined;
+
+      at it (src/app/store/_uploads/worker/encryption.test.ts:121:5)
+      at Object.describe (src/app/store/_uploads/worker/encryption.test.ts:14:1)
+
+  ● block generator › should call the hasher correctly
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      166 |     });
+      167 |
+    > 168 |     it('should call the hasher correctly', async () => {
+          |     ^
+      169 |         const hasher: any = {
+      170 |             process: jest.fn(),
+      171 |             finish: jest.fn(() => {
+
+      at it (src/app/store/_uploads/worker/encryption.test.ts:168:5)
+      at Object.describe (src/app/store/_uploads/worker/encryption.test.ts:14:1)
+
+Test Suites: 1 failed, 1 total
+Tests:       5 failed, 5 total
+Snapshots:   0 total
+Time:        104.087 s
+Ran all test suites matching /applications\/drive\/src\/app\/store\/_uploads\/worker\/encryption.test.ts/i.

@@ -1,0 +1,35 @@
+diff --git a/applications/mail/src/app/logic/elements/elementsReducers.ts b/applications/mail/src/app/logic/elements/elementsReducers.ts
+index f7176f27f..62565f665 100644
+--- a/applications/mail/src/app/logic/elements/elementsReducers.ts
++++ b/applications/mail/src/app/logic/elements/elementsReducers.ts
+@@ -8,7 +8,7 @@ import isTruthy from '@proton/utils/isTruthy';
+ import range from '@proton/utils/range';
+ 
+ import { MAX_ELEMENT_LIST_LOAD_RETRIES, PAGE_SIZE } from '../../constants';
+-import { parseLabelIDsInEvent, isMessage as testIsMessage } from '../../helpers/elements';
++import { parseLabelIDsInEvent, isMessage as testIsMessage, isFilter, isUnread } from '../../helpers/elements';
+ import { Element } from '../../models/element';
+ import { newState } from './elementsSlice';
+ import {
+@@ -164,11 +164,19 @@ export const optimisticUpdates = (state: Draft<ElementsState>, action: PayloadAc
+     }
+     if (action.payload.bypass) {
+         const { conversationMode } = action.payload;
++        const { filter, labelID } = state.params;
+         action.payload.elements.forEach((element) => {
+             const isMessage = testIsMessage(element);
+             const id = (isMessage && conversationMode ? (element as Message).ConversationID : element.ID) || '';
+-            if (!state.bypassFilter.includes(id)) {
+-                state.bypassFilter.push(id);
++            const elementUnread = isUnread(element, labelID);
++            const needToBypass = isFilter(filter) && (filter.Unread ? !elementUnread : elementUnread);
++            const index = state.bypassFilter.indexOf(id);
++            if (needToBypass) {
++                if (index === -1) {
++                    state.bypassFilter.push(id);
++                }
++            } else if (index !== -1) {
++                state.bypassFilter.splice(index, 1);
+             }
+         });
+     }

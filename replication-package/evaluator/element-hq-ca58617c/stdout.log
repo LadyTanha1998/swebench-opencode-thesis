@@ -1,0 +1,238 @@
+Running selected tests: test/components/views/rooms/NotificationBadge/NotificationBadge-test.ts test/LegacyCallHandler-test.ts test/components/views/elements/LabelledCheckbox-test.ts test/modules/ModuleRunner-test.ts test/utils/beacon/geolocation-test.ts test/components/views/context_menus/ContextMenu-test.ts test/components/views/settings/tabs/room/VoipRoomSettingsTab-test.ts test/components/views/settings/devices/SecurityRecommendations-test.ts test/components/views/audio_messages/RecordingPlayback-test.ts test/components/structures/auth/ForgotPassword-test.ts test/components/views/spaces/SpacePanel-test.ts test/components/views/settings/devices/filter-test.ts test/components/views/rooms/wysiwyg_composer/utils/createMessageContent-test.ts test/audio/Playback-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/audio/Playback-test.ts (60.891 s)
+  Playback
+    ✓ initialises correctly (12 ms)
+    ✓ toggles playback on from stopped state (11 ms)
+    ✓ toggles playback to paused from playing state (8 ms)
+    ✓ stop playbacks (7 ms)
+    prepare()
+      ✓ decodes audio data when not greater than 5mb (3 ms)
+      ✓ tries to decode ogg when decodeAudioData fails (8 ms)
+      ✓ does not try to re-decode audio (10 ms)
+
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/settings/devices/SecurityRecommendations-test.tsx (61.612 s)
+  <SecurityRecommendations />
+    ✓ renders null when no devices (74 ms)
+    ✓ renders unverified devices section when user has unverified devices (231 ms)
+    ✓ does not render unverified devices section when only the current device is unverified (15 ms)
+    ✓ renders inactive devices section when user has inactive devices (40 ms)
+    ✓ renders both cards when user has both unverified and inactive devices (32 ms)
+    ✓ clicking view all unverified devices button works (55 ms)
+    ✓ clicking view all inactive devices button works (21 ms)
+
+PASS test/components/views/context_menus/ContextMenu-test.tsx (63.205 s)
+  <ContextMenu />
+    ✓ should automatically close when a modal is opened (40 ms)
+    ✓ should not automatically close when a modal is opened under the existing one (18 ms)
+    near top edge of window
+      ✓ stays within the window (8 ms)
+      ✓ positions the chevron correctly (4 ms)
+    near right edge of window
+      ✓ stays within the window (3 ms)
+      ✓ positions the chevron correctly (2 ms)
+    near bottom edge of window
+      ✓ stays within the window (6 ms)
+      ✓ positions the chevron correctly (1 ms)
+    near left edge of window
+      ✓ stays within the window (1 ms)
+      ✓ positions the chevron correctly (2 ms)
+
+PASS test/components/views/settings/devices/filter-test.ts
+  filterDevicesBySecurityRecommendation()
+    ✓ returns all devices when no securityRecommendations are passed (5 ms)
+    ✓ returns devices older than 90 days as inactive (3 ms)
+    ✓ returns correct devices for verified filter (2 ms)
+    ✓ returns correct devices for unverified filter (1 ms)
+    ✓ returns correct devices for combined verified and inactive filters (1 ms)
+
+PASS test/components/views/elements/LabelledCheckbox-test.tsx
+  <LabelledCheckbox />
+    ✓ should render with byline of null (308 ms)
+    ✓ should render with byline of "this is a byline" (42 ms)
+    ✓ should support unchecked by default (17 ms)
+    ✓ should be possible to disable the checkbox (13 ms)
+    ✓ should emit onChange calls (17 ms)
+    ✓ should react to value and disabled prop changes (30 ms)
+
+PASS test/modules/ModuleRunner-test.ts
+  ModuleRunner
+    invoke
+      ✓ should invoke to every registered module (6 ms)
+
+PASS test/components/views/rooms/NotificationBadge/NotificationBadge-test.tsx
+  NotificationBadge
+    StatelessNotificationBadge
+      ✓ lets you click it (30 ms)
+
+PASS test/components/views/rooms/wysiwyg_composer/utils/createMessageContent-test.ts (116.43 s)
+  createMessageContent
+    ✓ Should create html message (41 ms)
+    ✓ Should add reply to message content (17 ms)
+    ✓ Should add relation to message (11 ms)
+    ✓ Should add fields related to edition (26 ms)
+
+PASS test/utils/beacon/geolocation-test.ts (116.433 s)
+  geolocation utilities
+    getGeoUri
+      ✓ Renders a URI with only lat and lon (10 ms)
+      ✓ Nulls in location are not shown in URI (10 ms)
+      ✓ Renders a URI with 3 coords (5 ms)
+      ✓ Renders a URI with accuracy (4 ms)
+      ✓ Renders a URI with accuracy and altitude (13 ms)
+    mapGeolocationError
+      ✓ returns default for other error (3 ms)
+      ✓ returns unavailable for unavailable error (3 ms)
+      ✓ maps geo error permissiondenied correctly (1 ms)
+      ✓ maps geo position unavailable error correctly (1 ms)
+      ✓ maps geo timeout error correctly (3 ms)
+    mapGeolocationPositionToTimedGeo()
+      ✓ maps geolocation position correctly (3 ms)
+    watchPosition()
+      ✓ throws with unavailable error when geolocation is not available (45 ms)
+      ✓ sets up position handler with correct options (3 ms)
+      ✓ returns clearWatch function (4 ms)
+      ✓ calls position handler with position (4 ms)
+      ✓ maps geolocation position error and calls error handler (3 ms)
+    getCurrentPosition()
+      ✓ throws with unavailable error when geolocation is not available (6 ms)
+      ✓ throws with geolocation error when geolocation.getCurrentPosition fails (3 ms)
+      ✓ resolves with current location (2 ms)
+
+(node:118) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:120) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL test/LegacyCallHandler-test.ts (116.793 s)
+  LegacyCallHandler
+    ✓ should look up the correct user and start a call in the room when a phone number is dialled (206 ms)
+    ✓ should look up the correct user and start a call in the room when a call is transferred (39 ms)
+    ✓ should move calls between rooms when remote asserted identity changes (22 ms)
+  LegacyCallHandler without third party protocols
+    ✓ should still start a native call (7 ms)
+    incoming calls
+      ✕ should unmute <audio> before playing (8 ms)
+      ✓ listens for incoming call events when voip is enabled (12 ms)
+      ✓ rings when incoming call state is ringing and notifications set to ring (8 ms)
+      ✓ does not ring when incoming call state is ringing but local notifications are silenced (10 ms)
+      ✓ should force calls to silent when local notifications are silenced (9 ms)
+      ✓ does not unsilence calls when local notifications are silenced (11 ms)
+
+  ● LegacyCallHandler without third party protocols › incoming calls › should unmute <audio> before playing
+
+    TypeError: Cannot read properties of undefined (reading 'Ring')
+
+      497 |             expect(mockAudioElement.muted).toStrictEqual(true);
+      498 |
+    > 499 |             callHandler.play(AudioID.Ring);
+          |                                      ^
+      500 |
+      501 |             // Ensure audio is no longer muted
+      502 |             expect(mockAudioElement.muted).toStrictEqual(false);
+
+      at Object.Ring (test/LegacyCallHandler-test.ts:499:38)
+
+PASS test/components/views/settings/tabs/room/VoipRoomSettingsTab-test.tsx (116.952 s)
+  RolesRoomSettingsTab
+    Element Call
+      correct state
+        ✓ shows enabled when call member power level is 0 (221 ms)
+        ✓ shows disabled when call member power level is 0 (41 ms)
+        ✓ shows disabled when call member power level is 0 (22 ms)
+        ✓ shows disabled when call member power level is 0 (22 ms)
+      enabling/disabling
+        ✓ disables Element calls (65 ms)
+        enabling Element calls
+          ✓ enables Element calls in public room (125 ms)
+          ✓ enables Element calls in private room (163 ms)
+
+PASS test/components/views/audio_messages/RecordingPlayback-test.tsx (117.203 s)
+  <RecordingPlayback />
+    ✓ renders recording playback (298 ms)
+    ✓ disables play button while playback is decoding (39 ms)
+    ✓ enables play button when playback is finished decoding (108 ms)
+    ✓ displays error when playback decoding fails (82 ms)
+    ✓ displays pre-prepared playback with correct playback phase (47 ms)
+    ✓ toggles playback on play pause button click (60 ms)
+    Composer Layout
+      ✓ should have a waveform, no seek bar, and clock (140 ms)
+    Timeline Layout
+      ✓ should have a waveform, a seek bar, and clock (65 ms)
+      ✓ should be the default (70 ms)
+
+(node:117) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/spaces/SpacePanel-test.tsx (54.104 s)
+  <SpacePanel />
+    create new space button
+      ✓ renders create space button when UIComponent.CreateSpaces component should be shown (255 ms)
+      ✓ does not render create space button when UIComponent.CreateSpaces component should not be shown (65 ms)
+      ✓ opens context menu on create space button click (199 ms)
+
+(node:115) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/structures/auth/ForgotPassword-test.tsx (120.169 s)
+  <ForgotPassword>
+    when starting a password reset flow
+      ✓ should show the email input and mention the homeserver (315 ms)
+      and updating the server config
+        ✓ should show the new homeserver server name (80 ms)
+      when entering a non-email value
+        ✓ should show a message about the wrong format (740 ms)
+      when submitting an unknown email
+        ✓ should show an email not found message (196 ms)
+      when a connection error occurs
+        ✓ should show an info about that (151 ms)
+      when the server liveness check fails
+        ✓ should show the server error (130 ms)
+      when submitting an known email
+        ✓ should send the mail and show the check email view (179 ms)
+        when clicking resend email
+          ✓ should should resend the mail and show the tooltip (169 ms)
+        when clicking next
+          ✓ should show the password input view (167 ms)
+          when entering different passwords
+            ✓ should show an info about that (600 ms)
+          when entering a new password
+            and submitting it running into rate limiting
+              ✓ should show the rate limit error message (391 ms)
+            and submitting it
+              ✓ should send the new password and show the click validation link dialog (361 ms)
+              when validating the link from the mail
+                ✓ should display the confirm reset view and now show the dialog (373 ms)
+
+Test Suites: 1 failed, 13 passed, 14 total
+Tests:       1 failed, 101 passed, 102 total
+Snapshots:   5 passed, 5 total
+Time:        122.342 s

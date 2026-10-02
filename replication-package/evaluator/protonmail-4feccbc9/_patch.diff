@@ -1,0 +1,303 @@
+diff --git a/applications/drive/src/app/store/_links/extendedAttributes.ts b/applications/drive/src/app/store/_links/extendedAttributes.ts
+index 1c28c566b..cc2ab5b72 100644
+--- a/applications/drive/src/app/store/_links/extendedAttributes.ts
++++ b/applications/drive/src/app/store/_links/extendedAttributes.ts
+@@ -32,16 +32,58 @@ interface ParsedExtendedAttributes {
+     };
+ }
+ 
+-export async function encryptFolderExtendedAttributes(
+-    modificationTime: Date,
+-    nodePrivateKey: PrivateKeyReference,
+-    addressPrivateKey: PrivateKeyReference
+-) {
+-    const xattr = createFolderExtendedAttributes(modificationTime);
++type RawExtendedAttributes = {
++    Common?: RawCommon;
++    Media?: {
++        Width?: unknown;
++        Height?: unknown;
++    };
++};
++
++type RawCommon = {
++    ModificationTime?: unknown;
++    Size?: unknown;
++    BlockSizes?: unknown;
++    Digests?: {
++        SHA1?: unknown;
++    };
++};
++
++export interface CreateFolderExtendedAttributesOptions {
++    modificationTime: Date;
++}
++
++export interface CreateFileExtendedAttributesOptions {
++    file: File;
++    media?: {
++        width: number;
++        height: number;
++    };
++    digests?: {
++        sha1: string;
++    };
++}
++
++export interface EncryptFolderExtendedAttributesOptions extends CreateFolderExtendedAttributesOptions {
++    nodePrivateKey: PrivateKeyReference;
++    addressPrivateKey: PrivateKeyReference;
++}
++
++export interface EncryptFileExtendedAttributesOptions extends CreateFileExtendedAttributesOptions {
++    nodePrivateKey: PrivateKeyReference;
++    addressPrivateKey: PrivateKeyReference;
++}
++
++export async function encryptFolderExtendedAttributes({
++    modificationTime,
++    nodePrivateKey,
++    addressPrivateKey,
++}: EncryptFolderExtendedAttributesOptions) {
++    const xattr = createFolderExtendedAttributes({ modificationTime });
+     return encryptExtendedAttributes(xattr, nodePrivateKey, addressPrivateKey);
+ }
+ 
+-export function createFolderExtendedAttributes(modificationTime: Date): ExtendedAttributes {
++export function createFolderExtendedAttributes({ modificationTime }: CreateFolderExtendedAttributesOptions): ExtendedAttributes {
+     return {
+         Common: {
+             ModificationTime: dateToIsoString(modificationTime),
+@@ -49,32 +91,18 @@ export function createFolderExtendedAttributes(modificationTime: Date): Extended
+     };
+ }
+ 
+-export async function encryptFileExtendedAttributes(
+-    file: File,
+-    nodePrivateKey: PrivateKeyReference,
+-    addressPrivateKey: PrivateKeyReference,
+-    media?: {
+-        width: number;
+-        height: number;
+-    },
+-    digests?: {
+-        sha1: string;
+-    }
+-) {
+-    const xattr = createFileExtendedAttributes(file, media, digests);
++export async function encryptFileExtendedAttributes({
++    file,
++    nodePrivateKey,
++    addressPrivateKey,
++    media,
++    digests,
++}: EncryptFileExtendedAttributesOptions) {
++    const xattr = createFileExtendedAttributes({ file, media, digests });
+     return encryptExtendedAttributes(xattr, nodePrivateKey, addressPrivateKey);
+ }
+ 
+-export function createFileExtendedAttributes(
+-    file: File,
+-    media?: {
+-        width: number;
+-        height: number;
+-    },
+-    digests?: {
+-        sha1: string;
+-    }
+-): ExtendedAttributes {
++export function createFileExtendedAttributes({ file, media, digests }: CreateFileExtendedAttributesOptions): ExtendedAttributes {
+     const blockSizes = new Array(Math.floor(file.size / FILE_CHUNK_SIZE));
+     blockSizes.fill(FILE_CHUNK_SIZE);
+     blockSizes.push(file.size % FILE_CHUNK_SIZE);
+@@ -131,28 +159,41 @@ export async function decryptExtendedAttributes(
+ }
+ 
+ export function parseExtendedAttributes(xattrString: string): ParsedExtendedAttributes {
+-    let xattr = {};
++    let xattr: unknown;
+     try {
+         xattr = JSON.parse(xattrString);
+     } catch (err) {
+         console.warn(`XAttr "${xattrString}" is not valid JSON`);
++        xattr = undefined;
++    }
++    let common: RawCommon | undefined;
++    if (isRecord(xattr)) {
++        const rawCommon = xattr.Common;
++        if (isRecord(rawCommon)) {
++            common = rawCommon as RawCommon;
++        }
+     }
++    const parsedXattr = isRecord(xattr) ? xattr : undefined;
+     return {
+         Common: {
+-            ModificationTime: parseModificationTime(xattr),
+-            Size: parseSize(xattr),
+-            BlockSizes: parseBlockSizes(xattr),
+-            Digests: parseDigests(xattr),
++            ModificationTime: parseModificationTime(common),
++            Size: parseSize(common),
++            BlockSizes: parseBlockSizes(common),
++            Digests: parseDigests(common),
+         },
+-        Media: parseMedia(xattr),
++        Media: parseMedia(parsedXattr),
+     };
+ }
+ 
+-function parseModificationTime(xattr: any): number | undefined {
+-    const modificationTime = xattr?.Common?.ModificationTime;
++function parseModificationTime(common: RawCommon | undefined): number | undefined {
++    const modificationTime = common?.ModificationTime;
+     if (modificationTime === undefined) {
+         return undefined;
+     }
++    if (typeof modificationTime !== 'string' && typeof modificationTime !== 'number') {
++        console.warn(`XAttr modification time "${modificationTime}" is not valid`);
++        return undefined;
++    }
+     const modificationDate = new Date(modificationTime);
+     // This is the best way to check if date is "Invalid Date". :shrug:
+     if (JSON.stringify(modificationDate) === 'null') {
+@@ -167,8 +208,8 @@ function parseModificationTime(xattr: any): number | undefined {
+     return modificationTimestamp;
+ }
+ 
+-function parseSize(xattr: any): number | undefined {
+-    const size = xattr?.Common?.Size;
++function parseSize(common: RawCommon | undefined): number | undefined {
++    const size = common?.Size;
+     if (size === undefined) {
+         return undefined;
+     }
+@@ -179,35 +220,27 @@ function parseSize(xattr: any): number | undefined {
+     return size;
+ }
+ 
+-function parseBlockSizes(xattr: any): number[] | undefined {
+-    const blockSizes = xattr?.Common?.BlockSizes;
++function parseBlockSizes(common: RawCommon | undefined): number[] | undefined {
++    const blockSizes = common?.BlockSizes;
+     if (blockSizes === undefined) {
+         return undefined;
+     }
+-    if (!Array.isArray(blockSizes)) {
+-        console.warn(`XAttr block sizes "${blockSizes}" is not valid`);
+-        return undefined;
+-    }
+-    if (!blockSizes.every((item) => typeof item === 'number')) {
++    if (!Array.isArray(blockSizes) || !blockSizes.every((item) => typeof item === 'number')) {
+         console.warn(`XAttr block sizes "${blockSizes}" is not valid`);
+         return undefined;
+     }
+     return blockSizes;
+ }
+ 
+-function parseMedia(xattr: any): { Width: number; Height: number } | undefined {
++function parseMedia(xattr: RawExtendedAttributes | undefined): { Width: number; Height: number } | undefined {
+     const media = xattr?.Media;
+-    if (media === undefined || media.Width === undefined || media.Height === undefined) {
++    if (media === undefined) {
+         return undefined;
+     }
+     const width = media.Width;
+-    if (typeof width !== 'number') {
+-        console.warn(`XAttr media width "${width}" is not valid`);
+-        return undefined;
+-    }
+     const height = media.Height;
+-    if (typeof height !== 'number') {
+-        console.warn(`XAttr media height "${height}" is not valid`);
++    if (typeof width !== 'number' || typeof height !== 'number') {
++        console.warn(`XAttr media width "${width}" or height "${height}" is not valid`);
+         return undefined;
+     }
+     return {
+@@ -216,23 +249,24 @@ function parseMedia(xattr: any): { Width: number; Height: number } | undefined {
+     };
+ }
+ 
+-function parseDigests(xattr: any): { SHA1: string } | undefined {
+-    const digests = xattr?.Common?.Digests;
+-    if (digests === undefined || digests.SHA1 === undefined) {
++function parseDigests(common: RawCommon | undefined): { SHA1: string } | undefined {
++    const sha1 = common?.Digests?.SHA1;
++    if (sha1 === undefined) {
+         return undefined;
+     }
+-
+-    const sha1 = digests.SHA1;
+     if (typeof sha1 !== 'string') {
+         console.warn(`XAttr digest SHA1 "${sha1}" is not valid`);
+         return undefined;
+     }
+-
+     return {
+         SHA1: sha1,
+     };
+ }
+ 
++function isRecord(value: unknown): value is Record<string, unknown> {
++    return typeof value === 'object' && value !== null;
++}
++
+ function dateToIsoString(date: Date) {
+     const isDateValid = !Number.isNaN(date.getTime());
+     return isDateValid ? date.toISOString() : undefined;
+diff --git a/applications/drive/src/app/store/_links/useLinkActions.ts b/applications/drive/src/app/store/_links/useLinkActions.ts
+index 556eaa3f1..0bee9c999 100644
+--- a/applications/drive/src/app/store/_links/useLinkActions.ts
++++ b/applications/drive/src/app/store/_links/useLinkActions.ts
+@@ -61,7 +61,11 @@ export default function useLinkActions() {
+ 
+         const xattr = !modificationTime
+             ? undefined
+-            : await encryptFolderExtendedAttributes(modificationTime, privateKey, addressKey);
++            : await encryptFolderExtendedAttributes({
++                  modificationTime,
++                  nodePrivateKey: privateKey,
++                  addressPrivateKey: addressKey,
++              });
+ 
+         const { Folder } = await preventLeave(
+             debouncedRequest<{ Folder: { ID: string } }>(
+diff --git a/applications/drive/src/app/store/_uploads/worker/worker.ts b/applications/drive/src/app/store/_uploads/worker/worker.ts
+index 83a52fe55..0f2040eac 100644
+--- a/applications/drive/src/app/store/_uploads/worker/worker.ts
++++ b/applications/drive/src/app/store/_uploads/worker/worker.ts
+@@ -101,22 +101,23 @@ async function start(
+ 
+         const [signature, xattr] = await Promise.all([
+             signMessage(fileHash, [addressPrivateKey]),
+-            encryptFileExtendedAttributes(
++            encryptFileExtendedAttributes({
+                 file,
+-                privateKey,
++                nodePrivateKey: privateKey,
+                 addressPrivateKey,
+-                thumbnailData && thumbnailData.originalWidth && thumbnailData.originalHeight
+-                    ? {
+-                          width: thumbnailData.originalWidth,
+-                          height: thumbnailData.originalHeight,
+-                      }
+-                    : undefined,
+-                sha1Digest
++                media:
++                    thumbnailData && thumbnailData.originalWidth && thumbnailData.originalHeight
++                        ? {
++                              width: thumbnailData.originalWidth,
++                              height: thumbnailData.originalHeight,
++                          }
++                        : undefined,
++                digests: sha1Digest
+                     ? {
+                           sha1: arrayToHexString(sha1Digest),
+                       }
+-                    : undefined
+-            ),
++                    : undefined,
++            }),
+         ]);
+         uploadWorker.postDone(buffer.blockTokens, signature, addressEmail, xattr);
+     };

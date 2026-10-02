@@ -1,0 +1,7 @@
+Running selected tests: packages/components/components/modalTwo/ModalTwo.test.tsx components/modalTwo/ModalTwo.test.ts
+Running test file in @proton/components workspace: packages/components/components/modalTwo/ModalTwo.test.tsx
+----------|---------|----------|---------|---------|-------------------
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------|---------|----------|---------|---------|-------------------
+All files |       0 |        0 |       0 |       0 |                   
+----------|---------|----------|---------|---------|-------------------

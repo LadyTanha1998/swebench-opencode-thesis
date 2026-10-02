@@ -1,0 +1,29 @@
+FAIL src/app/components/FileBrowser/hooks/useSelectionControls.test.ts
+  useSelection
+    ✓ toggleSelectItem (28 ms)
+    ✓ toggleAllSelected (15 ms)
+    ✓ toggleRange (23 ms)
+    ✓ selectItem (21 ms)
+    ✓ clearSelection (31 ms)
+    ✓ isSelected (36 ms)
+    ✕ selectionState (24 ms)
+
+  ● useSelection › selectionState
+
+    TypeError: Cannot read properties of undefined (reading 'SOME')
+
+      75 |         });
+      76 |
+    > 77 |         expect(hook.current.selectionState).toBe(SelectionState.SOME);
+         |                                                                 ^
+      78 |
+      79 |         act(() => {
+      80 |             hook.current.toggleAllSelected();
+
+      at Object.SOME (src/app/components/FileBrowser/hooks/useSelectionControls.test.ts:77:65)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 6 passed, 7 total
+Snapshots:   0 total
+Time:        3.894 s
+Ran all test suites matching /applications\/drive\/src\/app\/components\/FileBrowser\/hooks\/useSelectionControls.test.ts/i.

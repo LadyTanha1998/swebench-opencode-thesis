@@ -1,0 +1,3 @@
+# go.flipt.io/flipt/internal/metrics [go.flipt.io/flipt/internal/metrics.test]
+internal/metrics/metrics_test.go:74:4: undefined: metricExpOnce
+internal/metrics/metrics_test.go:75:25: undefined: GetExporter

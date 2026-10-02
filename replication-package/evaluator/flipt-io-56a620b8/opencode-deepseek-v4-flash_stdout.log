@@ -1,0 +1,118 @@
+Running selected tests: TestSegment TestCacheUnaryInterceptor_Evaluation_Boolean TestAuditUnaryInterceptor_CreateRule TestAuditUnaryInterceptor_DeleteRule TestCacheUnaryInterceptor_CreateVariant TestAuditUnaryInterceptor_UpdateSegment TestVariant TestAuditUnaryInterceptor_UpdateFlag TestAuditUnaryInterceptor_DeleteConstraint TestAuditUnaryInterceptor_UpdateRollout TestCacheUnaryInterceptor_Evaluation_Variant TestAuditUnaryInterceptor_DeleteSegment TestAuditUnaryInterceptor_DeleteFlag TestAuditUnaryInterceptor_DeleteVariant TestEvaluationUnaryInterceptor_Evaluation TestAuditUnaryInterceptor_CreateSegment TestConstraint TestCacheUnaryInterceptor_UpdateFlag TestAuditUnaryInterceptor_CreateFlag TestFlag TestValidationUnaryInterceptor TestEvaluationUnaryInterceptor_BatchEvaluation TestAuditUnaryInterceptor_CreateConstraint TestErrorUnaryInterceptor TestAuditUnaryInterceptor_UpdateConstraint TestGRPCMethodToAction TestSink TestCacheUnaryInterceptor_UpdateVariant TestAuditUnaryInterceptor_DeleteRollout TestNamespace TestAuditUnaryInterceptor_UpdateRule TestAuthMetadataAuditUnaryInterceptor TestCacheUnaryInterceptor_DeleteVariant TestSinkSpanExporter TestLoad TestAuditUnaryInterceptor_UpdateVariant TestCacheUnaryInterceptor_Evaluate TestDistribution TestAuditUnaryInterceptor_CreateRollout TestHTTPClient_Failure TestAuditUnaryInterceptor_DeleteDistribution TestAuditUnaryInterceptor_UpdateNamespace TestHTTPClient_Success TestCacheUnaryInterceptor_DeleteFlag TestAuditUnaryInterceptor_CreateToken TestChecker TestAuditUnaryInterceptor_CreateNamespace TestHTTPClient_Success_WithSignedPayload TestAuditUnaryInterceptor_CreateVariant TestAuditUnaryInterceptor_CreateDistribution TestAuditUnaryInterceptor_DeleteNamespace TestRule TestEvaluationUnaryInterceptor_Noop TestAuditUnaryInterceptor_UpdateDistribution TestCacheUnaryInterceptor_GetFlag
+FAIL	go.flipt.io/flipt/cmd/flipt [build failed]
+FAIL	go.flipt.io/flipt/config [build failed]
+?   	go.flipt.io/flipt/config/migrations	[no test files]
+?   	go.flipt.io/flipt/internal/cache	[no test files]
+FAIL	go.flipt.io/flipt/internal/cache/memory [build failed]
+FAIL	go.flipt.io/flipt/internal/cache/redis [build failed]
+FAIL	go.flipt.io/flipt/internal/cleanup [build failed]
+FAIL	go.flipt.io/flipt/internal/cmd [build failed]
+FAIL	go.flipt.io/flipt/internal/config [build failed]
+?   	go.flipt.io/flipt/internal/containers	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/cue	0.121s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/ext	0.137s [no tests to run]
+?   	go.flipt.io/flipt/internal/gateway	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/gitfs	0.125s [no tests to run]
+?   	go.flipt.io/flipt/internal/info	[no test files]
+?   	go.flipt.io/flipt/internal/metrics	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/release	0.111s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/s3fs	0.129s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server	0.205s [no tests to run]
+=== RUN   TestSinkSpanExporter
+=== RUN   TestSinkSpanExporter/Valid
+=== RUN   TestSinkSpanExporter/Invalid
+--- PASS: TestSinkSpanExporter (3.02s)
+    --- PASS: TestSinkSpanExporter/Valid (0.02s)
+    --- PASS: TestSinkSpanExporter/Invalid (3.00s)
+=== RUN   TestGRPCMethodToAction
+--- PASS: TestGRPCMethodToAction (0.00s)
+=== RUN   TestChecker
+--- PASS: TestChecker (0.00s)
+=== RUN   TestFlag
+--- PASS: TestFlag (0.00s)
+=== RUN   TestVariant
+--- PASS: TestVariant (0.00s)
+=== RUN   TestConstraint
+--- PASS: TestConstraint (0.00s)
+=== RUN   TestNamespace
+--- PASS: TestNamespace (0.00s)
+=== RUN   TestDistribution
+--- PASS: TestDistribution (0.00s)
+=== RUN   TestSegment
+--- PASS: TestSegment (0.00s)
+=== RUN   TestRule
+--- PASS: TestRule (0.00s)
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit	3.185s
+?   	go.flipt.io/flipt/internal/server/audit/logfile	[no test files]
+FAIL	go.flipt.io/flipt/internal/server/audit/webhook [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/method [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/method/github [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/method/kubernetes [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/method/kubernetes/testing [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/method/oidc [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/method/oidc/testing [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/method/token [build failed]
+FAIL	go.flipt.io/flipt/internal/server/auth/public [build failed]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/server/evaluation	0.130s [no tests to run]
+FAIL	go.flipt.io/flipt/internal/server/metadata [build failed]
+?   	go.flipt.io/flipt/internal/server/metrics	[no test files]
+FAIL	go.flipt.io/flipt/internal/server/middleware/grpc [build failed]
+?   	go.flipt.io/flipt/internal/server/otel	[no test files]
+?   	go.flipt.io/flipt/internal/storage	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/auth	0.102s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/auth/cache	0.120s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/auth/memory	0.107s [no tests to run]
+FAIL	go.flipt.io/flipt/internal/storage/auth/sql [build failed]
+?   	go.flipt.io/flipt/internal/storage/auth/testing	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/cache	0.124s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs	0.134s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/git	0.127s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/local	0.098s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/fs/s3	0.081s [no tests to run]
+?   	go.flipt.io/flipt/internal/storage/oplock	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	go.flipt.io/flipt/internal/storage/oplock/memory	0.066s [no tests to run]
+FAIL	go.flipt.io/flipt/internal/storage/oplock/sql [build failed]
+?   	go.flipt.io/flipt/internal/storage/oplock/testing	[no test files]
+FAIL	go.flipt.io/flipt/internal/storage/sql [build failed]
+FAIL	go.flipt.io/flipt/internal/storage/sql/common [build failed]
+FAIL	go.flipt.io/flipt/internal/storage/sql/mysql [build failed]
+FAIL	go.flipt.io/flipt/internal/storage/sql/postgres [build failed]
+FAIL	go.flipt.io/flipt/internal/storage/sql/sqlite [build failed]
+FAIL	go.flipt.io/flipt/internal/storage/sql/testing [build failed]
+FAIL	go.flipt.io/flipt/internal/telemetry [build failed]
+?   	go.flipt.io/flipt/ui	[no test files]
+FAIL

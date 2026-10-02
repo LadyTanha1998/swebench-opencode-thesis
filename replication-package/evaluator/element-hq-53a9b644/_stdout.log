@@ -1,0 +1,685 @@
+Running selected tests: test/components/structures/MessagePanel-test.ts test/stores/MemberListStore-test.ts test/components/views/messages/TextualBody-test.ts test/components/structures/auth/Login-test.ts test/utils/__snapshots__/MessageDiffUtils-test.tsx.snap test/KeyBindingsManager-test.ts test/voice-broadcast/utils/pauseNonLiveBroadcastFromOtherRoom-test.ts test/components/views/settings/AddPrivilegedUsers-test.ts test/components/views/dialogs/DevtoolsDialog-test.ts test/utils/maps-test.ts test/settings/watchers/ThemeWatcher-test.ts test/components/views/messages/MessageEvent-test.ts test/utils/beacon/geolocation-test.ts test/components/views/location/Map-test.ts test/SlashCommands-test.ts test/components/views/elements/ReplyChain-test.ts test/components/views/dialogs/InviteDialog-test.ts test/components/views/beacon/BeaconViewDialog-test.ts test/events/RelationsHelper-test.ts test/events/location/getShareableLocationEvent-test.ts test/components/views/elements/EventListSummary-test.ts test/components/views/settings/devices/LoginWithQRFlow-test.ts test/components/views/spaces/SpaceTreeLevel-test.ts test/editor/history-test.ts test/components/views/avatars/BaseAvatar-test.ts test/linkify-matrix-test.ts test/utils/MessageDiffUtils-test.tsx test/PosthogAnalytics-test.ts test/utils/device/clientInformation-test.ts test/components/views/rooms/RoomPreviewBar-test.ts test/Markdown-test.ts test/components/views/right_panel/PinnedMessagesCard-test.ts test/components/views/settings/devices/LoginWithQR-test.ts test/utils/MessageDiffUtils-test.ts test/components/views/settings/discovery/EmailAddresses-test.ts test/modules/ProxiedModuleApi-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/linkify-matrix-test.ts (54.35 s)
+  linkify-matrix
+    roomalias plugin
+      ✓ should not parse #foo without domain (23 ms)
+      ✓ properly parses #_foonetic_xkcd:matrix.org (3 ms)
+      ✓ properly parses #foo:localhost (1 ms)
+      ✓ accept #foo:bar.com (1 ms)
+      ✓ accept #foo:com (mostly for (TLD|DOMAIN)+ mixing) (2 ms)
+      ✓ accept repeated TLDs (e.g .org.uk) (2 ms)
+      ✓ accept hyphens in name #foo-bar:server.com (10 ms)
+      ✓ ignores trailing `:` (1 ms)
+      ✓ accept :NUM (port specifier)
+      ✓ ignores all the trailing : (1 ms)
+      ✓ properly parses room alias with dots in name (1 ms)
+      ✓ does not parse room alias with too many separators (1 ms)
+      ✓ does not parse multiple room aliases in one string (1 ms)
+      ip v4 tests
+        ✓ should properly parse IPs v4 as the domain name (8 ms)
+        ✓ should properly parse IPs v4 with port as the domain name with attached (3 ms)
+        ✓ should properly parse IPs v4 as the domain name while ignoring missing port (10 ms)
+      ip v6 tests
+        ○ skipped should properly parse IPs v6 as the domain name
+        ○ skipped should properly parse IPs v6 with port as the domain name
+        ○ skipped should properly parse IPs v6 while ignoring dangling comma when without port name as the domain name
+    userid plugin
+      ✓ should not parse @foo without domain (2 ms)
+      ✓ properly parses @_foonetic_xkcd:matrix.org
+      ✓ properly parses @foo:localhost (1 ms)
+      ✓ accept @foo:bar.com
+      ✓ accept @foo:com (mostly for (TLD|DOMAIN)+ mixing) (1 ms)
+      ✓ accept repeated TLDs (e.g .org.uk)
+      ✓ accept hyphens in name @foo-bar:server.com (1 ms)
+      ✓ ignores trailing `:`
+      ✓ accept :NUM (port specifier)
+      ✓ ignores all the trailing : (1 ms)
+      ✓ properly parses room alias with dots in name
+      ✓ does not parse room alias with too many separators (1 ms)
+      ✓ does not parse multiple room aliases in one string
+      ip v4 tests
+        ✓ should properly parse IPs v4 as the domain name
+        ✓ should properly parse IPs v4 with port as the domain name with attached
+        ✓ should properly parse IPs v4 as the domain name while ignoring missing port (1 ms)
+      ip v6 tests
+        ○ skipped should properly parse IPs v6 as the domain name
+        ○ skipped should properly parse IPs v6 with port as the domain name
+        ○ skipped should properly parse IPs v6 while ignoring dangling comma when without port name as the domain name
+    matrix uri
+      ✓ accepts matrix:u/foo_bar:server.uk (1 ms)
+      ✓ accepts matrix:r/foo-bar:server.uk (1 ms)
+      ✓ accepts matrix:roomid/somewhere:example.org?via=elsewhere.ca
+      ✓ accepts matrix:r/somewhere:example.org
+      ✓ accepts matrix:r/somewhere:example.org/e/event
+      ✓ accepts matrix:roomid/somewhere:example.org/e/event?via=elsewhere.ca (1 ms)
+      ✓ accepts matrix:u/alice:example.org?action=chat
+    matrix-prefixed domains
+      ✓ accepts matrix.org (1 ms)
+      ✓ accepts matrix.to (1 ms)
+      ✓ accepts matrix-help.org
+      ✓ accepts matrix123.org
+
+PASS test/Markdown-test.ts (54.499 s)
+  Markdown parser test
+    fixing HTML links
+      ✓ tests that links with markdown empasis in them are getting properly HTML formatted (52 ms)
+      ✓ tests that links with autolinks are not touched at all and are still properly formatted (16 ms)
+      ✓ expects that links in codeblock are not modified (4 ms)
+      ✓ expects that links with emphasis are "escaped" correctly (8 ms)
+      ✓ expects that the link part will not be accidentally added to <strong> (3 ms)
+      ✓ expects that the link part will not be accidentally added to <strong> for multiline links (1 ms)
+      ✓ resumes applying formatting to the rest of a message after a link (23 ms)
+
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/settings/devices/LoginWithQR-test.tsx (56.808 s)
+  <LoginWithQR />
+    ✓ no homeserver support (140 ms)
+    ✓ failed to connect (77 ms)
+    ✓ render QR then cancel and try again (147 ms)
+    ✓ render QR then back (72 ms)
+    ✓ render QR then decline (84 ms)
+    ✓ approve - no crypto (98 ms)
+    ✓ approve + verifying (119 ms)
+    ✓ approve + verify (69 ms)
+
+PASS test/PosthogAnalytics-test.ts (48.549 s)
+  PosthogAnalytics
+    Initialisation
+      ✓ Should not be enabled without config being set (8 ms)
+      ✓ Should be enabled if config is set (5 ms)
+    Tracking
+      ✓ Should pass event to posthog (9 ms)
+      ✓ Should not track events if anonymous (3 ms)
+      ✓ Should not track any events if disabled (3 ms)
+      ✓ Should anonymise location of a known screen (2 ms)
+      ✓ Should anonymise location of an unknown screen (4 ms)
+      ✓ Should handle an empty hash (3 ms)
+      ✓ Should identify the user to posthog if pseudonymous (6 ms)
+      ✓ Should not identify the user to posthog if anonymous (3 ms)
+      ✓ Should identify using the server's analytics id if present (1 ms)
+    WebLayout
+      ✓ should send layout IRC correctly (18 ms)
+      ✓ should send layout Bubble correctly (4 ms)
+      ✓ should send layout Group correctly (2 ms)
+      ✓ should send layout Compact correctly (3 ms)
+
+PASS test/SlashCommands-test.tsx (46.526 s)
+  SlashCommands
+    /topic
+      ✓ sets topic (65 ms)
+      isEnabled
+        ✓ should return true for Room (17 ms)
+        ✓ should return false for LocalRoom (18 ms)
+    /upgraderoom
+      isEnabled
+        ✓ should return true for Room (7 ms)
+        ✓ should return false for LocalRoom (6 ms)
+    /myroomnick
+      isEnabled
+        ✓ should return true for Room (6 ms)
+        ✓ should return false for LocalRoom (9 ms)
+    /roomavatar
+      isEnabled
+        ✓ should return true for Room (4 ms)
+        ✓ should return false for LocalRoom (3 ms)
+    /myroomavatar
+      isEnabled
+        ✓ should return true for Room (5 ms)
+        ✓ should return false for LocalRoom (5 ms)
+    /roomname
+      isEnabled
+        ✓ should return true for Room (4 ms)
+        ✓ should return false for LocalRoom (10 ms)
+    /invite
+      isEnabled
+        ✓ should return true for Room (5 ms)
+        ✓ should return false for LocalRoom (5 ms)
+    /part
+      ✓ should part room matching alias if found (14 ms)
+      ✓ should part room matching alt alias if found (15 ms)
+      isEnabled
+        ✓ should return true for Room (4 ms)
+        ✓ should return false for LocalRoom (3 ms)
+    /remove
+      isEnabled
+        ✓ should return true for Room (3 ms)
+        ✓ should return false for LocalRoom (4 ms)
+    /ban
+      isEnabled
+        ✓ should return true for Room (5 ms)
+        ✓ should return false for LocalRoom (6 ms)
+    /unban
+      isEnabled
+        ✓ should return true for Room (3 ms)
+        ✓ should return false for LocalRoom (4 ms)
+    /op
+      isEnabled
+        ✓ should return true for Room (5 ms)
+        ✓ should return false for LocalRoom (6 ms)
+    /deop
+      isEnabled
+        ✓ should return true for Room (4 ms)
+        ✓ should return false for LocalRoom (5 ms)
+    /addwidget
+      isEnabled
+        ✓ should return true for Room (5 ms)
+        ✓ should return false for LocalRoom (5 ms)
+    /discardsession
+      isEnabled
+        ✓ should return true for Room (20 ms)
+        ✓ should return false for LocalRoom (2 ms)
+    /whois
+      isEnabled
+        ✓ should return true for Room (3 ms)
+        ✓ should return false for LocalRoom (2 ms)
+    /holdcall
+      isEnabled
+        ✓ should return true for Room (2 ms)
+        ✓ should return false for LocalRoom (4 ms)
+    /unholdcall
+      isEnabled
+        ✓ should return true for Room (4 ms)
+        ✓ should return false for LocalRoom (14 ms)
+    /converttodm
+      isEnabled
+        ✓ should return true for Room (5 ms)
+        ✓ should return false for LocalRoom (5 ms)
+    /converttoroom
+      isEnabled
+        ✓ should return true for Room (8 ms)
+        ✓ should return false for LocalRoom (3 ms)
+    /tovirtual
+      isEnabled
+        when virtual rooms are supported
+          ✓ should return true for Room (12 ms)
+          ✓ should return false for LocalRoom (5 ms)
+        when virtual rooms are not supported
+          ✓ should return false for Room (4 ms)
+          ✓ should return false for LocalRoom (9 ms)
+    /remakeolm
+      isEnabled
+        when developer mode is enabled
+          ✓ should return true for Room (3 ms)
+          ✓ should return false for LocalRoom (2 ms)
+        when developer mode is not enabled
+          ✓ should return false for Room (23 ms)
+          ✓ should return false for LocalRoom (5 ms)
+    /rainbow
+      ✓ should return usage if no args (6 ms)
+      ✓ should make things rainbowy (12 ms)
+    /rainbowme
+      ✓ should return usage if no args (6 ms)
+      ✓ should make things rainbowy (7 ms)
+
+(node:117) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/messages/TextualBody-test.tsx (103.894 s)
+  <TextualBody />
+    ✓ renders m.emote correctly (213 ms)
+    ✓ renders m.notice correctly (49 ms)
+    ✓ renders url previews correctly (99 ms)
+    renders plain-text m.text correctly
+      ✓ simple message renders as expected (35 ms)
+      ✓ linkification get applied correctly into the DOM (53 ms)
+    renders formatted m.text correctly
+      ✓ italics, bold, underline and strikethrough render as expected (78 ms)
+      ✓ spoilers get injected properly into the DOM (67 ms)
+      ✓ linkification is not applied to code blocks (50 ms)
+      ✓ pills get injected correctly into the DOM (82 ms)
+      ✓ pills do not appear in code blocks (36 ms)
+      ✓ pills do not appear for event permalinks (41 ms)
+      ✓ pills appear for room links with vias (74 ms)
+      ✓ renders formatted body without html corretly (18 ms)
+
+(node:118) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:115) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:115) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/components/views/elements/EventListSummary-test.tsx (104.391 s)
+  EventListSummary
+    ✓ renders expanded events if there are less than props.threshold (296 ms)
+    ✓ renders expanded events if there are less than props.threshold (32 ms)
+    ✓ renders collapsed events if events.length = props.threshold (59 ms)
+    ✓ truncates long join,leave repetitions (51 ms)
+    ✓ truncates long join,leave repetitions between other events (43 ms)
+    ✓ truncates multiple sequences of repetitions with other events between (27 ms)
+    ✓ handles multiple users following the same sequence of memberships (24 ms)
+    ✓ handles many users following the same sequence of memberships (68 ms)
+    ✓ correctly orders sequences of transitions by the order of their first event (19 ms)
+    ✓ correctly identifies transitions (23 ms)
+    ✓ handles invitation plurals correctly when there are multiple users (24 ms)
+    ✓ handles invitation plurals correctly when there are multiple invites (18 ms)
+    ✓ handles a summary length = 2, with no "others" (16 ms)
+    ✓ handles a summary length = 2, with 1 "other" (18 ms)
+    ✓ handles a summary length = 2, with many "others" (18 ms)
+
+PASS test/components/views/rooms/RoomPreviewBar-test.tsx (104.92 s)
+  <RoomPreviewBar />
+    ✓ renders joining message (184 ms)
+    ✓ renders rejecting message (66 ms)
+    ✓ renders loading message (29 ms)
+    ✓ renders not logged in message (29 ms)
+    ✓ should send room oob data to start login (148 ms)
+    ✓ renders kicked message (44 ms)
+    ✓ renders banned message (23 ms)
+    ✓ renders viewing room message when room an be previewed (35 ms)
+    ✓ renders viewing room message when room can not be previewed (32 ms)
+    with an error
+      ✓ renders room not found error (22 ms)
+      ✓ renders other errors (37 ms)
+    with an invite
+      without an invited email
+        for a non-dm room
+          ✓ renders invite message (71 ms)
+          ✓ renders join and reject action buttons correctly (28 ms)
+          ✓ renders reject and ignore action buttons when handler is provided (27 ms)
+          ✓ renders join and reject action buttons in reverse order when room can previewed (32 ms)
+          ✓ joins room on primary button click (42 ms)
+          ✓ rejects invite on secondary button click (28 ms)
+        for a dm room
+          ✓ renders invite message to a non-dm room (47 ms)
+          ✓ renders join and reject action buttons with correct labels (22 ms)
+      with an invited email
+        when client fails to get 3PIDs
+          ✓ renders error message (38 ms)
+          ✓ renders join button (30 ms)
+        when invitedEmail is not associated with current account
+          ✓ renders invite message with invited email (34 ms)
+          ✓ renders join button (31 ms)
+        when client has no identity server connected
+          ✓ renders invite message with invited email (46 ms)
+          ✓ renders join button (22 ms)
+        when client has an identity server connected
+          ✓ renders email mismatch message when invite email mxid doesnt match (55 ms)
+          ✓ renders invite message when invite email mxid match (53 ms)
+
+PASS test/components/views/right_panel/PinnedMessagesCard-test.tsx (104.985 s)
+  <PinnedMessagesCard />
+    ✓ updates when messages are pinned (667 ms)
+    ✓ updates when messages are unpinned (189 ms)
+    ✓ hides unpinnable events found in local timeline (36 ms)
+    ✓ hides unpinnable events not found in local timeline (34 ms)
+    ✓ accounts for edits (96 ms)
+    ✓ displays votes on polls not found in local timeline (202 ms)
+
+(node:119) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:119) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 OwnBeaconStore.LivenessChange listeners added to [OwnBeaconStore]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:119) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 WellKnown.client listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:119) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added to [MockMap]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:119) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/components/views/beacon/BeaconViewDialog-test.tsx (105.475 s)
+  <BeaconViewDialog />
+    ✓ renders a map with markers (604 ms)
+    ✓ does not render any own beacon status when user is not live sharing (172 ms)
+    ✓ renders own beacon status when user is live sharing (172 ms)
+    ✓ updates markers on changes to beacons (158 ms)
+    ✓ does not update bounds or center on changing beacons (109 ms)
+    ✓ renders a fallback when there are no locations (117 ms)
+    ✓ renders map without markers when no live beacons remain (122 ms)
+    sidebar
+      ✓ opens sidebar on view list button click (131 ms)
+      ✓ closes sidebar on close button click (175 ms)
+    focused beacons
+      ✓ opens map with both beacons in view on first load without initialFocusedBeacon (120 ms)
+      ✓ opens map with both beacons in view on first load with an initially focused beacon (109 ms)
+      ✓ focuses on beacon location on sidebar list item click (257 ms)
+      ✓ refocuses on same beacon when clicking list item again (235 ms)
+
+PASS test/stores/MemberListStore-test.ts
+  MemberListStore
+    ✓ loads members in a room (66 ms)
+    ✓ fails gracefully for invalid rooms (9 ms)
+    ✓ sorts by power level (10 ms)
+    ✓ sorts by name if power level is equal (17 ms)
+    ✓ filters based on a search query (15 ms)
+    lazy loading
+      ✓ calls Room.loadMembersIfNeeded once when enabled (14 ms)
+    sliding sync
+      ✓ calls /members when lazy loading (10 ms)
+      ✓ does not use lazy loading on encrypted rooms (9 ms)
+
+PASS test/utils/maps-test.ts
+  maps
+    mapDiff
+      ✓ should indicate no differences when the pointers are the same (5 ms)
+      ✓ should indicate no differences when there are none (2 ms)
+      ✓ should indicate added properties (4 ms)
+      ✓ should indicate removed properties (3 ms)
+      ✓ should indicate changed properties (12 ms)
+      ✓ should indicate changed, added, and removed properties (3 ms)
+      ✓ should indicate changes for difference in pointers (2 ms)
+    EnhancedMap
+      ✓ should be empty by default
+      ✓ should use the provided entries (1 ms)
+      ✓ should create keys if they do not exist (2 ms)
+      ✓ should proxy remove to delete and return it (2 ms)
+      ✓ should support removing unknown keys (1 ms)
+
+PASS test/utils/beacon/geolocation-test.ts
+  geolocation utilities
+    getGeoUri
+      ✓ Renders a URI with only lat and lon (4 ms)
+      ✓ Nulls in location are not shown in URI (1 ms)
+      ✓ Renders a URI with 3 coords (1 ms)
+      ✓ Renders a URI with accuracy (1 ms)
+      ✓ Renders a URI with accuracy and altitude
+    mapGeolocationError
+      ✓ returns default for other error (1 ms)
+      ✓ returns unavailable for unavailable error (1 ms)
+      ✓ maps geo error permissiondenied correctly (1 ms)
+      ✓ maps geo position unavailable error correctly (2 ms)
+      ✓ maps geo timeout error correctly (2 ms)
+    mapGeolocationPositionToTimedGeo()
+      ✓ maps geolocation position correctly (3 ms)
+    watchPosition()
+      ✓ throws with unavailable error when geolocation is not available (74 ms)
+      ✓ sets up position handler with correct options (7 ms)
+      ✓ returns clearWatch function (3 ms)
+      ✓ calls position handler with position (5 ms)
+      ✓ maps geolocation position error and calls error handler (4 ms)
+    getCurrentPosition()
+      ✓ throws with unavailable error when geolocation is not available (17 ms)
+      ✓ throws with geolocation error when geolocation.getCurrentPosition fails (6 ms)
+      ✓ resolves with current location (2 ms)
+
+PASS test/settings/watchers/ThemeWatcher-test.tsx
+  ThemeWatcher
+    ✓ should choose a light theme by default (8 ms)
+    ✓ should choose default theme if system settings are inconclusive (2 ms)
+    ✓ should choose a dark theme if that is selected (1 ms)
+    ✓ should choose a light theme if that is selected (29 ms)
+    ✓ should choose a light-high-contrast theme if that is selected (2 ms)
+    ✓ should choose a light theme if system prefers it (via default) (3 ms)
+    ✓ should choose a dark theme if system prefers it (via default) (1 ms)
+    ✓ should choose a light theme if system prefers it (explicit) (1 ms)
+    ✓ should choose a dark theme if system prefers it (explicit) (3 ms)
+    ✓ should choose a high-contrast theme if system prefers it (2 ms)
+    ✓ should not choose a high-contrast theme if not available (1 ms)
+
+PASS test/components/views/elements/ReplyChain-test.tsx
+  ReplyChain
+    getParentEventId
+      ✓ retrieves relation reply from unedited event (6 ms)
+      ✓ retrieves relation reply from original event when edited (2 ms)
+      ✓ retrieves relation reply from edit event when provided (3 ms)
+      ✓ prefers relation reply from edit event over original event (3 ms)
+      ✓ able to clear relation reply from original event by providing empty relation field (2 ms)
+
+(node:123) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/editor/history-test.ts
+  editor/history
+    ✓ push, then undo (7 ms)
+    ✓ push, undo, then redo (2 ms)
+    ✓ push, undo, push, ensure you can`t redo
+    ✓ not every keystroke stores a history step (2 ms)
+    ✓ history step is added at word boundary (2 ms)
+    ✓ keystroke that didn't add a step can undo (2 ms)
+    ✓ undo after keystroke that didn't add a step is able to redo (30 ms)
+    ✓ overwriting text always stores a step (7 ms)
+
+PASS test/KeyBindingsManager-test.ts
+  KeyBindingsManager
+    ✓ should match basic key combo (4 ms)
+    ✓ should match key + modifier key combo (18 ms)
+    ✓ should match key + multiple modifiers key combo (3 ms)
+    ✓ should match ctrlOrMeta key combo (3 ms)
+    ✓ should match advanced ctrlOrMeta key combo (1 ms)
+
+PASS test/components/structures/auth/Login-test.tsx (54.05 s)
+  Login
+    ✓ should show form with change server link (954 ms)
+    ✓ should show form without change server link when custom URLs disabled (247 ms)
+    ✓ should show SSO button if that flow is available (116 ms)
+    ✓ should show both SSO button and username+password if both are available (160 ms)
+    ✓ should show multiple SSO buttons if multiple identity_providers are available (108 ms)
+    ✓ should show single SSO button if identity_providers is null (75 ms)
+    ✓ should handle serverConfig updates correctly (184 ms)
+    ✓ should show single Continue button if OIDC MSC3824 compatibility is given by server (68 ms)
+    ✓ should show branded SSO buttons (147 ms)
+
+PASS test/components/views/avatars/BaseAvatar-test.tsx
+  <BaseAvatar />
+    ✓ renders with minimal properties (163 ms)
+    ✓ matches snapshot (avatar) (43 ms)
+    ✓ matches snapshot (avatar + click) (48 ms)
+    ✓ matches snapshot (no avatar) (33 ms)
+    ✓ matches snapshot (no avatar + click) (25 ms)
+    ✓ uses fallback images (135 ms)
+    ✓ re-renders on reconnect (22 ms)
+    ✓ renders with an image (18 ms)
+    ✓ renders the initial letter (15 ms)
+    ✓ includes a click handler (26 ms)
+    ✓ includes a click handler (18 ms)
+    ✓ includes a click handler (23 ms)
+
+(node:116) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:122) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added to [MockMap]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/components/views/location/Map-test.tsx (5.094 s)
+  <Map />
+    ✓ renders (31 ms)
+    onClientWellKnown emits
+      ✓ updates map style when style url is truthy (16 ms)
+      ✓ does not update map style when style url is truthy (17 ms)
+    map centering
+      ✓ does not try to center when no center uri provided (24 ms)
+      ✓ sets map center to centerGeoUri (11 ms)
+      ✓ handles invalid centerGeoUri (30 ms)
+      ✓ updates map center when centerGeoUri prop changes (19 ms)
+    map bounds
+      ✓ does not try to fit map bounds when no bounds provided (21 ms)
+      ✓ fits map to bounds (12 ms)
+      ✓ handles invalid bounds (11 ms)
+      ✓ updates map bounds when bounds prop changes (16 ms)
+    children
+      ✓ renders without children (16 ms)
+      ✓ renders children with map renderProp (64 ms)
+    onClick
+      ✓ eats clicks to maplibre attribution button (15 ms)
+      ✓ calls onClick (25 ms)
+
+PASS test/events/RelationsHelper-test.ts
+  RelationsHelper
+    when there is an event without ID
+      ✓ should raise an error (115 ms)
+    when there is an event without room ID
+      ✓ should raise an error (10 ms)
+    when there is an event without relations
+      emitCurrent
+        ✓ should not emit any event (6 ms)
+      and a new event appears
+        ✓ should emit the new event (10 ms)
+    when there is an event with two pages server side relations
+      emitFetchCurrent
+        ✓ should emit the server side events (13 ms)
+    when there is an event with relations
+      emitCurrent
+        ✓ should emit the related event (12 ms)
+      and a new event appears
+        ✓ should emit the new event (8 ms)
+
+PASS test/components/structures/MessagePanel-test.tsx (110.774 s)
+  MessagePanel
+    ✓ should show the events (967 ms)
+    ✓ should collapse adjacent member events (172 ms)
+    ✓ should insert the read-marker in the right place (258 ms)
+    ✓ should show the read-marker that fall in summarised events after the summary (106 ms)
+    ✓ should hide the read-marker at the end of summarised events (70 ms)
+    ✓ shows a ghost read-marker when the read-marker moves (571 ms)
+    ✓ should collapse creation events (141 ms)
+    ✓ should not collapse beacons as part of creation events (120 ms)
+    ✓ should hide read-marker at the end of creation event summary (112 ms)
+    ✓ should render Date separators for the events (386 ms)
+    ✓ appends events into summaries during forward pagination without changing key (62 ms)
+    ✓ prepends events into summaries during backward pagination without changing key (55 ms)
+    ✓ assigns different keys to summaries that get split up (114 ms)
+    ✓ doesn't lookup showHiddenEventsInTimeline while rendering (72 ms)
+    ✓ should group hidden event reactions into an event list summary (34 ms)
+  shouldFormContinuation
+    ✓ does not form continuations from thread roots which have summaries (12 ms)
+
+PASS test/components/views/settings/devices/LoginWithQRFlow-test.tsx
+  <LoginWithQRFlow />
+    ✓ renders spinner while loading (55 ms)
+    ✓ renders spinner whilst QR generating (51 ms)
+    ✓ renders QR code (503 ms)
+    ✓ renders spinner while connecting (24 ms)
+    ✓ renders code when connected (34 ms)
+    ✓ renders spinner while signing in (18 ms)
+    ✓ renders spinner while verifying (11 ms)
+    errors
+      ✓ renders user_declined (14 ms)
+      ✓ renders other_device_not_signed_in (18 ms)
+      ✓ renders other_device_already_signed_in (22 ms)
+      ✓ renders unknown (38 ms)
+      ✓ renders expired (17 ms)
+      ✓ renders user_cancelled (24 ms)
+      ✓ renders invalid_code (18 ms)
+      ✓ renders unsupported_algorithm (16 ms)
+      ✓ renders data_mismatch (30 ms)
+      ✓ renders unsupported_transport (15 ms)
+      ✓ renders homeserver_lacks_support (47 ms)
+
+PASS test/utils/device/clientInformation-test.ts
+  recordClientInformation()
+    ✓ saves client information without url for electron clients (6 ms)
+    ✓ saves client information with url for non-electron clients (6 ms)
+  getDeviceClientInformation()
+    ✓ returns an empty object when no event exists for the device (2 ms)
+    ✓ returns client information for the device (8 ms)
+    ✓ excludes values with incorrect types (2 ms)
+
+FAIL test/components/views/spaces/SpaceTreeLevel-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=123) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:366:23)
+
+PASS test/voice-broadcast/utils/pauseNonLiveBroadcastFromOtherRoom-test.ts (6.226 s)
+  pauseNonLiveBroadcastFromOtherRoom
+    when there is no current playback
+      ✓ should not clear the current playback (22 ms)
+    when listening to a live broadcast in another room
+      ✓ should not clear current / pause the playback (26 ms)
+    when listening to a non-live broadcast in the same room
+      ✓ should not clear current / pause the playback (10 ms)
+    when listening to a non-live broadcast in another room
+      ✓ should clear current and pause the playback (9 ms)
+
+PASS test/components/views/settings/AddPrivilegedUsers-test.tsx (8.075 s)
+  <AddPrivilegedUsers />
+    ✓ checks whether form submit works as intended (1884 ms)
+    ✓ getUserIdsFromCompletions() should map completions to user id's (2 ms)
+    ✓ hasLowerOrEqualLevelThanDefaultLevel() should return false for default level -50 (1 ms)
+    ✓ hasLowerOrEqualLevelThanDefaultLevel() should return true for default level 0 (1 ms)
+    ✓ hasLowerOrEqualLevelThanDefaultLevel() should return true for default level 50 (1 ms)
+
+FAIL test/utils/MessageDiffUtils-test.tsx (5.672 s)
+  editBodyDiffToHtml
+    ✓ renders simple word changes (138 ms)
+    ✓ renders central word changes (88 ms)
+    ✓ renders text deletions (48 ms)
+    ✓ renders text additions (41 ms)
+    ✓ renders block element additions (45 ms)
+    ✓ renders inline element additions (36 ms)
+    ✓ renders block element deletions (32 ms)
+    ✓ renders inline element deletions (23 ms)
+    ✓ renders element replacements (22 ms)
+    ✓ renders attribute modifications (58 ms)
+    ✓ renders attribute deletions (44 ms)
+    ✓ renders attribute additions (21 ms)
+    ✓ deduplicates diff steps (27 ms)
+    ✓ handles non-html input (37 ms)
+    ✕ handles complex transformations (47 ms)
+
+  ● editBodyDiffToHtml › handles complex transformations
+
+    TypeError: Cannot read properties of undefined (reading 'cloneNode')
+
+      215 |         case "addAttribute":
+      216 |         case "modifyAttribute": {
+    > 217 |             const delNode = wrapDeletion(refNode.cloneNode(true));
+          |                                                  ^
+      218 |             const updatedNode = refNode.cloneNode(true) as HTMLElement;
+      219 |             if (diff.action === "addAttribute" || diff.action === "modifyAttribute") {
+      220 |                 updatedNode.setAttribute(diff.name, diff.newValue as string);
+
+      at cloneNode (src/utils/MessageDiffUtils.tsx:217:50)
+      at renderDifferenceInDOM (src/utils/MessageDiffUtils.tsx:288:9)
+      at renderDiff (test/utils/MessageDiffUtils-test.tsx:34:40)
+      at Object.renderDiff (test/utils/MessageDiffUtils-test.tsx:84:31)
+
+PASS test/components/views/dialogs/InviteDialog-test.tsx (8.762 s)
+  InviteDialog
+    ✓ should label with space name (558 ms)
+    ✓ should label with room name (169 ms)
+    ✓ should suggest valid MXIDs even if unknown (321 ms)
+    ✓ should not suggest invalid MXIDs (200 ms)
+    ✓ should lookup inputs which look like email addresses (2357 ms)
+    ✓ should suggest e-mail even if lookup fails (300 ms)
+
+PASS test/events/location/getShareableLocationEvent-test.ts (5.479 s)
+  getShareableLocationEvent()
+    ✓ returns null for a non-location event (14 ms)
+    ✓ returns the event for a location event (7 ms)
+    beacons
+      ✓ returns null for a beacon that is not live (14 ms)
+      ✓ returns null for a live beacon that does not have a location (5 ms)
+      ✓ returns the latest location event for a live beacon with location (7 ms)
+
+PASS test/modules/ProxiedModuleApi-test.ts (6.37 s)
+  ProxiedApiModule
+    translations
+      ✓ should cache translations (17 ms)
+      integration
+        ✓ should translate strings using translation system (207 ms)
+
+PASS test/components/views/messages/MessageEvent-test.tsx (5.933 s)
+  MessageEvent
+    when a voice broadcast start event occurs
+      ✓ should render a VoiceBroadcast component (68 ms)
+
+(node:120) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/dialogs/DevtoolsDialog-test.tsx (6.386 s)
+  DevtoolsDialog
+    ✓ renders the devtools dialog (633 ms)
+    ✓ copies the roomid (715 ms)
+

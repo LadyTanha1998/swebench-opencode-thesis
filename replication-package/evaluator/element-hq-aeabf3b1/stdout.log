@@ -1,0 +1,1665 @@
+Running selected tests: test/unit-tests/components/views/rooms/RoomHeader/CallGuestLinkButton-test.ts test/unit-tests/modules/ProxiedModuleApi-test.ts test/unit-tests/hooks/useUserDirectory-test.ts test/unit-tests/components/views/emojipicker/EmojiPicker-test.ts test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.ts test/unit-tests/utils/FixedRollingArray-test.ts test/unit-tests/voice-broadcast/components/VoiceBroadcastBody-test.ts test/unit-tests/stores/room-list/algorithms/list-ordering/NaturalAlgorithm-test.ts test/unit-tests/components/views/right_panel/UserInfo-test.ts test/test-utils/threads.ts test/unit-tests/components/views/rooms/PinnedMessageBanner-test.ts test/unit-tests/components/views/settings/tabs/user/PreferencesUserSettingsTab-test.ts test/unit-tests/components/views/rooms/__snapshots__/PinnedMessageBanner-test.tsx.snap test/unit-tests/hooks/useLatestResult-test.ts test/unit-tests/components/views/voip/DialPad-test.ts test/unit-tests/utils/notifications-test.ts test/unit-tests/components/views/rooms/wysiwyg_composer/EditWysiwygComposer-test.ts test/unit-tests/stores/RoomNotificationStateStore-test.ts test/unit-tests/widgets/ManagedHybrid-test.ts test/unit-tests/utils/LruCache-test.ts test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx test/unit-tests/utils/StorageManager-test.ts test/unit-tests/components/views/settings/SecureBackupPanel-test.ts test/unit-tests/components/views/settings/tabs/room/RolesRoomSettingsTab-test.ts test/unit-tests/components/views/dialogs/spotlight/RoomResultContextMenus-test.ts test/unit-tests/utils/oidc/persistOidcSettings-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/unit-tests/utils/LruCache-test.ts (65.247 s)
+  LruCache
+    ✓ when creating a cache with negative capacity it should raise an error (97 ms)
+    ✓ when creating a cache with 0 capacity it should raise an error (8 ms)
+    when there is a cache with a capacity of 3
+      ✓ has() should return false (14 ms)
+      ✓ get() should return undefined (5 ms)
+      ✓ values() should return an empty iterator (7 ms)
+      ✓ delete() should not raise an error (1 ms)
+      when the cache contains 2 items
+        ✓ has() should return false for an item not in the cache (4 ms)
+        ✓ get() should return undefined for an item not in the cahce (2 ms)
+        ✓ values() should return the items in the cache (3 ms)
+        ✓ clear() should clear the cache (8 ms)
+        ✓ when an error occurs while setting an item the cache should be cleard (8 ms)
+        and adding another item
+          ✓ deleting an unkonwn item should not raise an error (1 ms)
+          ✓ deleting the first item should work (4 ms)
+          ✓ deleting the item in the middle should work (2 ms)
+          ✓ deleting the last item should work (2 ms)
+          ✓ deleting all items should work (1 ms)
+          ✓ deleting and adding some items should work (2 ms)
+          and accesing the first added item and adding another item
+            ✓ should contain the last recently accessed items (2 ms)
+            ✓ should not contain the least recently accessed items (1 ms)
+          and adding 2 additional items
+            ✓ has() should return false for expired items (1 ms)
+            ✓ has() should return true for items in the caceh (1 ms)
+            ✓ get() should return undefined for expired items (1 ms)
+            ✓ get() should return the items in the cache (1 ms)
+            ✓ values() should return the items in the cache (1 ms)
+      when the cache contains some items where one of them is a replacement
+        ✓ should contain the last recently set items (2 ms)
+
+FAIL test/unit-tests/components/views/rooms/wysiwyg_composer/EditWysiwygComposer-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=123) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+PASS test/unit-tests/utils/notifications-test.ts (118.752 s)
+  notifications
+    createLocalNotification
+      ✓ creates account data event (152 ms)
+      ✓ does not do anything for guests (8 ms)
+      ✓ unsilenced for existing sessions when notificationsEnabled setting is truthy (11 ms)
+      ✓ unsilenced for existing sessions when notificationBodyEnabled setting is truthy (4 ms)
+      ✓ unsilenced for existing sessions when audioNotificationsEnabled setting is truthy (3 ms)
+      ✓ does not override an existing account event data (2 ms)
+    localNotificationsAreSilenced
+      ✓ defaults to false when no setting exists (3 ms)
+      ✓ checks the persisted value (3 ms)
+    clearRoomNotification
+      ✓ sends a request even if everything has been read (85 ms)
+      ✓ marks the room as read even if the receipt failed (30 ms)
+      when sendReadReceipts setting is disabled
+        ✓ should send a private read receipt (15 ms)
+    clearAllNotifications
+      ✓ does not send any requests if everything has been read (9 ms)
+      ✓ sends unthreaded receipt requests (11 ms)
+      ✓ sends private read receipts (12 ms)
+    getMarkedUnreadState
+      ✓ reads from stable prefix (6 ms)
+      ✓ reads from unstable prefix (24 ms)
+      ✓ returns undefined if neither prefix is present (9 ms)
+    setUnreadMarker
+      ✓ sets unread flag if event doesn't exist (18 ms)
+      ✓ does nothing when clearing if flag is false (7 ms)
+      ✓ sets unread flag to if existing event is false (7 ms)
+      ✓ does nothing if set false and existing event is false (6 ms)
+      ✓ does nothing if setting true and existing event is true (9 ms)
+      ✓ sets flag if setting false and existing event is true (9 ms)
+    notificationLevelToIndicator
+      ✓ returns undefined if notification level is None (2 ms)
+      ✓ returns default if notification level is Activity (1 ms)
+      ✓ returns success if notification level is Notification (1 ms)
+      ✓ returns critical if notification level is Highlight (1 ms)
+    getThreadNotificationLevel
+      ✓ returns NotificationLevel 4 when notificationCountType is 4 (3 ms)
+      ✓ returns NotificationLevel 3 when notificationCountType is 3 (3 ms)
+      ✓ returns NotificationLevel 2 when notificationCountType is 2 (2 ms)
+
+PASS test/unit-tests/voice-broadcast/components/VoiceBroadcastBody-test.tsx (37.813 s)
+  VoiceBroadcastBody
+    when there is a stopped voice broadcast
+      ✓ should render a voice broadcast playback body (274 ms)
+    when there is a started voice broadcast from the current user
+      ✓ should render a voice broadcast recording body (76 ms)
+      and the recordings ends
+        ✓ should render a voice broadcast playback body (64 ms)
+    when displaying a voice broadcast playback
+      ✓ should render a voice broadcast playback body (51 ms)
+
+(node:119) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:125) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:120) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Event.decrypted listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:120) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/unit-tests/stores/room-list/algorithms/list-ordering/NaturalAlgorithm-test.ts (157.73 s)
+  NaturalAlgorithm
+    When sortAlgorithm is alphabetical
+      ✓ orders rooms by alpha (265 ms)
+      handleRoomUpdate
+        ✓ removes a room (41 ms)
+        ✓ warns when removing a room that is not indexed (23 ms)
+        ✓ adds a new room (20 ms)
+        ✓ adds a new muted room (22 ms)
+        ✓ ignores a mute change update (12 ms)
+        ✓ throws for an unhandled update cause (97 ms)
+        time and read receipt updates
+          ✓ handles when a room is not indexed (4 ms)
+          ✓ re-sorts rooms when timeline updates (9 ms)
+    When sortAlgorithm is recent
+      ✓ orders rooms by recent with muted rooms to the bottom (33 ms)
+      handleRoomUpdate
+        ✓ removes a room (24 ms)
+        ✓ warns and returns without change when removing a room that is not indexed (20 ms)
+        ✓ adds a new room (21 ms)
+        ✓ does not re-sort on possible mute change when room did not change effective mutedness (9 ms)
+        ✓ re-sorts on a mute change (39 ms)
+
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL test/unit-tests/modules/ProxiedModuleApi-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=119) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+(node:117) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx (177.873 s)
+  <PinnedMessageBanner />
+    ✓ should render nothing when there are no pinned events (305 ms)
+    ✕ should render a single pinned event (496 ms)
+    ✕ should render 2 pinned event (134 ms)
+    ✕ should render 4 pinned event (111 ms)
+    ✕ should display the last message when the pinned event array changed (132 ms)
+    ✕ should rotate the pinned events when the banner is clicked (101 ms)
+    ✕ should display the m.file event type (158 ms)
+    ✕ should display the m.audio event type (194 ms)
+    ✕ should display the m.video event type (231 ms)
+    ✕ should display the m.image event type (1181 ms)
+    ✕ should display display a poll event (2951 ms)
+    Right button
+      ✕ should display View all button if the right panel is closed (5821 ms)
+      ✕ should display View all button if the right panel is not opened on the pinned message list (7899 ms)
+      ✕ should display Close list button if the message pinning list is displayed (87 ms)
+      ✕ should open or close the message pinning list (44 ms)
+      ✕ should listen to the right panel (36 ms)
+
+  ● <PinnedMessageBanner /> › should render a single pinned event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:96:32)
+
+  ● <PinnedMessageBanner /> › should render 2 pinned event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:107:32)
+
+  ● <PinnedMessageBanner /> › should render 4 pinned event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:125:32)
+
+  ● <PinnedMessageBanner /> › should display the last message when the pinned event array changed
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:138:42)
+
+  ● <PinnedMessageBanner /> › should rotate the pinned events when the banner is clicked
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:157:9)
+
+  ● <PinnedMessageBanner /> › should display the m.file event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display the m.audio event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display the m.video event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display the m.image event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display display a poll event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:204:32)
+
+  ● <PinnedMessageBanner /> › Right button › should display View all button if the right panel is closed
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:219:13)
+
+  ● <PinnedMessageBanner /> › Right button › should display View all button if the right panel is not opened on the pinned message list
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:230:13)
+
+  ● <PinnedMessageBanner /> › Right button › should display Close list button if the message pinning list is displayed
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:241:13)
+
+  ● <PinnedMessageBanner /> › Right button › should open or close the message pinning list
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:253:13)
+
+  ● <PinnedMessageBanner /> › Right button › should listen to the right panel
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:265:13)
+
+PASS test/unit-tests/utils/StorageManager-test.ts
+  StorageManager
+    Crypto store checks
+      ✓ should not be ok if sync store but no crypto store (25 ms)
+      ✓ should be ok if sync store and a rust crypto store (4 ms)
+      without rust store
+        ✓ should be ok if there is non migrated legacy crypto store (8 ms)
+        ✓ should be ok if legacy store in MigrationState `NOT_STARTED` (6 ms)
+        ✓ should not be ok if MigrationState greater than `NOT_STARTED` (8 ms)
+        ✓ should not be healthy if no indexeddb (2 ms)
+
+PASS test/unit-tests/hooks/useLatestResult-test.tsx (22.425 s)
+  renderhook tests
+    ✓ should return a result (44 ms)
+    ✓ should not let a slower response to an earlier query overwrite the result of a later query (13 ms)
+    ✓ should return expected results when all response times similar (12 ms)
+    ✓ should prevent out of order results (9 ms)
+
+(node:125) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/unit-tests/components/views/rooms/RoomHeader/CallGuestLinkButton-test.tsx (181.195 s)
+  <CallGuestLinkButton />
+    ✓ shows the JoinRuleDialog on click with private join rules (2535 ms)
+    ✓ shows the ShareDialog on click with public join rules (18407 ms)
+    ✓ shows the ShareDialog on click with knock join rules (366 ms)
+    ✓ don't show external conference button if room not public nor knock and the user cannot change join rules (40 ms)
+    ✓ don't show external conference button if now guest spa link is configured (252 ms)
+    ✓ opens the share dialog with the correct share link in an encrypted room (517 ms)
+    ✓ share dialog has correct link in an unencrypted room (291 ms)
+    <JoinRuleDialog />
+      ✓ shows ask to join if feature is enabled (220 ms)
+      ✓ font show ask to join if feature is enabled but cannot invite (116 ms)
+      ✓ doesn't show ask to join if feature is disabled (96 ms)
+      ✓ sends correct state event on click (1551 ms)
+
+(node:124) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx (116.038 s)
+  VoiceBroadcastRecordingPip
+    when rendering a started recording
+      ✓ should render as expected (848 ms)
+      and selecting another input device
+        ✕ should select the device and pause and resume the broadcast (20670 ms)
+      and clicking the room name
+        ✓ should show the broadcast room (301 ms)
+      and clicking the room avatar
+        ✓ should show the broadcast room (153 ms)
+      and clicking the pause button
+        ✓ should pause the recording (213 ms)
+      and clicking the stop button
+        ✓ should display the confirm end dialog (756 ms)
+        and confirming the dialog
+          ✓ should end the recording (713 ms)
+      and there is no connection and clicking the pause button
+        ✓ should show a connection error info (271 ms)
+        and the connection is back
+          ✓ should render a paused recording (288 ms)
+    when rendering a paused recording
+      ✓ should render as expected (58 ms)
+      and clicking the resume button
+        ✓ should resume the recording (289 ms)
+
+  ● VoiceBroadcastRecordingPip › when rendering a started recording › and selecting another input device › should select the device and pause and resume the broadcast
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      109 |
+      110 |         describe("and selecting another input device", () => {
+    > 111 |             beforeEach(async () => {
+          |             ^
+      112 |                 await userEvent.click(screen.getByLabelText("Change input device"));
+      113 |                 await userEvent.click(screen.getByText("Device 1"));
+      114 |             });
+
+      at beforeEach (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:111:13)
+      at describe (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:110:9)
+      at describe (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:101:5)
+      at Object.describe (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:51:1)
+
+PASS test/unit-tests/components/views/settings/tabs/room/RolesRoomSettingsTab-test.tsx (181.65 s)
+  RolesRoomSettingsTab
+    ✓ should allow an Admin to demote themselves but not others (1466 ms)
+    ✓ should initially show »Moderator« permission for »Voice broadcasts« (19313 ms)
+    ✓ should roll back power level change on error (939 ms)
+    when setting »Default« permission for »Voice broadcasts«
+      ✓ should update the power levels (564 ms)
+    Element Call
+      ✓ hides when group calls disabled (296 ms)
+      Element Call enabled
+        Join Element calls
+          ✓ defaults to moderator for joining calls (425 ms)
+          ✓ can change joining calls power level (548 ms)
+        Start Element calls
+          ✓ defaults to moderator for starting calls (353 ms)
+          ✓ can change starting calls power level (355 ms)
+    Banned users
+      ✓ should not render banned section when no banned users (289 ms)
+      ✓ renders banned users (279 ms)
+      ✓ uses banners display name when available (239 ms)
+
+PASS test/unit-tests/utils/oidc/persistOidcSettings-test.ts
+  persist OIDC settings
+    persistOidcAuthenticatedSettings
+      ✓ should set clientId and issuer in localStorage (17 ms)
+    getStoredOidcTokenIssuer()
+      ✓ should return issuer from localStorage (4 ms)
+      ✓ should return undefined when no issuer in localStorage (1 ms)
+    getStoredOidcClientId()
+      ✓ should return clientId from localStorage (1 ms)
+      ✓ should throw when no clientId in localStorage (17 ms)
+    getStoredOidcIdToken()
+      ✓ should return token from localStorage (20 ms)
+      ✓ should return undefined when no token in localStorage
+    getStoredOidcIdTokenClaims()
+      ✓ should return claims from localStorage (2 ms)
+      ✓ should return claims extracted from id_token in localStorage (2 ms)
+      ✓ should return undefined when no claims in localStorage (1 ms)
+
+PASS test/unit-tests/widgets/ManagedHybrid-test.ts
+  isManagedHybridWidgetEnabled
+    ✓ should return false if widget_build_url is unset (29 ms)
+    ✓ should return true for 1-1 rooms when widget_build_url_ignore_dm is unset (10 ms)
+    ✓ should return false for 1-1 rooms when widget_build_url_ignore_dm is true (9 ms)
+  addManagedHybridWidget
+    ✓ should noop if user lacks permission (9 ms)
+    ✓ should noop if no widget_build_url (7 ms)
+    ✓ should add the widget successfully (37 ms)
+
+PASS test/unit-tests/components/views/voip/DialPad-test.tsx
+  ✓ when hasDial is true, displays all expected numbers and letters (588 ms)
+  ✓ clicking a digit button calls the correct function (137 ms)
+  ✓ clicking the dial button calls the correct function (267 ms)
+
+PASS test/unit-tests/components/views/settings/tabs/user/PreferencesUserSettingsTab-test.tsx (61.537 s)
+  PreferencesUserSettingsTab
+    ✓ should render (21287 ms)
+    ✓ should reload when changing language (1466 ms)
+    ✓ should search and select a user timezone (1869 ms)
+    ✓ should not show spell check setting if unsupported (459 ms)
+    ✓ should enable spell check (720 ms)
+    send read receipts
+      with server support
+        ✓ can be enabled (756 ms)
+        ✓ can be disabled (567 ms)
+      without server support
+        ✓ is forcibly enabled (559 ms)
+        ✓ cannot be disabled (530 ms)
+
+(node:118) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/unit-tests/hooks/useUserDirectory-test.tsx
+  useUserDirectory
+    ✓ search for users in the identity server (17 ms)
+    ✓ should work with empty queries (24 ms)
+    ✓ should recover from a server exception (12 ms)
+
+PASS test/unit-tests/utils/FixedRollingArray-test.ts
+  FixedRollingArray
+    ✓ should seed the array with the given value (2 ms)
+    ✓ should insert at the correct end (1 ms)
+    ✓ should roll over (4 ms)
+
+PASS test/unit-tests/components/views/dialogs/spotlight/RoomResultContextMenus-test.tsx
+  RoomResultContextMenus
+    ✓ does not render the room options context menu when UIComponent customisations disable room options (83 ms)
+    ✓ renders the room options context menu when UIComponent customisations enable room options (70 ms)
+
+PASS test/unit-tests/components/views/settings/SecureBackupPanel-test.tsx (28.02 s)
+  <SecureBackupPanel />
+    ✓ displays a loader while checking keybackup (353 ms)
+    ✓ handles error fetching backup (72 ms)
+    ✓ handles absence of backup (32 ms)
+    ✓ suggests connecting session to key backup when backup exists (39 ms)
+    ✓ displays when session is connected to key backup (25 ms)
+    ✓ asks for confirmation before deleting a backup (222 ms)
+    ✓ deletes backup after confirmation (204 ms)
+    ✓ resets secret storage (25 ms)
+
+PASS test/unit-tests/components/views/emojipicker/EmojiPicker-test.tsx
+  EmojiPicker
+    ✓ should not mangle default order after filtering (510 ms)
+    ✓ sort emojis by shortcode and size (8 ms)
+    ✓ should allow keyboard navigation using arrow keys (543 ms)
+
+PASS test/unit-tests/stores/RoomNotificationStateStore-test.ts (9.285 s)
+  RoomNotificationStateStore
+    ✓ Emits no event when a room has no unreads (28 ms)
+    ✓ Emits an event when a room has unreads (7 ms)
+    ✓ Emits an event when a feature flag changes notification state (6 ms)
+    If the feature_dynamic_room_predecessors is not enabled
+      ✓ Passes the dynamic predecessor flag to getVisibleRooms (3 ms)
+    If the feature_dynamic_room_predecessors is enabled
+      ✓ Passes the dynamic predecessor flag to getVisibleRooms (9 ms)
+
+FAIL test/unit-tests/components/views/right_panel/UserInfo-test.tsx (191.817 s)
+  <UserInfo />
+    ✕ closes on close button click (21639 ms)
+    without a room
+      ✓ does not render space header (489 ms)
+      ✓ renders user info (615 ms)
+      ✓ renders user timezone if set (691 ms)
+      ✓ does not renders user timezone if timezone is invalid (223 ms)
+      ✓ renders encryption info panel without pending verification (279 ms)
+      ✓ renders encryption verification panel with pending verification (221 ms)
+      ✓ should show error modal when the verification request is cancelled with a mismatch (244 ms)
+      ✓ should not show error modal when the verification request is changed for some other reason (296 ms)
+      ✓ renders close button correctly when encryption panel with a pending verification request (325 ms)
+    with a room
+      ✓ renders user info (435 ms)
+      ✓ does not render space header when room is not a space room (335 ms)
+      ✓ renders encryption info panel without pending verification (484 ms)
+      ✓ renders encryption verification panel with pending verification (377 ms)
+      ✓ renders the message button (505 ms)
+      ✓ hides the message button if the visibility customisation hides all create room features (364 ms)
+      Ignore
+        ✓ shows block button when member userId does not match client userId (445 ms)
+        ✓ shows a modal before ignoring the user (400 ms)
+        ✓ cancels ignoring the user (347 ms)
+        ✓ unignores the user (210 ms)
+    with crypto enabled
+      ✓ renders a device list which can be expanded (421 ms)
+      ✓ renders <BasicUserInfo /> (223 ms)
+      ✓ should render a deactivate button for users of the same server if we are a server admin (257 ms)
+      device dehydration
+        ✓ hides a verified dehydrated device (unverified user) (462 ms)
+        ✓ hides a verified dehydrated device (verified user) (207 ms)
+        ✓ shows an unverified dehydrated device (176 ms)
+        ✓ shows dehydrated devices if there is more than one (492 ms)
+    with an encrypted room
+      ✓ renders unverified user info (210 ms)
+      ✓ renders verified user info (198 ms)
+  <UserInfoHeader />
+    ✓ does not render an e2e icon in the header if e2eStatus prop is undefined (23 ms)
+    ✓ renders an e2e icon in the header if e2eStatus prop is defined (66 ms)
+    ✓ renders custom user identifiers in the header (11 ms)
+  <DeviceItem />
+    ✓ with unverified user and device, displays button without a label (15 ms)
+    ✓ with verified user only, displays button with a 'Not trusted' label (10 ms)
+    ✓ with verified device only, displays no button without a label (4 ms)
+    ✓ when userId is the same as userId from client, uses isCrossSigningVerified to determine if button is shown (8 ms)
+    ✓ with verified user and device, displays no button and a 'Trusted' label (4 ms)
+    ✓ does not call verifyDevice if client.getUser returns null (126 ms)
+    ✓ calls verifyDevice if client.getUser returns an object (180 ms)
+    ✓ with display name (8 ms)
+    ✓ without display name (5 ms)
+    ✓ ambiguous display name (5 ms)
+  <UserOptionsSection />
+    ✓ always shows share user button and clicking it should produce a ShareDialog (1137 ms)
+    ✓ does not show ignore or direct message buttons when member userId matches client userId (22 ms)
+    ✓ shows direct message and mention buttons when member userId does not match client userId (87 ms)
+    ✓ mention button fires ComposerInsert Action (71 ms)
+    ✓ when call to client.getRoom is null, shows disabled read receipt button (51 ms)
+    ✓ when call to client.getRoom is non-null and room.getEventReadUpTo is null, shows disabled read receipt button (55 ms)
+    ✓ when calls to client.getRoom and room.getEventReadUpTo are non-null, shows read receipt button (60 ms)
+    ✓ clicking the read receipt button calls dispatch with correct event_id (68 ms)
+    ✓ firing the read receipt event handler with a null event_id calls dispatch with undefined not null (63 ms)
+    ✓ does not show the invite button when canInvite is false (43 ms)
+    ✓ shows the invite button when canInvite is true (56 ms)
+    ✓ clicking the invite button will call MultiInviter.invite (175 ms)
+    ✓ if calling .invite throws something strange, show default error message (158 ms)
+    ✓ clicking »message« for a RoomMember should start a DM (167 ms)
+    ✓ clicking »message« for a User should start a DM (134 ms)
+  <PowerLevelEditor />
+    ✓ renders a power level combobox (37 ms)
+    ✓ renders a combobox and attempts to change power level on change of the combobox (129 ms)
+  <RoomKickButton />
+    ✓ renders nothing if member.membership is undefined (5 ms)
+    ✓ renders something if member.membership is 'invite' or 'join' (5 ms)
+    ✓ renders the correct label (10 ms)
+    ✓ clicking the kick button calls Modal.createDialog with the correct arguments (24 ms)
+  <BanToggleButton />
+    ✓ renders the correct labels for banned and unbanned members (10 ms)
+    ✓ clicking the ban or unban button calls Modal.createDialog with the correct arguments if user is not banned (25 ms)
+    ✓ clicking the ban or unban button calls Modal.createDialog with the correct arguments if user _is_ banned (25 ms)
+  <RoomAdminToolsContainer />
+    ✓ returns a single empty div if room.getMember is falsy (8 ms)
+    ✓ can return a single empty div in case where room.getMember is not falsy (3 ms)
+    ✓ returns kick, redact messages, ban buttons if conditions met (120 ms)
+    ✓ should show BulkRedactDialog upon clicking the Remove messages button (59 ms)
+    ✓ returns mute toggle button if conditions met (9 ms)
+    ✓ should disable buttons when isUpdating=true (48 ms)
+    ✓ should not show mute button for one's own member (4 ms)
+  disambiguateDevices
+    ✓ does not add ambiguous key to unique names (3 ms)
+    ✓ adds ambiguous key to all ids with non-unique names (3 ms)
+  isMuted
+    ✓ returns false if either argument is falsy (1 ms)
+    ✓ when powerLevelContent.events and .events_default are undefined, returns false (1 ms)
+    ✓ when powerLevelContent.events is undefined, uses .events_default (2 ms)
+    ✓ when powerLevelContent.events is defined but '.m.room.message' isn't, uses .events_default (1 ms)
+    ✓ when powerLevelContent.events and '.m.room.message' are defined, uses the value (8 ms)
+  getPowerLevels
+    ✓ returns an empty object when room.currentState.getStateEvents return null (1 ms)
+
+  ● <UserInfo /> › closes on close button click
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      212 |     });
+      213 |
+    > 214 |     it("closes on close button click", async () => {
+          |     ^
+      215 |         renderComponent();
+      216 |
+      217 |         await userEvent.click(screen.getByTestId("base-card-close-button"));
+
+      at it (test/unit-tests/components/views/right_panel/UserInfo-test.tsx:214:5)
+      at Object.describe (test/unit-tests/components/views/right_panel/UserInfo-test.tsx:170:1)
+
+Summary of all failing tests
+FAIL test/unit-tests/components/views/rooms/wysiwyg_composer/EditWysiwygComposer-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=123) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+FAIL test/unit-tests/modules/ProxiedModuleApi-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=119) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+FAIL test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx (177.873 s)
+  ● <PinnedMessageBanner /> › should render a single pinned event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:96:32)
+
+  ● <PinnedMessageBanner /> › should render 2 pinned event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:107:32)
+
+  ● <PinnedMessageBanner /> › should render 4 pinned event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:125:32)
+
+  ● <PinnedMessageBanner /> › should display the last message when the pinned event array changed
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:138:42)
+
+  ● <PinnedMessageBanner /> › should rotate the pinned events when the banner is clicked
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:157:9)
+
+  ● <PinnedMessageBanner /> › should display the m.file event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display the m.audio event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display the m.video event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display the m.image event type
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:194:32)
+
+  ● <PinnedMessageBanner /> › should display display a poll event
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:204:32)
+
+  ● <PinnedMessageBanner /> › Right button › should display View all button if the right panel is closed
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:219:13)
+
+  ● <PinnedMessageBanner /> › Right button › should display View all button if the right panel is not opened on the pinned message list
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:230:13)
+
+  ● <PinnedMessageBanner /> › Right button › should display Close list button if the message pinning list is displayed
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:241:13)
+
+  ● <PinnedMessageBanner /> › Right button › should open or close the message pinning list
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:253:13)
+
+  ● <PinnedMessageBanner /> › Right button › should listen to the right panel
+
+    ReferenceError: MAX_INDICATORS is not defined
+
+      151 |     // If there is only 2 messages pinned, we will display 2 indicators
+      152 |     // In case of 1 message pinned, the indicators are not displayed, see {@link PinnedMessageBanner} logic.
+    > 153 |     const numberOfIndicators = Math.min(count, MAX_INDICATORS);
+          |                                                ^
+      154 |     // The index of the active indicator
+      155 |     const index = currentIndex % numberOfIndicators;
+      156 |
+
+      at MAX_INDICATORS (src/components/views/rooms/PinnedMessageBanner.tsx:153:48)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+      at mountIndeterminateComponent (node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+      at beginWork (node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+      at beginWork$1 (node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom.development.js:26124:20)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+      at flushSync (node_modules/react-dom/cjs/react-dom.development.js:26240:7)
+      at legacyCreateRootFromDOMContainer (node_modules/react-dom/cjs/react-dom.development.js:29614:5)
+      at legacyRenderSubtreeIntoContainer (node_modules/react-dom/cjs/react-dom.development.js:29640:12)
+      at Object.render (node_modules/react-dom/cjs/react-dom.development.js:29731:10)
+      at Object.render (node_modules/@testing-library/react/dist/pure.js:165:25)
+      at node_modules/@testing-library/react/dist/pure.js:184:12
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at act (node_modules/react/cjs/react.development.js:2512:16)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:180:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:271:10)
+      at customRender (test/test-utils/jest-matrix-react.tsx:29:18)
+      at renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:79:22)
+      at Object.renderBanner (test/unit-tests/components/views/rooms/PinnedMessageBanner-test.tsx:265:13)
+
+FAIL test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx (116.038 s)
+  ● VoiceBroadcastRecordingPip › when rendering a started recording › and selecting another input device › should select the device and pause and resume the broadcast
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      109 |
+      110 |         describe("and selecting another input device", () => {
+    > 111 |             beforeEach(async () => {
+          |             ^
+      112 |                 await userEvent.click(screen.getByLabelText("Change input device"));
+      113 |                 await userEvent.click(screen.getByText("Device 1"));
+      114 |             });
+
+      at beforeEach (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:111:13)
+      at describe (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:110:9)
+      at describe (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:101:5)
+      at Object.describe (test/unit-tests/voice-broadcast/components/molecules/VoiceBroadcastRecordingPip-test.tsx:51:1)
+
+FAIL test/unit-tests/components/views/right_panel/UserInfo-test.tsx (191.817 s)
+  ● <UserInfo /> › closes on close button click
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      212 |     });
+      213 |
+    > 214 |     it("closes on close button click", async () => {
+          |     ^
+      215 |         renderComponent();
+      216 |
+      217 |         await userEvent.click(screen.getByTestId("base-card-close-button"));
+
+      at it (test/unit-tests/components/views/right_panel/UserInfo-test.tsx:214:5)
+      at Object.describe (test/unit-tests/components/views/right_panel/UserInfo-test.tsx:170:1)
+
+
+Test Suites: 5 failed, 18 passed, 23 total
+Tests:       17 failed, 250 passed, 267 total
+Snapshots:   13 passed, 13 total
+Time:        197.033 s

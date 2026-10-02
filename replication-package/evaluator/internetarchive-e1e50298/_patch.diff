@@ -1,0 +1,157 @@
+diff --git a/openlibrary/plugins/upstream/models.py b/openlibrary/plugins/upstream/models.py
+index 9e9d40a4b..8c02e21dc 100644
+--- a/openlibrary/plugins/upstream/models.py
++++ b/openlibrary/plugins/upstream/models.py
+@@ -422,7 +422,19 @@ class Edition(models.Edition):
+ 
+     def set_toc_text(self, text: str | None):
+         if text:
+-            self.table_of_contents = TableOfContents.from_markdown(text).to_db()
++            new_toc = TableOfContents.from_markdown(text)
++            existing_toc = self.get_table_of_contents()
++            if (
++                existing_toc
++                and existing_toc.has_extended_metadata
++                and text == self.get_toc_text()
++            ):
++                # The plain-text markdown view cannot represent extended
++                # metadata (authors, subtitles, descriptions). If the submitted
++                # text is unchanged from what we displayed, keep the rich data.
++                self.table_of_contents = existing_toc.to_db()
++            else:
++                self.table_of_contents = new_toc.to_db()
+         else:
+             self.table_of_contents = None
+ 
+diff --git a/openlibrary/plugins/upstream/table_of_contents.py b/openlibrary/plugins/upstream/table_of_contents.py
+index 3c730f710..3c59cbea0 100644
+--- a/openlibrary/plugins/upstream/table_of_contents.py
++++ b/openlibrary/plugins/upstream/table_of_contents.py
+@@ -45,6 +45,10 @@ class TableOfContents:
+     def to_markdown(self) -> str:
+         return "\n".join(r.to_markdown() for r in self.entries)
+ 
++    @property
++    def has_extended_metadata(self) -> bool:
++        return any(entry.has_extended_metadata for entry in self.entries)
++
+ 
+ class AuthorRecord(TypedDict, total=False):
+     name: Required[str]
+@@ -117,6 +121,10 @@ class TocEntry:
+     def to_markdown(self) -> str:
+         return f"{'*' * self.level} {self.label or ''} | {self.title or ''} | {self.pagenum or ''}"
+ 
++    @property
++    def has_extended_metadata(self) -> bool:
++        return bool(self.authors or self.subtitle or self.description)
++
+     def is_empty(self) -> bool:
+         return all(
+             getattr(self, field) is None
+diff --git a/openlibrary/plugins/upstream/tests/test_models.py b/openlibrary/plugins/upstream/tests/test_models.py
+index a0d4f4920..cc6ea5c72 100644
+--- a/openlibrary/plugins/upstream/tests/test_models.py
++++ b/openlibrary/plugins/upstream/tests/test_models.py
+@@ -85,6 +85,26 @@ class TestModels:
+         assert callable(work.get_sorted_editions)  # Issue #3633
+         assert work.get_sorted_editions() == []
+ 
++    def _edition(self, toc):
++        edition = models.Edition(web.ctx.site, '/books/OL1M', web.Storage())
++        edition._data['table_of_contents'] = toc
++        return edition
++
++    def test_set_toc_text_preserves_extended_metadata_when_unchanged(self):
++        toc = [{"level": 1, "title": "Chapter 1", "subtitle": "A subtitle", "pagenum": "3"}]
++        edition = self._edition(toc)
++        # The plain-text markdown view cannot represent the subtitle; the
++        # unchanged submitted text must not wipe out the extended metadata.
++        edition.set_toc_text(edition.get_toc_text())
++        assert edition.table_of_contents == toc
++
++    def test_set_toc_text_applies_changes_for_simple_toc(self):
++        edition = self._edition([{"level": 1, "title": "Chapter 1", "pagenum": "3"}])
++        edition.set_toc_text("* | Chapter 1 | 3")
++        assert edition.table_of_contents == [
++            {"level": 1, "title": "Chapter 1", "pagenum": "3"}
++        ]
++
+     def test_user_settings(self):
+         user = models.User(web.ctx.site, 'user')
+         assert user.get_safe_mode() == ""
+diff --git a/openlibrary/plugins/upstream/tests/test_table_of_contents.py b/openlibrary/plugins/upstream/tests/test_table_of_contents.py
+index 18f39de62..4075c6eb9 100644
+--- a/openlibrary/plugins/upstream/tests/test_table_of_contents.py
++++ b/openlibrary/plugins/upstream/tests/test_table_of_contents.py
+@@ -171,3 +171,26 @@ class TestTocEntry:
+ 
+         entry = TocEntry(level=0, title="Just title")
+         assert entry.to_markdown() == "  | Just title | "
++
++    def test_has_extended_metadata(self):
++        assert not TocEntry(level=0, title="Chapter 1").has_extended_metadata
++        assert not TocEntry(
++            level=0, title="Chapter 1", label="1", pagenum="2"
++        ).has_extended_metadata
++
++        assert TocEntry(level=0, title="Chapter 1", subtitle="Subtitle").has_extended_metadata
++        assert TocEntry(level=0, title="Chapter 1", description="Desc").has_extended_metadata
++        assert TocEntry(
++            level=0, title="Chapter 1", authors=[{"name": "Author 1"}]
++        ).has_extended_metadata
++
++    def test_table_of_contents_has_extended_metadata(self):
++        assert not TableOfContents([TocEntry(level=0, title="Chapter 1")]).has_extended_metadata
++
++        toc = TableOfContents(
++            [
++                TocEntry(level=0, title="Chapter 1"),
++                TocEntry(level=0, title="Chapter 2", subtitle="A subtitle"),
++            ]
++        )
++        assert toc.has_extended_metadata
+diff --git a/openlibrary/templates/books/edit/edition.html b/openlibrary/templates/books/edit/edition.html
+index 988487691..d1ac75bf0 100644
+--- a/openlibrary/templates/books/edit/edition.html
++++ b/openlibrary/templates/books/edit/edition.html
+@@ -341,7 +341,20 @@ $jsdef render_work_autocomplete_item(item):
+         <br/>
+             </div>
+             <div class="input">
+-                <textarea name="edition--table_of_contents" id="edition-toc" rows="5" cols="50">$book.get_toc_text()</textarea>
++                $code:
++                    toc = book.get_table_of_contents()
++                    toc_text = book.get_toc_text()
++                    toc_has_extended_metadata = toc is not None and toc.has_extended_metadata
++                    # Size the textarea based on the number of entries, with sensible limits
++                    toc_rows = min(max(len(toc_text.splitlines()), 5), 20)
++                $if toc_has_extended_metadata:
++                    <div class="ol-message ol-message--warning" role="alert">
++                        <p><strong>$_('This Table of Contents contains additional metadata')</strong></p>
++                        <p>$:_('It includes authors, subtitles, or descriptions that cannot be edited here. Editing this field may result in the loss of that data.')</p>
++                    </div>
++                <textarea name="edition--table_of_contents" id="edition-toc" rows="$toc_rows" cols="50" $:cond(toc_has_extended_metadata, 'readonly')>$toc_text</textarea>
++                $if toc_has_extended_metadata:
++                    <span class="tip">$:_('This field is read-only because it contains metadata that cannot be edited here.')</span>
+             </div>
+         </div>
+ 
+diff --git a/static/css/js-all.less b/static/css/js-all.less
+index e2d989196..d38bb557c 100644
+--- a/static/css/js-all.less
++++ b/static/css/js-all.less
+@@ -10,6 +10,7 @@
+ @import (less) "components/cbox.less";
+ @import (less) "components/native-dialog.less";
+ @import (less) "components/flash-messages.less";
++@import (less) "components/ol-message.less";
+ @import (less) "components/jquery.autocomplete.less";
+ 
+ @import (less) "components/read-statuses.less";
+diff --git a/vendor/infogami b/vendor/infogami
+--- a/vendor/infogami
++++ b/vendor/infogami
+@@ -1 +1 @@
+-Subproject commit cb117b021773f9a9a5c2fd9594f55e1afe74a5c9
++Subproject commit cb117b021773f9a9a5c2fd9594f55e1afe74a5c9-dirty

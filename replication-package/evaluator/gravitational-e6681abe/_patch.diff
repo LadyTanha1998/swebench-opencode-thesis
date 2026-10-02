@@ -1,0 +1,158 @@
+diff --git a/lib/events/async.go b/lib/events/async.go
+new file mode 100644
+index 0000000..1498c1c
+--- /dev/null
++++ b/lib/events/async.go
+@@ -0,0 +1,152 @@
++/*
++Copyright 2021 Gravitational, Inc.
++
++Licensed under the Apache License, Version 2.0 (the "License");
++you may not use this file except in compliance with the License.
++You may obtain a copy of the License at
++
++    http://www.apache.org/licenses/LICENSE-2.0
++
++Unless required by applicable law or agreed to in writing, software
++distributed under the License is distributed on an "AS IS" BASIS,
++WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++See the License for the specific language governing permissions and
++limitations under the License.
++*/
++
++package events
++
++import (
++	"context"
++	"time"
++
++	"github.com/gravitational/teleport/lib/utils"
++	"github.com/gravitational/trace"
++	"github.com/jonboulle/clockwork"
++	log "github.com/sirupsen/logrus"
++)
++
++const (
++	// DefaultAuditEventsBufferCapacity is a default buffer size of the channel
++	DefaultAuditEventsBufferCapacity = 1024
++
++	// DefaultAuditEventsDeliveryPeriod is a default period of time
++	// that events are delivered in a batch
++	DefaultAuditEventsDeliveryPeriod = time.Duration(float64(time.Second) * 1.5)
++)
++
++// AsyncEmitterConfig provides parameters for emitter
++type AsyncEmitterConfig struct {
++	// Inner emits events to the underlying store
++	Inner Emitter
++	// Clock is a clock interface, used in tests
++	Clock clockwork.Clock
++	// UIDGenerator is unique ID generator
++	UIDGenerator utils.UID
++	// BufferSize is buffer size of the channel
++	BufferSize int
++	// SendChannelTimeout is a timeout for sending events to the channel
++	SendChannelTimeout time.Duration
++	// PauseDelay is a delay to pause after the channel is full
++	PauseDelay time.Duration
++}
++
++// CheckAndSetDefaults checks and sets default values
++func (a *AsyncEmitterConfig) CheckAndSetDefaults() error {
++	if a.Inner == nil {
++		return trace.BadParameter("missing parameter Inner")
++	}
++	if a.Clock == nil {
++		a.Clock = clockwork.NewRealClock()
++	}
++	if a.UIDGenerator == nil {
++		a.UIDGenerator = utils.NewRealUID()
++	}
++	if a.BufferSize == 0 {
++		a.BufferSize = DefaultAuditEventsBufferCapacity
++	}
++	if a.SendChannelTimeout == 0 {
++		a.SendChannelTimeout = time.Duration(float64(time.Second) * 1.5)
++	}
++	if a.PauseDelay == 0 {
++		a.PauseDelay = time.Duration(float64(time.Second) * 5.0)
++	}
++	return nil
++}
++
++// NewAsyncEmitter creates a new AsyncEmitter based on the provided configuration.
++func NewAsyncEmitter(cfg AsyncEmitterConfig) (*AsyncEmitter, error) {
++	if err := cfg.CheckAndSetDefaults(); err != nil {
++		return nil, trace.Wrap(err)
++	}
++
++	async := &AsyncEmitter{
++		AsyncEmitterConfig: cfg,
++		eventsC:            make(chan AuditEvent, cfg.BufferSize),
++		log:                log.WithField(trace.Component, "async-emitter"),
++	}
++	go async.emit()
++	return async, nil
++}
++
++// AsyncEmitter non-blocking emitter that emits events to the inner emitter
++// in a background goroutine, and drops events when the channel is full or
++// the inner emitter is slow.
++type AsyncEmitter struct {
++	AsyncEmitterConfig
++	eventsC chan AuditEvent
++	log     *log.Entry
++	closed  bool
++}
++
++func (a *AsyncEmitter) emit() {
++	for {
++		select {
++		case event, ok := <-a.eventsC:
++			if !ok {
++				return
++			}
++			ctx, cancel := context.WithTimeout(context.Background(), a.SendChannelTimeout)
++			err := a.Inner.EmitAuditEvent(ctx, event)
++			cancel()
++			if err != nil {
++				a.log.WithError(err).Error("Failed to emit audit event.")
++			}
++		case <-a.Clock.After(a.PauseDelay):
++			a.log.Debug("Async emitter is paused.")
++			// Wait for the channel to drain
++			<-a.eventsC
++		}
++	}
++}
++
++// EmitAuditEvent emits audit event
++func (a *AsyncEmitter) EmitAuditEvent(ctx context.Context, event AuditEvent) error {
++	if err := CheckAndSetEventFields(event, a.Clock, a.UIDGenerator); err != nil {
++		a.log.WithError(err).Error("Failed to emit audit event.")
++		return trace.Wrap(err)
++	}
++	select {
++	case a.eventsC <- event:
++		return nil
++	case <-ctx.Done():
++		a.log.WithError(ctx.Err()).Error("Failed to emit audit event, context done.")
++		return trace.Wrap(ctx.Err())
++	case <-a.Clock.After(a.SendChannelTimeout):
++		a.log.Error("Failed to emit audit event, channel is full.")
++		return EventDrop
++	}
++}
++
++// Close closes the audit emitter and the underlying emitter
++func (a *AsyncEmitter) Close() error {
++	if a.closed {
++		return nil
++	}
++	a.closed = true
++	close(a.eventsC)
++	return nil
++}
++
++// EventDrop is returned when events are dropped
++var EventDrop = trace.Errorf("event dropped")

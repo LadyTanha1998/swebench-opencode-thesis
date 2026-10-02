@@ -1,0 +1,16 @@
+diff --git a/scripts/solr_builder/solr_builder/fn_to_cli.py b/scripts/solr_builder/solr_builder/fn_to_cli.py
+index 289062c13..0ce6b0c4b 100644
+--- a/scripts/solr_builder/solr_builder/fn_to_cli.py
++++ b/scripts/solr_builder/solr_builder/fn_to_cli.py
+@@ -104,8 +104,9 @@ class FnToCLI:
+             return {'type': typ, 'action': BooleanOptionalAction}
+         if typ in (int, str, float):
+             return {'type': typ}
+-        if typ == list[str]:
+-            return {'nargs': '*'}
++        if typing.get_origin(typ) is list:
++            arg_type = typing.get_args(typ)[0]
++            return {'nargs': '*', 'type': arg_type}
+         if typing.get_origin(typ) == typing.Literal:
+             return {'choices': typing.get_args(typ)}
+         raise ValueError(f'Unsupported type: {typ}')

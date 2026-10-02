@@ -1,0 +1,97 @@
+{
+  "schema_version": 2,
+  "instance_id": "instance_flipt-io__flipt-86906cbfc3a5d3629a583f98e6301142f5f14bdb-v6bea0cc3a6fc532d7da914314f2944fc1cd04dee",
+  "base_commit": "358e13bf5748bba4418ffdcdd913bcbfdedc9d3f",
+  "source": "dataset_task_metadata",
+  "f2p": [
+    {
+      "id": "TestAnalyticsClickhouseConfiguration",
+      "path": null
+    },
+    {
+      "id": "TestAnalyticsPrometheusConfiguration",
+      "path": null
+    },
+    {
+      "id": "TestAuditEnabled",
+      "path": null
+    },
+    {
+      "id": "TestWithForwardPrefix",
+      "path": null
+    },
+    {
+      "id": "TestRequiresDatabase",
+      "path": null
+    },
+    {
+      "id": "TestJSONSchema",
+      "path": null
+    },
+    {
+      "id": "TestScheme",
+      "path": null
+    },
+    {
+      "id": "TestCacheBackend",
+      "path": null
+    },
+    {
+      "id": "TestTracingExporter",
+      "path": null
+    },
+    {
+      "id": "TestDatabaseProtocol",
+      "path": null
+    },
+    {
+      "id": "TestLogEncoding",
+      "path": null
+    },
+    {
+      "id": "TestLoad",
+      "path": null
+    },
+    {
+      "id": "TestServeHTTP",
+      "path": null
+    },
+    {
+      "id": "TestMarshalYAML",
+      "path": null
+    },
+    {
+      "id": "Test_mustBindEnv",
+      "path": null
+    },
+    {
+      "id": "TestGetConfigFile",
+      "path": null
+    },
+    {
+      "id": "TestStructTags",
+      "path": null
+    },
+    {
+      "id": "TestDefaultDatabaseRoot",
+      "path": null
+    },
+    {
+      "id": "TestFindDatabaseRoot",
+      "path": null
+    },
+    {
+      "id": "TestStorageConfigInfo",
+      "path": null
+    },
+    {
+      "id": "TestIsReadOnly",
+      "path": null
+    }
+  ],
+  "p2p": [],
+  "source_fields": {
+    "f2p": "fail_to_pass"
+  },
+  "status": "READY"
+}

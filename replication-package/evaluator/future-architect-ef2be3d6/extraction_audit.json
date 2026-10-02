@@ -1,0 +1,9 @@
+{
+  "status": "CAPTURE_ERROR",
+  "touched_files": [],
+  "patch_files": [],
+  "missing_from_patch": [],
+  "touched_count": 0,
+  "patch_file_count": 0,
+  "error": "git patch capture failed (exit 1): Error response from daemon: container db1fe4bd1cb0e9bc3d60f50899cba99f5c9aafc0fdbbccfc20603283e4a57f98 is not running"
+}

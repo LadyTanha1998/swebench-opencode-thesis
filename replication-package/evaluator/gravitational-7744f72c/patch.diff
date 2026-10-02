@@ -1,0 +1,251 @@
+diff --git a/lib/audit/audit.go b/lib/audit/audit.go
+new file mode 100644
+index 000000000..1dc710fd8
+--- /dev/null
++++ b/lib/audit/audit.go
+@@ -0,0 +1,60 @@
++// Package audit provides a thin wrapper around Linux auditd.
++package audit
++
++import (
++	"errors"
++	"fmt"
++	"strings"
++)
++
++// AuditEvent is a single audit event.
++type AuditEvent struct {
++	// Op is the operation that was performed, e.g. "login".
++	Op string
++	// Acct is the system account that the operation targeted.
++	Acct string
++	// Exe is the executable that performed the operation.
++	Exe string
++	// Hostname is the hostname of the machine.
++	Hostname string
++	// Addr is the address of the client.
++	Addr string
++	// Terminal is the terminal that was used.
++	Terminal string
++	// TeleportUser is the Teleport user.
++	TeleportUser string
++	// Result is the result of the operation, e.g. "success".
++	Result string
++}
++
++// String returns the audit event as a stable, space-separated payload.
++func (e *AuditEvent) String() string {
++	var b strings.Builder
++	fmt.Fprintf(&b, "op=%s acct=%q exe=%q", e.Op, e.Acct, e.Exe)
++	if e.Hostname != "" {
++		fmt.Fprintf(&b, " hostname=%s", e.Hostname)
++	}
++	if e.Addr != "" {
++		fmt.Fprintf(&b, " addr=%s", e.Addr)
++	}
++	fmt.Fprintf(&b, " terminal=%s", e.Terminal)
++	if e.TeleportUser != "" {
++		fmt.Fprintf(&b, " teleportUser=%s", e.TeleportUser)
++	}
++	fmt.Fprintf(&b, " res=%s", e.Result)
++	return b.String()
++}
++
++// Reporter reports events to Linux auditd.
++type Reporter interface {
++	// Enabled returns true if auditd is available and enabled.
++	Enabled() (bool, error)
++	// EmitAuditEvent emits a single audit event. It returns an error when
++	// auditd is disabled or when the auditd status cannot be determined.
++	EmitAuditEvent(ev *AuditEvent) error
++	// Close releases the resources used by the reporter.
++	Close() error
++}
++
++// ErrAuditdDisabled is returned when auditd is not enabled.
++var ErrAuditdDisabled = errors.New("auditd is disabled")
+\ No newline at end of file
+diff --git a/lib/audit/audit_linux.go b/lib/audit/audit_linux.go
+new file mode 100644
+index 000000000..f5c776d1e
+--- /dev/null
++++ b/lib/audit/audit_linux.go
+@@ -0,0 +1,142 @@
++//go:build linux
++// +build linux
++
++package audit
++
++import (
++	"encoding/binary"
++	"sync"
++
++	"github.com/gravitational/trace"
++	"golang.org/x/sys/unix"
++)
++
++// reporter reports audit events to Linux auditd over a netlink socket.
++type reporter struct {
++	mu sync.Mutex
++	// fd is the netlink socket file descriptor, or -1 if not connected.
++	fd int
++
++	// enabledFn reports whether auditd is enabled.
++	enabledFn func() (bool, error)
++	// sendFn sends an audit message string to auditd.
++	sendFn func(string) error
++}
++
++// New creates a new audit reporter. The netlink socket is created lazily on
++// first use so that creating a reporter never fails, even on hosts where the
++// audit subsystem is unavailable.
++func New() Reporter {
++	r := &reporter{fd: -1}
++	r.enabledFn = r.auditEnabled
++	r.sendFn = r.auditSend
++	return r
++}
++
++// Enabled returns true if auditd is enabled.
++func (r *reporter) Enabled() (bool, error) {
++	return r.enabledFn()
++}
++
++// EmitAuditEvent emits a single audit event. It returns an error when auditd
++// is disabled or when the auditd status cannot be determined.
++func (r *reporter) EmitAuditEvent(ev *AuditEvent) error {
++	enabled, err := r.Enabled()
++	if err != nil {
++		return trace.Wrap(err, "failed to get auditd status")
++	}
++	if !enabled {
++		return ErrAuditdDisabled
++	}
++	return trace.Wrap(r.sendFn(ev.String()))
++}
++
++// Close releases the resources used by the reporter.
++func (r *reporter) Close() error {
++	r.mu.Lock()
++	defer r.mu.Unlock()
++	if r.fd < 0 {
++		return nil
++	}
++	err := unix.Close(r.fd)
++	r.fd = -1
++	return trace.Wrap(err)
++}
++
++// connect opens the netlink socket if it has not been opened yet.
++func (r *reporter) connect() error {
++	if r.fd >= 0 {
++		return nil
++	}
++	fd, err := unix.Socket(unix.AF_NETLINK, unix.SOCK_RAW|unix.SOCK_CLOEXEC, unix.NETLINK_AUDIT)
++	if err != nil {
++		return trace.Wrap(err)
++	}
++	r.fd = fd
++	return nil
++}
++
++// auditEnabled queries the kernel for the audit status and reports whether
++// auditing is enabled.
++func (r *reporter) auditEnabled() (bool, error) {
++	r.mu.Lock()
++	defer r.mu.Unlock()
++
++	if err := r.connect(); err != nil {
++		return false, trace.Wrap(err)
++	}
++
++	// Send an AUDIT_GET request to query the audit status.
++	msg := make([]byte, unix.NLMSG_HDRLEN)
++	binary.LittleEndian.PutUint32(msg[0:4], unix.NLMSG_HDRLEN)
++	binary.LittleEndian.PutUint16(msg[4:6], unix.AUDIT_GET)
++	binary.LittleEndian.PutUint16(msg[6:8], 0)
++	binary.LittleEndian.PutUint32(msg[8:12], 1)
++	binary.LittleEndian.PutUint32(msg[12:16], uint32(unix.Getpid()))
++
++	addr := &unix.SockaddrNetlink{Family: unix.AF_NETLINK}
++	if err := unix.Sendto(r.fd, msg, 0, addr); err != nil {
++		return false, trace.Wrap(err)
++	}
++
++	// Read the reply. A successful reply is an AUDIT_GET message whose payload
++	// is an audit_status struct; the enabled flag is the second u32 in it.
++	resp := make([]byte, 4096)
++	n, _, err := unix.Recvfrom(r.fd, resp, 0)
++	if err != nil {
++		return false, trace.Wrap(err)
++	}
++	if n < unix.NLMSG_HDRLEN+8 {
++		return false, trace.Errorf("short audit status reply: %d bytes", n)
++	}
++	msgType := binary.LittleEndian.Uint16(resp[4:6])
++	if msgType == unix.NLMSG_ERROR {
++		errno := int32(binary.LittleEndian.Uint32(resp[16:20]))
++		return false, trace.Wrap(unix.Errno(-errno))
++	}
++	enabled := binary.LittleEndian.Uint32(resp[unix.NLMSG_HDRLEN+4 : unix.NLMSG_HDRLEN+8])
++	return enabled != 0, nil
++}
++
++// auditSend sends an audit message string to auditd as an AUDIT_USER record.
++func (r *reporter) auditSend(msg string) error {
++	r.mu.Lock()
++	defer r.mu.Unlock()
++
++	if err := r.connect(); err != nil {
++		return trace.Wrap(err)
++	}
++
++	// The audit message payload is the record text, NUL terminated.
++	payload := msg + "\x00"
++	buf := make([]byte, unix.NLMSG_HDRLEN+len(payload))
++	binary.LittleEndian.PutUint32(buf[0:4], uint32(len(buf)))
++	binary.LittleEndian.PutUint16(buf[4:6], unix.AUDIT_USER)
++	binary.LittleEndian.PutUint16(buf[6:8], 0)
++	binary.LittleEndian.PutUint32(buf[8:12], 1)
++	binary.LittleEndian.PutUint32(buf[12:16], uint32(unix.Getpid()))
++	copy(buf[unix.NLMSG_HDRLEN:], payload)
++
++	addr := &unix.SockaddrNetlink{Family: unix.AF_NETLINK}
++	return trace.Wrap(unix.Sendto(r.fd, buf, 0, addr))
++}
+\ No newline at end of file
+diff --git a/lib/audit/audit_other.go b/lib/audit/audit_other.go
+new file mode 100644
+index 000000000..c2efe27de
+--- /dev/null
++++ b/lib/audit/audit_other.go
+@@ -0,0 +1,28 @@
++//go:build !linux
++// +build !linux
++
++package audit
++
++// reporter is a no-op reporter used on platforms where Linux auditd is not
++// available.
++type reporter struct{}
++
++// New creates a new audit reporter.
++func New() Reporter {
++	return &reporter{}
++}
++
++// Enabled returns false because auditd is not available on this platform.
++func (r *reporter) Enabled() (bool, error) {
++	return false, nil
++}
++
++// EmitAuditEvent returns an error because auditd is not available.
++func (r *reporter) EmitAuditEvent(ev *AuditEvent) error {
++	return ErrAuditdDisabled
++}
++
++// Close is a no-op.
++func (r *reporter) Close() error {
++	return nil
++}
+\ No newline at end of file

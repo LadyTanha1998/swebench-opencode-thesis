@@ -1,0 +1,56 @@
+diff --git a/openlibrary/templates/account/books.html b/openlibrary/templates/account/books.html
+index 51990c13e..99b0f0718 100644
+--- a/openlibrary/templates/account/books.html
++++ b/openlibrary/templates/account/books.html
+@@ -61,7 +61,7 @@ $var title: $header_title
+       $ component_times['Yearly Goal Banner'] = time()
+       $ year = get_reading_goals_year()
+       $ current_goal = get_reading_goals(year=year)
+-      $if not current_goal:
++      $if not current_goal and is_reading_goal_promotion_period():
+         <div class="page-banner page-banner-body page-banner-mybooks">
+           Announcing Yearly Reading Goals: <a href="https://blog.openlibrary.org/2022/12/31/reach-your-2023-reading-goals-with-open-library" class="btn primary">Learn More</a> or <a class="btn primary set-reading-goal-link" data-ol-link-track="MyBooksLandingPage|SetReadingGoal"href="javascript:;">$:_('Set %(year)s reading goal', year=year)</a>
+         </div>
+diff --git a/openlibrary/templates/account/mybooks.html b/openlibrary/templates/account/mybooks.html
+index 8111cd56d..878e3623d 100644
+--- a/openlibrary/templates/account/mybooks.html
++++ b/openlibrary/templates/account/mybooks.html
+@@ -19,7 +19,7 @@ $def year_span(year, use_local_year=False):
+ 
+ $ year = get_reading_goals_year()
+ $ current_goal = get_reading_goals(year=year)
+-$ hidden = 'hidden' if current_goal else ''
++$ hidden = 'hidden' if (current_goal or not is_reading_goal_promotion_period()) else ''
+ 
+ <div class="yearly-goal-section">
+   <div class="chip-group $hidden">
+diff --git a/openlibrary/utils/dateutil.py b/openlibrary/utils/dateutil.py
+index de78ae13d..aaed8f476 100644
+--- a/openlibrary/utils/dateutil.py
++++ b/openlibrary/utils/dateutil.py
+@@ -118,6 +118,25 @@ def get_reading_goals_year():
+     return year if now.month < 12 else year + 1
+ 
+ 
++@public
++def is_reading_goal_promotion_period(now=None):
++    """Returns True if the given datetime is within the yearly reading goal
++    promotion window (December 1st through February 1st, inclusive).
++
++    Defaults to the current time when no datetime is provided.
++    """
++    now = now or datetime.datetime.now()
++    month, day = now.month, now.day
++
++    if month == 12:
++        return day >= 1
++    if month == 1:
++        return True
++    if month == 2:
++        return day <= 1
++    return False
++
++
+ @contextmanager
+ def elapsed_time(name="elapsed_time"):
+     """

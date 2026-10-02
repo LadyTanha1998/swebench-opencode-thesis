@@ -1,0 +1,68 @@
+FAIL src/app/helpers/message/messageBlockquote.test.ts (83 MB heap size)
+  messageBlockquote
+    ✓ should find the blockquote in the mail proton1 (136 ms)
+    ✓ should find the blockquote in the mail proton2 (42 ms)
+    ✓ should find the blockquote in the mail gmail1 (22 ms)
+    ✓ should find the blockquote in the mail gmail2 (14 ms)
+    ✓ should find the blockquote in the mail gmail3 (31 ms)
+    ✓ should find the blockquote in the mail gmail4 (20 ms)
+    ✓ should find the blockquote in the mail gmx (10 ms)
+    ✓ should find the blockquote in the mail android (8 ms)
+    ✓ should find the blockquote in the mail aol1 (34 ms)
+    ✓ should find the blockquote in the mail aol2 (25 ms)
+    ✓ should find the blockquote in the mail icloud (56 ms)
+    ✓ should find the blockquote in the mail netease (16 ms)
+    ✓ should find the blockquote in the mail sina (9 ms)
+    ✓ should find the blockquote in the mail thunderbird (8 ms)
+    ✓ should find the blockquote in the mail yahoo (11 ms)
+    ✓ should find the blockquote in the mail zoho (14 ms)
+    ✓ should correctly detect proton blockquote with default font and no signature (9 ms)
+    ✓ should take the last element containing text in case of siblings blockquotes (8 ms)
+    ✕ should take the last element containing an image in case of siblings blockquotes (10 ms)
+    ✓ should display nothing in blockquote when there is text after blockquotes (11 ms)
+    ✕ should display nothing in blockquote when there is an image after blockquotes (7 ms)
+
+  ● messageBlockquote › should take the last element containing an image in case of siblings blockquotes
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: "blockquote1"
+    Received string:    "
+                Email content
+                "
+
+      82 |
+      83 |         expect(before).toContain('Email content');
+    > 84 |         expect(before).toContain('blockquote1');
+         |                        ^
+      85 |         expect(before).not.toContain('proton-image-anchor');
+      86 |         expect(after).toContain('proton-image-anchor');
+      87 |         expect(after).not.toContain('blockquote1');
+
+      at Object.toContain (src/app/helpers/message/messageBlockquote.test.ts:84:24)
+
+  ● messageBlockquote › should display nothing in blockquote when there is an image after blockquotes
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: "blockquote1"
+    Received string:    "
+                Email content
+                "
+
+      115 |
+      116 |         expect(before).toContain('Email content');
+    > 117 |         expect(before).toContain('blockquote1');
+          |                        ^
+      118 |         expect(before).toContain('proton-image-anchor');
+      119 |         expect(after).toEqual('');
+      120 |     });
+
+      at Object.toContain (src/app/helpers/message/messageBlockquote.test.ts:117:24)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 19 passed, 21 total
+Snapshots:   0 total
+Time:        142.627 s
+Ran all test suites matching /applications\/mail\/src\/app\/helpers\/message\/messageBlockquote.test.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

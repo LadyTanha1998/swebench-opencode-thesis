@@ -1,0 +1,35 @@
+{
+  "schema_version": 3,
+  "instance_id": "instance_future-architect__vuls-ef2be3d6ea4c0a13674aaab08b182eca4e2b9a17-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+  "base_commit": "827f2cb8d86509c4455b2df2fe79b9d59533d3b0",
+  "docker_image": "jefzda/sweap-images:future-architect.vuls-future-architect__vuls-ef2be3d6ea4c0a13674aaab08b182eca4e2b9a17-v264a82e2f4818e30f5a25e4da53b27ba119f62b5",
+  "docker_image_id": "sha256:90ceb4723635e82d8f448cfbccb487beb752429a72619a4ba590d7b01ed2f1ac",
+  "docker_repo_digests": [
+    "jefzda/sweap-images@sha256:90ceb4723635e82d8f448cfbccb487beb752429a72619a4ba590d7b01ed2f1ac"
+  ],
+  "model": "opencode/deepseek-v4-flash",
+  "prompt_sha256": "99f20506392b83266547268167702b2ed52e28947b55233a3cca04c54fda2626",
+  "script_sha256": "51792a0a04d864943403050ddd9d61d194d6464c39e0f54c3da42245732daeea",
+  "opencode_binary_sha256": "c67c8602154a18729cb80b4fca2669911f558347d76599f7ef45dee76c806613",
+  "opencode_config_sha256": "ebfdc199dbfb678ae28f52eb16937af848e5c6aa1e815283fcdb5689986a2c4a",
+  "timeout_seconds": 1800,
+  "resources": {
+    "memory": "4g",
+    "cpus": 2
+  },
+  "network": {
+    "name": "swebench-net",
+    "proxy": "http://swebench-proxy:3128"
+  },
+  "environment": {
+    "LANG": "C",
+    "LC_ALL": "C",
+    "TZ": "UTC",
+    "PYTHONHASHSEED": "0"
+  },
+  "experiment_kind": "targeted_rerun",
+  "run_kind": "agent",
+  "f2p_count": 4,
+  "p2p_count": 0,
+  "f2p_manifest_status": "READY"
+}

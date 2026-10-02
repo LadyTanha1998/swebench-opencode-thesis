@@ -1,0 +1,335 @@
+diff --git a/cmd/flipt/main.go b/cmd/flipt/main.go
+index 82fbe4f3..146c8ca1 100644
+--- a/cmd/flipt/main.go
++++ b/cmd/flipt/main.go
+@@ -141,6 +141,7 @@ func main() {
+ 	rootCmd.AddCommand(migrateCmd)
+ 	rootCmd.AddCommand(newExportCommand())
+ 	rootCmd.AddCommand(newImportCommand())
++	rootCmd.AddCommand(newValidateCommand())
+ 
+ 	ctx, cancel := context.WithCancel(context.Background())
+ 	defer cancel()
+@@ -154,7 +155,16 @@ func main() {
+ 	}()
+ 
+ 	if err := rootCmd.ExecuteContext(ctx); err != nil {
+-		fatal("execute", zap.Error(err))
++		switch {
++		case errors.Is(err, errValidationFailed):
++			// validation failures exit with a specific status code.
++			os.Exit(1)
++		case errors.Is(err, errUnexpectedError):
++			// unexpected errors during validation exit with a distinct code.
++			os.Exit(2)
++		default:
++			fatal("execute", zap.Error(err))
++		}
+ 	}
+ }
+ 
+diff --git a/cmd/flipt/validate.go b/cmd/flipt/validate.go
+new file mode 100644
+index 00000000..1d9896ef
+--- /dev/null
++++ b/cmd/flipt/validate.go
+@@ -0,0 +1,151 @@
++package main
++
++import (
++	"encoding/json"
++	"errors"
++	"fmt"
++	"io"
++	"path/filepath"
++	"strings"
++
++	"github.com/spf13/cobra"
++	fliptconfig "go.flipt.io/flipt/config"
++)
++
++// sentinel errors used to distinguish exit codes for the validate command.
++var (
++	// errValidationFailed is returned when one or more config files fail
++	// schema validation. It maps to a non-zero, but non-fatal, exit code.
++	errValidationFailed = errors.New("configuration validation failed")
++
++	// errUnexpectedError is returned when validation could not be performed
++	// (e.g. a file could not be read or parsed). It maps to a separate exit
++	// code to distinguish unexpected errors from validation failures.
++	errUnexpectedError = errors.New("unexpected error during validation")
++)
++
++type validateCommand struct {
++	format string
++	paths  []string
++}
++
++func newValidateCommand() *cobra.Command {
++	validate := &validateCommand{}
++
++	cmd := &cobra.Command{
++		Use:           "validate",
++		Short:         "Validate the configuration file(s) against the Flipt schema",
++		Args:          cobra.ArbitraryArgs,
++		RunE:          validate.run,
++		SilenceErrors: true,
++		SilenceUsage:  true,
++	}
++
++	cmd.Flags().StringVarP(
++		&validate.format,
++		"format", "f",
++		"text",
++		"output format (text|json)",
++	)
++
++	cmd.Flags().StringSliceVar(
++		&validate.paths,
++		"paths",
++		[]string{},
++		"paths to config files to validate",
++	)
++
++	return cmd
++}
++
++// validationOutcome captures the result of validating a single config file.
++type validationOutcome struct {
++	Path       string                `json:"path"`
++	Valid      bool                  `json:"valid"`
++	Violations []fliptconfig.Violation `json:"violations,omitempty"`
++	Error      string                `json:"error,omitempty"`
++}
++
++func (c *validateCommand) run(cmd *cobra.Command, args []string) error {
++	paths := c.paths
++	paths = append(paths, args...)
++
++	if len(paths) == 0 {
++		return fmt.Errorf("at least one configuration file must be provided")
++	}
++
++	var (
++		outcomes        []validationOutcome
++		hadFailure      bool
++		hadUnexpected   bool
++	)
++
++	for _, p := range paths {
++		outcome := validationOutcome{
++			Path:  filepath.Clean(p),
++			Valid: true,
++		}
++
++		violations, err := fliptconfig.ValidateConfigFile(outcome.Path)
++		switch {
++		case err != nil:
++			hadUnexpected = true
++			outcome.Valid = false
++			outcome.Error = err.Error()
++		case len(violations) > 0:
++			hadFailure = true
++			outcome.Valid = false
++			outcome.Violations = violations
++		}
++
++		outcomes = append(outcomes, outcome)
++	}
++
++	var outErr error
++	switch {
++	case hadUnexpected:
++		outErr = errUnexpectedError
++	case hadFailure:
++		outErr = errValidationFailed
++	}
++
++	switch c.format {
++	case "json":
++		if err := writeJSON(cmd.OutOrStdout(), outcomes); err != nil {
++			return fmt.Errorf("%w: %v", errUnexpectedError, err)
++		}
++	default:
++		writeText(cmd.OutOrStdout(), outcomes)
++	}
++
++	return outErr
++}
++
++func writeJSON(w io.Writer, outcomes []validationOutcome) error {
++	enc := json.NewEncoder(w)
++	enc.SetIndent("", "  ")
++	return enc.Encode(outcomes)
++}
++
++func writeText(w io.Writer, outcomes []validationOutcome) {
++	for _, o := range outcomes {
++		if o.Error != "" {
++			fmt.Fprintf(w, "%s: error: %s\n", o.Path, o.Error)
++			continue
++		}
++
++		if o.Valid {
++			fmt.Fprintf(w, "%s: valid\n", o.Path)
++			continue
++		}
++
++		fmt.Fprintf(w, "%s: invalid\n", o.Path)
++		for _, v := range o.Violations {
++			loc := v.Location
++			if loc == "" {
++				loc = "."
++			}
++			fmt.Fprintf(w, "  - %s: %s\n", loc, strings.TrimSpace(v.Message))
++		}
++	}
++}
+diff --git a/config/schema.go b/config/schema.go
+new file mode 100644
+index 00000000..371cbd8b
+--- /dev/null
++++ b/config/schema.go
+@@ -0,0 +1,6 @@
++package config
++
++import _ "embed"
++
++//go:embed flipt.schema.json
++var schema string
+diff --git a/config/validate.go b/config/validate.go
+new file mode 100644
+index 00000000..f3dcecff
+--- /dev/null
++++ b/config/validate.go
+@@ -0,0 +1,130 @@
++package config
++
++import (
++	"encoding/json"
++	"errors"
++	"fmt"
++	"os"
++
++	"github.com/santhosh-tekuri/jsonschema/v5"
++	"gopkg.in/yaml.v2"
++)
++
++// fliptSchema is the compiled JSON schema which is derived from
++// the embedded CUE schema (see flipt.schema.cue).
++var fliptSchema = func() *jsonschema.Schema {
++	s, err := jsonschema.CompileString("flipt.schema.json", schema)
++	if err != nil {
++		panic(fmt.Sprintf("compiling flipt schema: %v", err))
++	}
++	return s
++}()
++
++// Violation describes a single schema violation found in a config file.
++type Violation struct {
++	// Location is the path to the offending value within the document.
++	Location string `json:"location"`
++
++	// Message is a human readable description of the violation.
++	Message string `json:"message"`
++}
++
++// ValidateConfigFile reads the YAML configuration file at the supplied path and
++// validates it against the embedded JSON schema (derived from the CUE schema).
++//
++// It returns a slice of violations describing any schema violations found.
++// An error is only returned if the file could not be read or parsed, or if the
++// schema could not be applied to the document.
++func ValidateConfigFile(path string) (violations []Violation, err error) {
++	data, err := os.ReadFile(path)
++	if err != nil {
++		return nil, fmt.Errorf("reading config file %q: %w", path, err)
++	}
++
++	doc, err := yamlToJSON(data)
++	if err != nil {
++		return nil, fmt.Errorf("parsing config file %q: %w", path, err)
++	}
++
++	if err := fliptSchema.Validate(doc); err != nil {
++		var verr *jsonschema.ValidationError
++		if !errors.As(err, &verr) {
++			return nil, fmt.Errorf("validating config file %q: %w", path, err)
++		}
++
++		violations = flattenValidationErrors(verr)
++	}
++
++	return violations, nil
++}
++
++// flattenValidationErrors walks the tree of nested validation errors and
++// returns a flattened list of leaf violations, each with location information.
++func flattenValidationErrors(ve *jsonschema.ValidationError) []Violation {
++	var out []Violation
++
++	var walk func(*jsonschema.ValidationError)
++	walk = func(e *jsonschema.ValidationError) {
++		if len(e.Causes) == 0 {
++			out = append(out, Violation{
++				Location: e.InstanceLocation,
++				Message:  e.Message,
++			})
++			return
++		}
++
++		for _, cause := range e.Causes {
++			walk(cause)
++		}
++	}
++
++	walk(ve)
++
++	return out
++}
++
++// yamlToJSON parses the supplied YAML document and returns an equivalent
++// JSON-native value (map[string]interface{}, []interface{}, float64, etc.)
++// suitable for validation against a JSON schema.
++func yamlToJSON(data []byte) (interface{}, error) {
++	var v interface{}
++	if err := yaml.Unmarshal(data, &v); err != nil {
++		return nil, err
++	}
++
++	// convert map[interface{}]interface{} values (which YAML produces for
++	// nested maps) into their JSON-compatible equivalents.
++	converted := convertYAML(v)
++
++	b, err := json.Marshal(converted)
++	if err != nil {
++		return nil, err
++	}
++
++	var out interface{}
++	if err := json.Unmarshal(b, &out); err != nil {
++		return nil, err
++	}
++
++	return out, nil
++}
++
++// convertYAML recursively converts map[interface{}]interface{} values into
++// map[string]interface{} values so they can be marshalled as JSON.
++func convertYAML(i interface{}) interface{} {
++	switch x := i.(type) {
++	case map[interface{}]interface{}:
++		m := make(map[string]interface{}, len(x))
++		for k, v := range x {
++			m[fmt.Sprintf("%v", k)] = convertYAML(v)
++		}
++		return m
++	case []interface{}:
++		for i, v := range x {
++			x[i] = convertYAML(v)
++		}
++		return x
++	default:
++		return i
++	}
++}

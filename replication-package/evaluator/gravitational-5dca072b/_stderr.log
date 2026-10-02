@@ -1,0 +1,168 @@
+# google.golang.org/protobuf/types/known/structpb
+unexpected fault address 0xeffff7d473b0
+fatal error: fault
+[signal SIGSEGV: segmentation violation code=0x1 addr=0xeffff7d473b0 pc=0x4ebeab]
+
+goroutine 1 [running]:
+runtime.throw(0x6fe63a, 0x5)
+	/usr/local/go/src/runtime/panic.go:1117 +0x72 fp=0xc00021c228 sp=0xc00021c1f8 pc=0x4351f2
+runtime.sigpanic()
+	/usr/local/go/src/runtime/signal_unix.go:741 +0x268 fp=0xc00021c260 sp=0xc00021c228 pc=0x44baa8
+encoding/binary.ReadUvarint(0x7550c0, 0xc000406ae8, 0xc000407140, 0x61b72b, 0xc000406ae0)
+	/usr/local/go/src/encoding/binary/varint.go:110 +0x8b fp=0xc00021c2a8 sp=0xc00021c260 pc=0x4ebeab
+go/internal/gcimporter.(*importReader).uint64(0xc000406ae0, 0xe)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:605 +0x45 fp=0xc00021c300 sp=0xc00021c2a8 pc=0x61ce05
+go/internal/gcimporter.(*importReader).string(0xc000406ae0, 0x2b6c53, 0xc0004008d0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:490 +0x2b fp=0xc00021c330 sp=0xc00021c300 pc=0x61b84b
+go/internal/gcimporter.(*importReader).ident(...)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:434
+go/internal/gcimporter.(*importReader).obj(0xc000406ae0, 0xc000018680, 0xe)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:290 +0x2d0 fp=0xc00021c420 sp=0xc00021c330 pc=0x61a210
+go/internal/gcimporter.(*iimporter).doDecl(0xc0000cc1b0, 0xc0004caaa0, 0xc000018680, 0xe)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:202 +0x1b9 fp=0xc00021c4b0 sp=0xc00021c420 pc=0x6196d9
+go/internal/gcimporter.(*importReader).doType(0xc000406a80, 0x0, 0x420a, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:500 +0xbdd fp=0xc00021c620 sp=0xc00021c4b0 pc=0x61c47d
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x420a, 0x0, 0x0, 0x0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021c6a8 sp=0xc00021c620 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc000406900, 0x0, 0x0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021c6e0 sp=0xc00021c6a8 pc=0x61b785
+go/internal/gcimporter.(*importReader).param(0xc000406900, 0x1)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:588 +0x6a fp=0xc00021c740 sp=0xc00021c6e0 pc=0x61cbaa
+go/internal/gcimporter.(*importReader).paramList(0xc000406900, 0x0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:580 +0x85 fp=0xc00021c788 sp=0xc00021c740 pc=0x61caa5
+go/internal/gcimporter.(*importReader).signature(0xc000406900, 0xc0001571d0, 0x7)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:572 +0x47 fp=0xc00021c7c0 sp=0xc00021c788 pc=0x61c887
+go/internal/gcimporter.(*importReader).obj(0xc000406900, 0xc0000189a0, 0xe)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:292 +0x309 fp=0xc00021c8b0 sp=0xc00021c7c0 pc=0x61a249
+go/internal/gcimporter.(*iimporter).doDecl(0xc0000cc1b0, 0xc0004ca960, 0xc0000189a0, 0xe)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:202 +0x1b9 fp=0xc00021c940 sp=0xc00021c8b0 pc=0x6196d9
+go/internal/gcimporter.(*importReader).doType(0xc0004068a0, 0x0, 0x888, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:500 +0xbdd fp=0xc00021cab0 sp=0xc00021c940 pc=0x61c47d
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x888, 0x0, 0xc0004020c0, 0x4)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021cb38 sp=0xc00021cab0 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc000406840, 0xc0004020c0, 0x4)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021cb70 sp=0xc00021cb38 pc=0x61b785
+go/internal/gcimporter.(*importReader).param(0xc000406840, 0xc000157090)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:588 +0x6a fp=0xc00021cbd0 sp=0xc00021cb70 pc=0x61cbaa
+go/internal/gcimporter.(*importReader).paramList(0xc000406840, 0x61b7fc)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:580 +0x85 fp=0xc00021cc18 sp=0xc00021cbd0 pc=0x61caa5
+go/internal/gcimporter.(*importReader).signature(0xc000406840, 0x0, 0x8aeb00)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:571 +0x2f fp=0xc00021cc50 sp=0xc00021cc18 pc=0x61c86f
+go/internal/gcimporter.(*importReader).doType(0xc000406840, 0x0, 0x787d, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:516 +0x973 fp=0xc00021cdc0 sp=0xc00021cc50 pc=0x61c213
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x787d, 0x0, 0xc000177abc, 0x4)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021ce48 sp=0xc00021cdc0 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc0004067e0, 0xc000177abc, 0x4)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021ce80 sp=0xc00021ce48 pc=0x61b785
+go/internal/gcimporter.(*importReader).doType(0xc0004067e0, 0xc000156fa0, 0x791a, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:526 +0x6b0 fp=0xc00021cff0 sp=0xc00021ce80 pc=0x61bf50
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x791a, 0xc000156fa0, 0x400, 0x7fffd8cad400)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021d078 sp=0xc00021cff0 pc=0x619d51
+go/internal/gcimporter.(*importReader).obj(0xc000406720, 0xc000018a30, 0xf)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:284 +0x1bb fp=0xc00021d168 sp=0xc00021d078 pc=0x61a0fb
+go/internal/gcimporter.(*iimporter).doDecl(0xc0000cc1b0, 0xc0004ca960, 0xc000018a30, 0xf)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:202 +0x1b9 fp=0xc00021d1f8 sp=0xc00021d168 pc=0x6196d9
+go/internal/gcimporter.(*importReader).doType(0xc0004066c0, 0x0, 0x4586, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:500 +0xbdd fp=0xc00021d368 sp=0xc00021d1f8 pc=0x61c47d
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x4586, 0x0, 0xc0004020b0, 0x5)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021d3f0 sp=0xc00021d368 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc000406660, 0xc0004020b0, 0x5)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021d428 sp=0xc00021d3f0 pc=0x61b785
+go/internal/gcimporter.(*importReader).doType(0xc000406660, 0xc000156dc0, 0x4590, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:526 +0x6b0 fp=0xc00021d598 sp=0xc00021d428 pc=0x61bf50
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x4590, 0xc000156dc0, 0x120, 0x203000)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021d620 sp=0xc00021d598 pc=0x619d51
+go/internal/gcimporter.(*importReader).obj(0xc000406600, 0xc0000142b8, 0x12)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:284 +0x1bb fp=0xc00021d710 sp=0xc00021d620 pc=0x61a0fb
+go/internal/gcimporter.(*iimporter).doDecl(0xc0000cc1b0, 0xc0004ca960, 0xc0000142b8, 0x12)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:202 +0x1b9 fp=0xc00021d7a0 sp=0xc00021d710 pc=0x6196d9
+go/internal/gcimporter.(*importReader).doType(0xc0004065a0, 0x0, 0xdf0, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:500 +0xbdd fp=0xc00021d910 sp=0xc00021d7a0 pc=0x61c47d
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0xdf0, 0x0, 0x8, 0x8dfa48)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021d998 sp=0xc00021d910 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc000406540, 0x1, 0xc000402020)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021d9d0 sp=0xc00021d998 pc=0x61b785
+go/internal/gcimporter.(*importReader).doType(0xc000406540, 0x0, 0xdf5, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:503 +0xc6e fp=0xc00021db40 sp=0xc00021d9d0 pc=0x61c50e
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0xdf5, 0x0, 0xc00040209e, 0x2)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021dbc8 sp=0xc00021db40 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc000406480, 0xc00040209e, 0x2)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021dc00 sp=0xc00021dbc8 pc=0x61b785
+go/internal/gcimporter.(*importReader).doType(0xc000406480, 0xc000156c80, 0x4a19, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:526 +0x6b0 fp=0xc00021dd70 sp=0xc00021dc00 pc=0x61bf50
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x4a19, 0xc000156c80, 0x1ffffffffffffff, 0xc00021df90)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021ddf8 sp=0xc00021dd70 pc=0x619d51
+go/internal/gcimporter.(*importReader).obj(0xc000406420, 0xc0000142e8, 0x12)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:284 +0x1bb fp=0xc00021dee8 sp=0xc00021ddf8 pc=0x61a0fb
+go/internal/gcimporter.(*iimporter).doDecl(0xc0000cc1b0, 0xc0004ca960, 0xc0000142e8, 0x12)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:202 +0x1b9 fp=0xc00021df78 sp=0xc00021dee8 pc=0x6196d9
+go/internal/gcimporter.(*importReader).doType(0xc0004063c0, 0x0, 0x105d, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:500 +0xbdd fp=0xc00021e0e8 sp=0xc00021df78 pc=0x61c47d
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x105d, 0x0, 0xd, 0xc0004cc330)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021e170 sp=0xc00021e0e8 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc000406360, 0x1, 0xc000018b00)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021e1a8 sp=0xc00021e170 pc=0x61b785
+go/internal/gcimporter.(*importReader).doType(0xc000406360, 0x0, 0x1062, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:503 +0xc6e fp=0xc00021e318 sp=0xc00021e1a8 pc=0x61c50e
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x1062, 0x0, 0xc000402090, 0x4)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021e3a0 sp=0xc00021e318 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc0004062a0, 0xc000402090, 0x4)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021e3d8 sp=0xc00021e3a0 pc=0x61b785
+go/internal/gcimporter.(*importReader).doType(0xc0004062a0, 0xc000156b40, 0x1065, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:526 +0x6b0 fp=0xc00021e548 sp=0xc00021e3d8 pc=0x61bf50
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x1065, 0xc000156b40, 0x757de8, 0xc0004001b0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021e5d0 sp=0xc00021e548 pc=0x619d51
+go/internal/gcimporter.(*importReader).obj(0xc0004061e0, 0xc000018920, 0xe)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:284 +0x1bb fp=0xc00021e6c0 sp=0xc00021e5d0 pc=0x61a0fb
+go/internal/gcimporter.(*iimporter).doDecl(0xc0000cc1b0, 0xc0004ca960, 0xc000018920, 0xe)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:202 +0x1b9 fp=0xc00021e750 sp=0xc00021e6c0 pc=0x6196d9
+go/internal/gcimporter.(*importReader).doType(0xc000406180, 0x0, 0x7b, 0x8ddec0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:500 +0xbdd fp=0xc00021e8c0 sp=0xc00021e750 pc=0x61c47d
+go/internal/gcimporter.(*iimporter).typAt(0xc0000cc1b0, 0x7b, 0x0, 0x2, 0x146c55)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:240 +0x151 fp=0xc00021e948 sp=0xc00021e8c0 pc=0x619d51
+go/internal/gcimporter.(*importReader).typ(0xc000406120, 0x146c55, 0xc000156aa0)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:481 +0x45 fp=0xc00021e980 sp=0xc00021e948 pc=0x61b785
+go/internal/gcimporter.(*importReader).obj(0xc000406120, 0xc000018590, 0x10)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:263 +0x916 fp=0xc00021ea70 sp=0xc00021e980 pc=0x61a856
+go/internal/gcimporter.(*iimporter).doDecl(0xc0000cc1b0, 0xc0004ca500, 0xc000018590, 0x10)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:202 +0x1b9 fp=0xc00021eb00 sp=0xc00021ea70 pc=0x6196d9
+go/internal/gcimporter.iImportData(0xc0001369c0, 0xc00019a450, 0xc000200001, 0x1431f, 0x17fff, 0xc0000bc330, 0x2c, 0x0, 0x0, 0x0, ...)
+	/usr/local/go/src/go/internal/gcimporter/iimport.go:153 +0xbec fp=0xc00021ee40 sp=0xc00021eb00 pc=0x61900c
+go/internal/gcimporter.Import(0xc0001369c0, 0xc00019a450, 0xc0000bc330, 0x2c, 0x0, 0x0, 0xc00017b910, 0x0, 0x0, 0x0)
+	/usr/local/go/src/go/internal/gcimporter/gcimporter.go:158 +0x555 fp=0xc00021f078 sp=0xc00021ee40 pc=0x617bf5
+go/importer.(*gcimports).ImportFrom(0xc000198498, 0xc0000bc330, 0x2c, 0x0, 0x0, 0x0, 0xc0001ffc20, 0xc0000cf200, 0xc0000d4728)
+	/usr/local/go/src/go/importer/importer.go:102 +0x7c fp=0xc00021f0d8 sp=0xc00021f078 pc=0x62113c
+go/importer.(*gcimports).Import(0xc000198498, 0xc0000bc330, 0x2c, 0x2c, 0xc0000cf2b8, 0x6b6401)
+	/usr/local/go/src/go/importer/importer.go:95 +0x50 fp=0xc00021f130 sp=0xc00021f0d8 pc=0x621070
+cmd/vendor/golang.org/x/tools/go/analysis/unitchecker.run.func2(0xc0000bc9c1, 0x2c, 0x6b6060, 0x9000000000203001, 0x0)
+	/usr/local/go/src/cmd/vendor/golang.org/x/tools/go/analysis/unitchecker/unitchecker.go:222 +0x98 fp=0xc00021f198 sp=0xc00021f130 pc=0x634758
+cmd/vendor/golang.org/x/tools/go/analysis/unitchecker.importerFunc.Import(0xc00019c4e0, 0xc0000bc9c1, 0x2c, 0x0, 0x0, 0x706100)
+	/usr/local/go/src/cmd/vendor/golang.org/x/tools/go/analysis/unitchecker/unitchecker.go:398 +0x3a fp=0xc00021f1d0 sp=0xc00021f198 pc=0x63429a
+go/types.(*Checker).importPackage(0xc0000cf560, 0x124e, 0xc0000bc9c1, 0x2c, 0xc000140000, 0x3b, 0x2)
+	/usr/local/go/src/go/types/resolver.go:161 +0x6fd fp=0xc00021f2b8 sp=0xc00021f1d0 pc=0x5e625d
+go/types.(*Checker).collectObjects.func1(0x755ae0, 0xc0000a9cb0)
+	/usr/local/go/src/go/types/resolver.go:250 +0xff2 fp=0xc00021f580 sp=0xc00021f2b8 pc=0x6000f2
+go/types.(*Checker).walkDecl(0xc0000cf560, 0x759f60, 0xc000136b00, 0xc00021f970)
+	/usr/local/go/src/go/types/decl.go:423 +0x139 fp=0xc00021f6f8 sp=0xc00021f580 pc=0x5cc6f9
+go/types.(*Checker).walkDecls(0xc0000cf560, 0xc00016e800, 0x4e, 0x80, 0xc00021f970)
+	/usr/local/go/src/go/types/decl.go:410 +0x76 fp=0xc00021f738 sp=0xc00021f6f8 pc=0x5cc596
+go/types.(*Checker).collectObjects(0xc0000cf560)
+	/usr/local/go/src/go/types/resolver.go:240 +0x23f fp=0xc00021fa78 sp=0xc00021f738 pc=0x5e65ff
+go/types.(*Checker).checkFiles(0xc0000cf560, 0xc0000c2dd8, 0x1, 0x1, 0x0, 0x0)
+	/usr/local/go/src/go/types/check.go:263 +0xab fp=0xc00021fac8 sp=0xc00021fa78 pc=0x5c876b
+go/types.(*Checker).Files(...)
+	/usr/local/go/src/go/types/check.go:250
+go/types.(*Config).Check(0xc00019e000, 0xc0000bc240, 0x2f, 0xc0001369c0, 0xc0000c2dd8, 0x1, 0x1, 0xc000184c80, 0x0, 0x0, ...)
+	/usr/local/go/src/go/types/api.go:370 +0x151 fp=0xc00021fb40 sp=0xc00021fac8 pc=0x5bc1f1
+cmd/vendor/golang.org/x/tools/go/analysis/unitchecker.run(0xc0001369c0, 0xc0000e2c30, 0xc000136880, 0x8, 0x8, 0x6adf60, 0xc0000a9980, 0xc0000d8b00, 0xc0000d8d68, 0x0)
+	/usr/local/go/src/cmd/vendor/golang.org/x/tools/go/analysis/unitchecker/unitchecker.go:236 +0x435 fp=0xc00021fce0 sp=0xc00021fb40 pc=0x6338d5
+cmd/vendor/golang.org/x/tools/go/analysis/unitchecker.Run(0x7ffffffffc5c, 0x24, 0xc000136880, 0x8, 0x8)
+	/usr/local/go/src/cmd/vendor/golang.org/x/tools/go/analysis/unitchecker/unitchecker.go:132 +0x119 fp=0xc00021feb8 sp=0xc00021fce0 pc=0x632d99
+cmd/vendor/golang.org/x/tools/go/analysis/unitchecker.Main(0xc000136880, 0x8, 0x8)
+	/usr/local/go/src/cmd/vendor/golang.org/x/tools/go/analysis/unitchecker/unitchecker.go:119 +0x2a6 fp=0xc00021ff40 sp=0xc00021feb8 pc=0x632b06
+main.main()
+	/usr/local/go/src/cmd/vet/main.go:39 +0x336 fp=0xc00021ff88 sp=0xc00021ff40 pc=0x67f936
+runtime.main()
+	/usr/local/go/src/runtime/proc.go:225 +0x256 fp=0xc00021ffe0 sp=0xc00021ff88 pc=0x437a36
+runtime.goexit()
+	/usr/local/go/src/runtime/asm_amd64.s:1371 +0x1 fp=0xc00021ffe8 sp=0xc00021ffe0 pc=0x469381

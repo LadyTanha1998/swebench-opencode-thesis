@@ -1,0 +1,19 @@
+diff --git a/src/stores/UIStore.ts b/src/stores/UIStore.ts
+index b1cdbae951..f64ec52597 100644
+--- a/src/stores/UIStore.ts
++++ b/src/stores/UIStore.ts
+@@ -58,6 +58,14 @@ export default class UIStore extends EventEmitter {
+         }
+     }
+ 
++    public getCurrentWindowWidth(): number {
++        return this.windowWidth;
++    }
++
++    public getCurrentWindowHeight(): number {
++        return this.windowHeight;
++    }
++
+     public getElementDimensions(name: string): DOMRectReadOnly | undefined {
+         return this.uiElementDimensions.get(name);
+     }

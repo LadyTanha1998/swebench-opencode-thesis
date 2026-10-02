@@ -1,0 +1,132 @@
+diff --git a/src/IConfigOptions.ts b/src/IConfigOptions.ts
+index 1fa873e..05a89d9 100644
+--- a/src/IConfigOptions.ts
++++ b/src/IConfigOptions.ts
+@@ -54,6 +54,11 @@ export interface IConfigOptions {
+     disable_3pid_login?: boolean;
+ 
+     brand: string;
++
++    // Whether to show the room options menu in room tiles, room headers and
++    // spotlight search results. Set to `false` to hide it in customized deployments.
++    show_room_options_menu?: boolean;
++
+     branding?: {
+         welcome_background_url?: string | string[]; // chosen at random if array
+         auth_header_logo_url?: string;
+diff --git a/src/SdkConfig.ts b/src/SdkConfig.ts
+index be94bb5..4507540 100644
+--- a/src/SdkConfig.ts
++++ b/src/SdkConfig.ts
+@@ -26,6 +26,7 @@ import { DeepReadonly, Defaultize } from "./@types/common";
+ // see element-web config.md for docs, or the IConfigOptions interface for dev docs
+ export const DEFAULTS: DeepReadonly<IConfigOptions> = {
+     brand: "Element",
++    show_room_options_menu: true,
+     integrations_ui_url: "https://scalar.vector.im/",
+     integrations_rest_url: "https://scalar.vector.im/api",
+     uisi_autorageshake_app: "element-auto-uisi",
+diff --git a/src/components/views/dialogs/spotlight/RoomResultContextMenus.tsx b/src/components/views/dialogs/spotlight/RoomResultContextMenus.tsx
+index 096138e..d2ce081 100644
+--- a/src/components/views/dialogs/spotlight/RoomResultContextMenus.tsx
++++ b/src/components/views/dialogs/spotlight/RoomResultContextMenus.tsx
+@@ -27,6 +27,7 @@ import { RoomNotificationContextMenu } from "../../context_menus/RoomNotificatio
+ import SpaceContextMenu from "../../context_menus/SpaceContextMenu";
+ import { ButtonEvent } from "../../elements/AccessibleButton";
+ import { contextMenuBelow } from "../../rooms/RoomTile";
++import { shouldShowRoomOptionsMenu } from "../../../../utils/rooms";
+ 
+ interface Props {
+     room: Room;
+@@ -80,18 +81,20 @@ export function RoomResultContextMenus({ room }: Props): JSX.Element {
+ 
+     return (
+         <Fragment>
+-            <ContextMenuTooltipButton
+-                className="mx_SpotlightDialog_option--menu"
+-                onClick={(ev: ButtonEvent) => {
+-                    ev.preventDefault();
+-                    ev.stopPropagation();
++            {shouldShowRoomOptionsMenu() && (
++                <ContextMenuTooltipButton
++                    className="mx_SpotlightDialog_option--menu"
++                    onClick={(ev: ButtonEvent) => {
++                        ev.preventDefault();
++                        ev.stopPropagation();
+ 
+-                    const target = ev.target as HTMLElement;
+-                    setGeneralMenuPosition(target.getBoundingClientRect());
+-                }}
+-                title={room.isSpaceRoom() ? _t("Space options") : _t("Room options")}
+-                isExpanded={generalMenuPosition !== null}
+-            />
++                        const target = ev.target as HTMLElement;
++                        setGeneralMenuPosition(target.getBoundingClientRect());
++                    }}
++                    title={room.isSpaceRoom() ? _t("Space options") : _t("Room options")}
++                    isExpanded={generalMenuPosition !== null}
++                />
++            )}
+             {!room.isSpaceRoom() && (
+                 <ContextMenuTooltipButton
+                     className={notificationMenuClasses}
+diff --git a/src/components/views/rooms/RoomHeader.tsx b/src/components/views/rooms/RoomHeader.tsx
+index 1e1f0ce..01e5aa8 100644
+--- a/src/components/views/rooms/RoomHeader.tsx
++++ b/src/components/views/rooms/RoomHeader.tsx
+@@ -54,6 +54,7 @@ import { isVideoRoom as calcIsVideoRoom } from "../../../utils/video-rooms";
+ import LegacyCallHandler, { LegacyCallHandlerEvent } from "../../../LegacyCallHandler";
+ import { useFeatureEnabled, useSettingValue } from "../../../hooks/useSettings";
+ import SdkConfig from "../../../SdkConfig";
++import { shouldShowRoomOptionsMenu } from "../../../utils/rooms";
+ import { useEventEmitterState, useTypedEventEmitterState } from "../../../hooks/useEventEmitter";
+ import { useWidgets } from "../right_panel/RoomSummaryCard";
+ import { WidgetType } from "../../../widgets/WidgetType";
+@@ -697,7 +698,7 @@ export default class RoomHeader extends React.Component<IProps, IState> {
+             </RoomName>
+         );
+ 
+-        if (this.props.enableRoomOptionsMenu) {
++        if (this.props.enableRoomOptionsMenu && shouldShowRoomOptionsMenu()) {
+             return (
+                 <ContextMenuTooltipButton
+                     className="mx_RoomHeader_name"
+diff --git a/src/components/views/rooms/RoomTile.tsx b/src/components/views/rooms/RoomTile.tsx
+index af25a5c..8e0ce64 100644
+--- a/src/components/views/rooms/RoomTile.tsx
++++ b/src/components/views/rooms/RoomTile.tsx
+@@ -49,6 +49,7 @@ import { CallStore, CallStoreEvent } from "../../../stores/CallStore";
+ import { SdkContextClass } from "../../../contexts/SDKContext";
+ import { useHasRoomLiveVoiceBroadcast } from "../../../voice-broadcast";
+ import { RoomTileSubtitle } from "./RoomTileSubtitle";
++import { shouldShowRoomOptionsMenu } from "../../../utils/rooms";
+ 
+ interface Props {
+     room: Room;
+@@ -327,7 +328,7 @@ export class RoomTile extends React.PureComponent<ClassProps, State> {
+     }
+ 
+     private renderGeneralMenu(): React.ReactElement | null {
+-        if (!this.showContextMenu) return null; // no menu to show
++        if (!this.showContextMenu || !shouldShowRoomOptionsMenu()) return null; // no menu to show
+         return (
+             <React.Fragment>
+                 <ContextMenuTooltipButton
+diff --git a/src/utils/rooms.ts b/src/utils/rooms.ts
+index 1382328..302e500 100644
+--- a/src/utils/rooms.ts
++++ b/src/utils/rooms.ts
+@@ -16,8 +16,13 @@ limitations under the License.
+ 
+ import { MatrixClient } from "matrix-js-sdk/src/matrix";
+ 
++import SdkConfig from "../SdkConfig";
+ import { getE2EEWellKnown } from "./WellKnownUtils";
+ 
++export function shouldShowRoomOptionsMenu(): boolean {
++    return SdkConfig.get("show_room_options_menu");
++}
++
+ export function privateShouldBeEncrypted(client: MatrixClient): boolean {
+     const e2eeWellKnown = getE2EEWellKnown(client);
+     if (e2eeWellKnown) {

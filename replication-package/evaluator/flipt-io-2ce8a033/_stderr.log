@@ -1,0 +1,4 @@
+# go.flipt.io/flipt/internal/server/middleware/grpc [go.flipt.io/flipt/internal/server/middleware/grpc.test]
+internal/server/middleware/grpc/middleware_test.go:2336:19: undefined: FliptAcceptServerVersionUnaryInterceptor
+internal/server/middleware/grpc/middleware_test.go:2346:9: undefined: FliptAcceptServerVersionFromContext
+internal/server/middleware/grpc/middleware_test.go:2352:21: undefined: preFliptAcceptServerVersion

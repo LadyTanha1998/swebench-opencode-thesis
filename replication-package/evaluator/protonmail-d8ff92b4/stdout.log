@@ -1,0 +1,9 @@
+Running selected tests: applications/drive/src/app/zustand/share/invitations.store.test.ts applications/drive/src/app/zustand/share/members.store.test.ts src/app/zustand/share/invitations.store.test.ts src/app/zustand/share/members.store.test.ts
+Running test file in proton-drive workspace: applications/drive/src/app/zustand/share/invitations.store.test.ts
+
+=============================== Coverage summary ===============================
+Statements   : 0.01% ( 2/14801 )
+Branches     : 0% ( 0/6975 )
+Functions    : 0.02% ( 1/4120 )
+Lines        : 0.01% ( 2/14301 )
+================================================================================

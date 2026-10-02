@@ -1,0 +1,244 @@
+Running selected tests: test/components/views/rooms/wysiwyg_composer/EditWysiwygComposer-test.ts test/utils/AutoDiscoveryUtils-test.ts test/components/views/beacon/BeaconMarker-test.ts test/components/views/rooms/wysiwyg_composer/SendWysiwygComposer-test.ts test/utils/LruCache-test.ts test/utils/beacon/bounds-test.ts test/components/views/dialogs/ChangelogDialog-test.ts test/utils/AutoDiscoveryUtils-test.tsx test/components/views/messages/MBeaconBody-test.ts test/components/views/rooms/VoiceRecordComposerTile-test.ts test/components/views/rooms/BasicMessageComposer-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/utils/LruCache-test.ts (64.074 s)
+  LruCache
+    ✓ when creating a cache with negative capacity it should raise an error (45 ms)
+    ✓ when creating a cache with 0 capacity it should raise an error (6 ms)
+    when there is a cache with a capacity of 3
+      ✓ has() should return false (3 ms)
+      ✓ get() should return undefined (5 ms)
+      ✓ values() should return an empty iterator (2 ms)
+      ✓ delete() should not raise an error (1 ms)
+      when the cache contains 2 items
+        ✓ has() should return false for an item not in the cache (2 ms)
+        ✓ get() should return undefined for an item not in the cahce (3 ms)
+        ✓ values() should return the items in the cache (2 ms)
+        ✓ clear() should clear the cache (3 ms)
+        ✓ when an error occurs while setting an item the cache should be cleard (3 ms)
+        and adding another item
+          ✓ deleting an unkonwn item should not raise an error
+          ✓ deleting the first item should work (4 ms)
+          ✓ deleting the item in the middle should work (1 ms)
+          ✓ deleting the last item should work (2 ms)
+          ✓ deleting all items should work (1 ms)
+          ✓ deleting and adding some items should work (1 ms)
+          and accesing the first added item and adding another item
+            ✓ should contain the last recently accessed items (15 ms)
+            ✓ should not contain the least recently accessed items (1 ms)
+          and adding 2 additional items
+            ✓ has() should return false for expired items (1 ms)
+            ✓ has() should return true for items in the caceh (1 ms)
+            ✓ get() should return undefined for expired items (1 ms)
+            ✓ get() should return the items in the cache (1 ms)
+            ✓ values() should return the items in the cache (3 ms)
+      when the cache contains some items where one of them is a replacement
+        ✓ should contain the last recently set items (3 ms)
+
+(node:118) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL test/utils/AutoDiscoveryUtils-test.tsx (64.572 s)
+  AutoDiscoveryUtils
+    buildValidatedConfigFromDiscovery()
+      ✓ throws an error when discovery result is falsy (54 ms)
+      ✓ throws an error when discovery result does not include homeserver config (5 ms)
+      ✓ throws an error when identity server config has fail error and recognised error string (8 ms)
+      ✓ throws an error with fallback message identity server config has fail error (20 ms)
+      ✓ throws an error when error is ERROR_INVALID_HOMESERVER (8 ms)
+      ✓ throws an error when homeserver base_url is falsy (8 ms)
+      ✓ throws an error when homeserver base_url is not a valid URL (13 ms)
+      ✓ uses hs url hostname when serverName is falsy in args and config (10 ms)
+      ✓ uses serverName from props (5 ms)
+      ✓ ignores liveliness error when checking syntax only (5 ms)
+      ✓ ignores delegated auth config when discovery was not successful (4 ms)
+      ✕ sets delegated auth config when discovery was successful (25 ms)
+
+  ● AutoDiscoveryUtils › buildValidatedConfigFromDiscovery() › sets delegated auth config when discovery was successful
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    @@ -1,10 +1,12 @@
+      Object {
+    -   "delegatedAuthentication": Object {
+    +   "delegatedAuthConfig": Object {
+          "authorizationEndpoint": "https://test.com/auth",
+    +     "error": null,
+          "issuer": "https://test.com/",
+          "registrationEndpoint": "https://test.com/registration",
+    +     "state": "SUCCESS",
+          "tokenEndpoint": "https://test.com/token",
+        },
+        "hsName": "my-server",
+        "hsNameIsDifferent": true,
+        "hsUrl": "https://matrix.org",
+
+      227 |             expect(
+      228 |                 AutoDiscoveryUtils.buildValidatedConfigFromDiscovery(serverName, discoveryResult, syntaxOnly),
+    > 229 |             ).toEqual({
+          |               ^
+      230 |                 ...expectedValidatedConfig,
+      231 |                 delegatedAuthentication: authConfig,
+      232 |                 warning: undefined,
+
+      at Object.toEqual (test/utils/AutoDiscoveryUtils-test.tsx:229:15)
+
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/dialogs/ChangelogDialog-test.tsx (64.908 s)
+  <ChangelogDialog />
+    ✓ should fetch github proxy url for each repo with old and new version strings (851 ms)
+
+PASS test/utils/beacon/bounds-test.ts (45.897 s)
+  getBeaconBounds()
+    ✓ should return undefined when there are no beacons (3 ms)
+    ✓ should return undefined when no beacons have locations (2 ms)
+    ✓ gets correct bounds for one beacon (2 ms)
+    ✓ gets correct bounds for beacons in the northern hemisphere, west of meridian (2 ms)
+    ✓ gets correct bounds for beacons in the northern hemisphere, both sides of meridian (1 ms)
+    ✓ gets correct bounds for beacons in the southern hemisphere (1 ms)
+    ✓ gets correct bounds for beacons in both hemispheres (2 ms)
+
+(node:119) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/rooms/VoiceRecordComposerTile-test.tsx (110.544 s)
+  <VoiceRecordComposerTile/>
+    send
+      ✓ should send the voice recording (201 ms)
+      ✓ reply with voice recording (104 ms)
+
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/beacon/BeaconMarker-test.tsx (110.73 s)
+  <BeaconMarker />
+    ✓ renders nothing when beacon is not live (128 ms)
+    ✓ renders nothing when beacon has no location (37 ms)
+    ✓ renders marker when beacon has location (259 ms)
+    ✓ updates with new locations (80 ms)
+
+(node:114) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/messages/MBeaconBody-test.tsx (111.465 s)
+  <MBeaconBody />
+    ✓ renders stopped beacon UI for an explicitly stopped beacon (199 ms)
+    ✓ renders stopped beacon UI for an expired beacon (47 ms)
+    ✓ renders loading beacon UI for a beacon that has not started yet (48 ms)
+    ✓ does not open maximised map when on click when beacon is stopped (56 ms)
+    ✓ renders stopped UI when a beacon event is not the latest beacon for a user (21 ms)
+    ✓ renders stopped UI when a beacon event is replaced (32 ms)
+    on liveness change
+      ✓ renders stopped UI when a beacon stops being live (22 ms)
+    latestLocationState
+      ✓ renders a live beacon without a location correctly (19 ms)
+      ✓ does nothing on click when a beacon has no location (29 ms)
+      ✓ renders a live beacon with a location correctly (58 ms)
+      ✓ opens maximised map view on click when beacon has a live location (34 ms)
+      ✓ updates latest location (28 ms)
+    redaction
+      ✓ does nothing when getRelationsForEvent is falsy (32 ms)
+      ✓ cleans up redaction listener on unmount (18 ms)
+      ✓ does nothing when beacon has no related locations (14 ms)
+      ✓ redacts related locations on beacon redaction (25 ms)
+    when map display is not configured
+      ✓ renders maps unavailable error for a live beacon with location (177 ms)
+      ✓ renders stopped beacon UI for an explicitly stopped beacon (12 ms)
+      ✓ renders stopped beacon UI for an expired beacon (13 ms)
+      ✓ renders loading beacon UI for a beacon that has not started yet (12 ms)
+      ✓ does not open maximised map when on click when beacon is stopped (13 ms)
+      ✓ renders stopped UI when a beacon event is not the latest beacon for a user (6 ms)
+      ✓ renders stopped UI when a beacon event is replaced (15 ms)
+
+PASS test/components/views/rooms/BasicMessageComposer-test.tsx (112.644 s)
+  BasicMessageComposer
+    ✓ should allow a user to paste a URL without it being mangled (412 ms)
+    ✓ should replaceEmoticons properly (1851 ms)
+
+(node:116) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:115) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:116) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/components/views/rooms/wysiwyg_composer/EditWysiwygComposer-test.tsx (116.53 s)
+  EditWysiwygComposer
+    ✓ Should not render the component when not ready (3061 ms)
+    ✓ Should focus when receiving an Action.FocusEditMessageComposer action (85 ms)
+    ✓ Should not focus when disabled (66 ms)
+    ✓ Should add emoji (112 ms)
+    Initialize with content
+      ✓ Should initialize useWysiwyg with html content (106 ms)
+      ✓ Should initialize useWysiwyg with plain text content (116 ms)
+      ✓ Should ignore when formatted_body is not filled (72 ms)
+      ✓ Should strip <mx-reply> tag from initial content (109 ms)
+    Edit and save actions
+      ✓ Should cancel edit on cancel button click (88 ms)
+      ✓ Should send message on save button click (176 ms)
+
+PASS test/components/views/rooms/wysiwyg_composer/SendWysiwygComposer-test.tsx (117.298 s)
+  SendWysiwygComposer
+    ✓ Should render WysiwygComposer when isRichTextEnabled is at true (4858 ms)
+    ✓ Should render PlainTextComposer when isRichTextEnabled is at false (68 ms)
+    Should focus when receiving an Action.FocusSendMessageComposer action
+      ✓ Should focus when receiving an Action.FocusSendMessageComposer action (283 ms)
+      ✓ Should focus and clear when receiving an Action.ClearAndFocusSendMessageComposer (180 ms)
+      ✓ Should focus when receiving a reply_to_event action (78 ms)
+      ✓ Should not focus when disabled (56 ms)
+      ✓ Should focus when receiving an Action.FocusSendMessageComposer action (53 ms)
+      ✓ Should focus and clear when receiving an Action.ClearAndFocusSendMessageComposer (66 ms)
+      ✓ Should focus when receiving a reply_to_event action (49 ms)
+      ✓ Should not focus when disabled (50 ms)
+    Placeholder when { isRichTextEnabled: true }
+      ✓ Should not has placeholder (61 ms)
+      ✓ Should has placeholder (63 ms)
+      ✓ Should display or not placeholder when editor content change (139 ms)
+    Placeholder when { isRichTextEnabled: false }
+      ✓ Should not has placeholder (43 ms)
+      ✓ Should has placeholder (43 ms)
+      ✓ Should display or not placeholder when editor content change (100 ms)
+    Emoji when { isRichTextEnabled: true }
+      ✓ Should add an emoji in an empty composer (90 ms)
+      ✓ Should add an emoji in the middle of a word (142 ms)
+      ✓ Should add an emoji when a word is selected (128 ms)
+    Emoji when { isRichTextEnabled: false }
+      ✓ Should add an emoji in an empty composer (61 ms)
+      ✓ Should add an emoji in the middle of a word (98 ms)
+      ✓ Should add an emoji when a word is selected (122 ms)
+
+Test Suites: 1 failed, 9 passed, 10 total
+Tests:       1 failed, 107 passed, 108 total
+Snapshots:   5 passed, 5 total
+Time:        119.81 s
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice

@@ -1,0 +1,54 @@
+FAIL src/app/store/_devices/useDevicesListing.test.tsx (189.343 s)
+  useLinksState
+    ✓ finds device by shareId (51 ms)
+    ✓ lists loaded devices (174 ms)
+    ✕ getLink should be call to get root link (55 ms)
+
+  ● useLinksState › getLink should be call to get root link
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 0
+    + Received  + 9
+
+    @@ -2,10 +2,19 @@
+        Object {
+          "haveLegacyName": false,
+          "id": "3",
+          "linkId": "linkId1",
+          "modificationTime": 1789388625960,
+    +     "name": "",
+    +     "shareId": "shareId1",
+    +     "volumeId": "1",
+    +   },
+    +   Object {
+    +     "haveLegacyName": false,
+    +     "id": "3",
+    +     "linkId": "linkId1",
+    +     "modificationTime": 1789388625960,
+          "name": "rootName",
+          "shareId": "shareId1",
+          "volumeId": "1",
+        },
+      ]
+
+      106 |
+      107 |             const targetList = [{ ...DEVICE_2, name }];
+    > 108 |             expect(cachedDevices).toEqual(targetList);
+          |                                   ^
+      109 |             expect(mockedGetLink).toHaveBeenCalled();
+      110 |         });
+      111 |     });
+
+      at toEqual (src/app/store/_devices/useDevicesListing.test.tsx:108:35)
+      at tryCatch (../../node_modules/@babel/runtime/helpers/regeneratorRuntime.js:44:17)
+      at Generator.<anonymous> (../../node_modules/@babel/runtime/helpers/regeneratorRuntime.js:125:22)
+      at Generator.next (../../node_modules/@babel/runtime/helpers/regeneratorRuntime.js:69:21)
+      at asyncGeneratorStep (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:24)
+      at _next (../../node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:9)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 2 passed, 3 total
+Snapshots:   0 total
+Time:        191.755 s
+Ran all test suites matching /applications\/drive\/src\/app\/store\/_devices\/useDevicesListing.test.tsx/i.

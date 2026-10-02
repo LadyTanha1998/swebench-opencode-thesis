@@ -1,0 +1,48 @@
+diff --git a/openlibrary/core/models.py b/openlibrary/core/models.py
+index d57e382cc..ad2a46377 100644
+--- a/openlibrary/core/models.py
++++ b/openlibrary/core/models.py
+@@ -386,26 +386,24 @@ class Edition(Thing):
+                 server will return a promise.
+         :return: an open library edition for this ISBN or None.
+         """
+-        asin = isbn if isbn.startswith("B") else ""
++        # Amazon Standard Identification Numbers (ASINs) are 10-char codes that
++        # begin with "B"; they are not ISBNs, so they must not be run through
++        # `canonical()` (which would strip them to an empty string).
++        asin = isbn.upper() if isbn.upper().startswith("B") else ""
+         isbn = canonical(isbn)
+ 
+-        if len(isbn) not in [10, 13] and len(asin) not in [10, 13]:
++        if len(isbn) not in [10, 13] and len(asin) != 10:
+             return None  # consider raising ValueError
+ 
+-        isbn13 = to_isbn_13(isbn)
+-        if isbn13 is None and not isbn:
+-            return None  # consider raising ValueError
+-
+-        isbn10 = isbn_13_to_isbn_10(isbn13)
+         book_ids: list[str] = []
+-        if isbn10 is not None:
+-            book_ids.extend(
+-                [isbn10, isbn13]
+-            ) if isbn13 is not None else book_ids.append(isbn10)
+-        elif asin is not None:
++        if asin:
+             book_ids.append(asin)
+         else:
+-            book_ids.append(isbn13)
++            isbn13 = to_isbn_13(isbn)
++            if isbn13 is None:
++                return None  # consider raising ValueError
++            isbn10 = isbn_13_to_isbn_10(isbn13)
++            book_ids.extend(i for i in [isbn10, isbn13] if i)
+ 
+         # Attempt to fetch book from OL
+         for book_id in book_ids:
+diff --git a/vendor/infogami b/vendor/infogami
+--- a/vendor/infogami
++++ b/vendor/infogami
+@@ -1 +1 @@
+-Subproject commit 3a6508785487728911252a9df53bcc5f44a4cde1
++Subproject commit 3a6508785487728911252a9df53bcc5f44a4cde1-dirty

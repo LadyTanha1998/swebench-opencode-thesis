@@ -1,0 +1,5 @@
+# go.flipt.io/flipt/internal/server/audit/template [go.flipt.io/flipt/internal/server/audit/template.test]
+internal/server/audit/template/leveled_logger_test.go:21:7: undefined: NewLeveledLogger
+# go.flipt.io/flipt/internal/server/audit/webhook [go.flipt.io/flipt/internal/server/audit/webhook.test]
+internal/server/audit/webhook/client_test.go:20:83: cannot use 8 * time.Second (constant 8000000000 of int64 type time.Duration) as *retryablehttp.Client value in argument to NewWebhookClient
+internal/server/audit/webhook/client_test.go:46:61: cannot use time.Second (constant 1000000000 of int64 type time.Duration) as *retryablehttp.Client value in argument to NewWebhookClient

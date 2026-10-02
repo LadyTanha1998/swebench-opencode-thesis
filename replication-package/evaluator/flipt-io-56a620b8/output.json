@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "TestSinkSpanExporter",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestGRPCMethodToAction",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestChecker",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestFlag",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestVariant",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConstraint",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestNamespace",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestDistribution",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSegment",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestRule",
+      "status": "PASSED"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# go.flipt.io/flipt/internal/oci/ecr
+internal/oci/ecr/ecr_test.go:11:2: no required module provides package github.com/aws/aws-sdk-go-v2/service/ecrpublic; to add it:
+	go get github.com/aws/aws-sdk-go-v2/service/ecrpublic
+# go.flipt.io/flipt/internal/oci/ecr
+internal/oci/ecr/credentials_store.go:34:11: undefined: NewPublicClient
+internal/oci/ecr/credentials_store.go:39:10: undefined: NewPrivateClient
+internal/oci/ecr/credentials_store.go:51:27: assignment mismatch: 3 variables but s.client().GetAuthorizationToken returns 2 values
+internal/oci/ecr/credentials_store.go:51:60: not enough arguments in call to s.client().GetAuthorizationToken
+	have ("context".Context)
+	want ("context".Context, *"github.com/aws/aws-sdk-go-v2/service/ecr".GetAuthorizationTokenInput, ...func(*"github.com/aws/aws-sdk-go-v2/service/ecr".Options))

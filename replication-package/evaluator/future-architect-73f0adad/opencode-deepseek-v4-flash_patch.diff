@@ -1,0 +1,149 @@
+diff --git a/models/cvecontents.go b/models/cvecontents.go
+index a23249b..4a91d2f 100644
+--- a/models/cvecontents.go
++++ b/models/cvecontents.go
+@@ -75,7 +75,9 @@ func (v CveContents) PrimarySrcURLs(lang, myFamily, cveID string, confidences Co
+ 		}
+ 	}
+ 
+-	order := CveContentTypes{Nvd, NewCveContentType(myFamily), GitHub}
++	order := CveContentTypes{Nvd}
++	order = append(order, NewCveContentTypes(myFamily)...)
++	order = append(order, GitHub)
+ 	for _, ctype := range order {
+ 		if conts, found := v[ctype]; found {
+ 			for _, cont := range conts {
+@@ -312,6 +314,48 @@ func (c CveContent) Empty() bool {
+ // CveContentType is a source of CVE information
+ type CveContentType string
+ 
++// NewCveContentTypes returns all CveContentTypes relevant to the given OS family.
++// A single OS family may have multiple CVE data sources (e.g. OVAL and API),
++// so this returns every relevant source instead of only one.
++func NewCveContentTypes(name string) CveContentTypes {
++	switch name {
++	case "nvd":
++		return CveContentTypes{Nvd}
++	case "jvn":
++		return CveContentTypes{Jvn}
++	case "redhat", "centos", "alma", "rocky":
++		return CveContentTypes{RedHat, RedHatAPI}
++	case "fedora":
++		return CveContentTypes{Fedora}
++	case "oracle":
++		return CveContentTypes{Oracle}
++	case "ubuntu":
++		return CveContentTypes{Ubuntu, UbuntuAPI}
++	case "debian", "debian-oval":
++		return CveContentTypes{Debian, DebianSecurityTracker}
++	case "redhat_api":
++		return CveContentTypes{RedHatAPI}
++	case "debian_security_tracker":
++		return CveContentTypes{DebianSecurityTracker}
++	case "ubuntu_api":
++		return CveContentTypes{UbuntuAPI}
++	case constant.OpenSUSE, constant.OpenSUSELeap, constant.SUSEEnterpriseServer, constant.SUSEEnterpriseDesktop:
++		return CveContentTypes{SUSE}
++	case "microsoft":
++		return CveContentTypes{Microsoft}
++	case "wordpress":
++		return CveContentTypes{WpScan}
++	case "amazon":
++		return CveContentTypes{Amazon}
++	case "trivy":
++		return CveContentTypes{Trivy}
++	case "GitHub":
++		return CveContentTypes{Trivy}
++	default:
++		return CveContentTypes{Unknown}
++	}
++}
++
+ // NewCveContentType create CveContentType
+ func NewCveContentType(name string) CveContentType {
+ 	switch name {
+diff --git a/models/cvecontents_test.go b/models/cvecontents_test.go
+index ef55f00..95a81bc 100644
+--- a/models/cvecontents_test.go
++++ b/models/cvecontents_test.go
+@@ -160,6 +160,25 @@ func TestSourceLinks(t *testing.T) {
+ 	}
+ }
+ 
++func TestSourceLinksUbuntu(t *testing.T) {
++	v := CveContents{
++		UbuntuAPI: []CveContent{{
++			Type:       UbuntuAPI,
++			SourceLink: "https://ubuntu.com/security/CVE-2017-6074",
++		}},
++	}
++	actual := v.PrimarySrcURLs("en", "ubuntu", "CVE-2017-6074", Confidences{})
++	want := []CveContentStr{
++		{
++			Type:  UbuntuAPI,
++			Value: "https://ubuntu.com/security/CVE-2017-6074",
++		},
++	}
++	if !reflect.DeepEqual(want, actual) {
++		t.Errorf("\n[ubuntu] expected: %v\n  actual: %v\n", want, actual)
++	}
++}
++
+ func TestCveContents_Sort(t *testing.T) {
+ 	tests := []struct {
+ 		name string
+diff --git a/models/vulninfos.go b/models/vulninfos.go
+index e7d59d3..e446b1c 100644
+--- a/models/vulninfos.go
++++ b/models/vulninfos.go
+@@ -504,7 +504,7 @@ func (v VulnInfo) Summaries(lang, myFamily string) (values []CveContentStr) {
+ 
+ // Cvss2Scores returns CVSS V2 Scores
+ func (v VulnInfo) Cvss2Scores() (values []CveContentCvss) {
+-	order := []CveContentType{RedHatAPI, RedHat, Nvd, Jvn}
++	order := []CveContentType{RedHatAPI, RedHat, Ubuntu, UbuntuAPI, Nvd, Jvn}
+ 	for _, ctype := range order {
+ 		if conts, found := v.CveContents[ctype]; found {
+ 			for _, cont := range conts {
+@@ -550,7 +550,7 @@ func (v VulnInfo) Cvss3Scores() (values []CveContentCvss) {
+ 		}
+ 	}
+ 
+-	for _, ctype := range []CveContentType{Debian, DebianSecurityTracker, Ubuntu, Amazon, Trivy, GitHub, WpScan} {
++	for _, ctype := range []CveContentType{Debian, DebianSecurityTracker, Ubuntu, UbuntuAPI, Amazon, Trivy, GitHub, WpScan} {
+ 		if conts, found := v.CveContents[ctype]; found {
+ 			for _, cont := range conts {
+ 				if cont.Cvss3Severity != "" {
+diff --git a/models/vulninfos_test.go b/models/vulninfos_test.go
+index edca0db..31e5528 100644
+--- a/models/vulninfos_test.go
++++ b/models/vulninfos_test.go
+@@ -698,6 +698,28 @@ func TestCvss3Scores(t *testing.T) {
+ 				},
+ 			},
+ 		},
++		// [2] Severity in gost (UbuntuAPI)
++		{
++			in: VulnInfo{
++				CveContents: CveContents{
++					UbuntuAPI: []CveContent{{
++						Type:          UbuntuAPI,
++						Cvss3Severity: "CRITICAL",
++					}},
++				},
++			},
++			out: []CveContentCvss{
++				{
++					Type: UbuntuAPI,
++					Value: Cvss{
++						Type:                 CVSS3,
++						Score:                10.0,
++						CalculatedBySeverity: true,
++						Severity:             "CRITICAL",
++					},
++				},
++			},
++		},
+ 		// Empty
+ 		{
+ 			in:  VulnInfo{},

@@ -1,0 +1,93 @@
+diff --git a/internal/oci/ecr/credentials_store.go b/internal/oci/ecr/credentials_store.go
+new file mode 100644
+index 00000000..4824ea67
+--- /dev/null
++++ b/internal/oci/ecr/credentials_store.go
+@@ -0,0 +1,86 @@
++package ecr
++
++import (
++	"context"
++	"encoding/base64"
++	"strings"
++	"sync"
++	"time"
++
++	"oras.land/oras-go/v2/registry/remote/auth"
++)
++
++type CredentialsStore struct {
++	mu     sync.Mutex
++	cache  map[string]cachedCredential
++	client func() Client
++}
++
++type cachedCredential struct {
++	credential auth.Credential
++	expiry     time.Time
++}
++
++func NewCredentialsStore(endpoint string) *CredentialsStore {
++	return &CredentialsStore{
++		cache:  make(map[string]cachedCredential),
++		client: defaultClientFunc(endpoint),
++	}
++}
++
++func defaultClientFunc(endpoint string) func() Client {
++	if strings.HasPrefix(endpoint, "public.ecr.aws") {
++		return func() Client {
++			return NewPublicClient(endpoint)
++		}
++	}
++
++	return func() Client {
++		return NewPrivateClient(endpoint)
++	}
++}
++
++func (s *CredentialsStore) Get(ctx context.Context, serverAddress string) (auth.Credential, error) {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++
++	if cred, ok := s.cache[serverAddress]; ok && cred.expiry.After(time.Now().UTC()) {
++		return cred.credential, nil
++	}
++
++	token, expiresAt, err := s.client().GetAuthorizationToken(ctx)
++	if err != nil {
++		return auth.EmptyCredential, err
++	}
++
++	username, password, err := extractUsernamePassword(token)
++	if err != nil {
++		return auth.EmptyCredential, err
++	}
++
++	cred := auth.Credential{
++		Username: username,
++		Password: password,
++	}
++
++	s.cache[serverAddress] = cachedCredential{
++		credential: cred,
++		expiry:     expiresAt,
++	}
++
++	return cred, nil
++}
++
++func extractUsernamePassword(token string) (string, string, error) {
++	output, err := base64.StdEncoding.DecodeString(token)
++	if err != nil {
++		return "", "", err
++	}
++
++	userpass := strings.SplitN(string(output), ":", 2)
++	if len(userpass) != 2 {
++		return "", "", auth.ErrBasicCredentialNotFound
++	}
++
++	return userpass[0], userpass[1], nil
++}
+\ No newline at end of file

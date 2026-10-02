@@ -1,0 +1,49 @@
+diff --git a/config/flipt.schema.json b/config/flipt.schema.json
+index e875e639..07455fd3 100644
+--- a/config/flipt.schema.json
++++ b/config/flipt.schema.json
+@@ -628,10 +628,17 @@
+             "repository": {
+               "type": "string"
+             },
++            "bundles_directory": {
++              "type": "string"
++            },
+             "insecure": {
+               "type": "boolean",
+               "default": false
+             },
++            "poll_interval": {
++              "type": "string",
++              "default": "30s"
++            },
+             "authentication": {
+               "type": "object",
+               "additionalProperties": false,
+diff --git a/internal/config/storage.go b/internal/config/storage.go
+index bb55aa06..90b88ff8 100644
+--- a/internal/config/storage.go
++++ b/internal/config/storage.go
+@@ -60,7 +60,8 @@ func (c *StorageConfig) setDefaults(v *viper.Viper) error {
+ 			v.SetDefault("storage.object.s3.poll_interval", "1m")
+ 		}
+ 	case string(OCIStorageType):
+-		v.SetDefault("store.oci.insecure", false)
++		v.SetDefault("storage.oci.insecure", false)
++		v.SetDefault("storage.oci.poll_interval", "30s")
+ 	default:
+ 		v.SetDefault("storage.type", "database")
+ 	}
+@@ -247,8 +248,11 @@ type OCI struct {
+ 	BundleDirectory string `json:"bundles_directory,omitempty" mapstructure:"bundles_directory" yaml:"bundles_directory,omitempty"`
+ 	// Insecure configures whether or not to use HTTP instead of HTTPS
+ 	Insecure bool `json:"insecure,omitempty" mapstructure:"insecure" yaml:"insecure,omitempty"`
++	// PollInterval configures the interval in which the target reference is polled to
++	// discover any updates to the target bundle.
++	PollInterval time.Duration `json:"poll_interval,omitempty" mapstructure:"poll_interval" yaml:"poll_interval,omitempty"`
+ 	// Authentication configures authentication credentials for accessing the target registry
+-	Authentication *OCIAuthentication `json:"-,omitempty" mapstructure:"authentication" yaml:"-,omitempty"`
++	Authentication *OCIAuthentication `json:"-" mapstructure:"authentication" yaml:"-"`
+ }
+ 
+ // OCIAuthentication configures the credentials for authenticating against a target OCI regitstry

@@ -1,0 +1,2 @@
+# github.com/gravitational/teleport/lib/utils/prompt [github.com/gravitational/teleport/lib/utils/prompt.test]
+lib/utils/prompt/context_reader_test.go:243:4: undefined: NotifyExit

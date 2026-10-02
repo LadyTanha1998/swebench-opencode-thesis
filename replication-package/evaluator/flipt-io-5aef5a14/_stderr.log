@@ -1,0 +1,4 @@
+# go.flipt.io/flipt/internal/storage/fs/git [go.flipt.io/flipt/internal/storage/fs/git.test]
+internal/storage/fs/git/source_test.go:148:35: undefined: WithInsecureTLS
+internal/storage/fs/git/source_test.go:150:34: undefined: WithInsecureTLS
+internal/storage/fs/git/source_test.go:162:34: undefined: WithCABundle

@@ -1,0 +1,355 @@
+Running selected tests: test/components/structures/ThreadPanel-test.ts test/components/structures/LegacyCallEventGrouper-test.ts test/utils/SessionLock-test.ts test/components/views/context_menus/EmbeddedPage-test.ts test/stores/room-list/algorithms/list-ordering/NaturalAlgorithm-test.ts test/components/views/dialogs/InviteDialog-test.ts test/components/views/voip/LegacyCallView/LegacyCallViewButtons-test.ts test/components/views/rooms/ExtraTile-test.ts test/components/views/rooms/__snapshots__/ExtraTile-test.tsx.snap test/components/views/rooms/MessageComposer-test.ts test/components/views/messages/MBeaconBody-test.ts test/components/views/right_panel/VerificationPanel-test.ts test/components/views/elements/ProgressBar-test.ts test/components/views/dialogs/AccessSecretStorageDialog-test.ts test/components/views/elements/AccessibleButton-test.ts test/components/views/dialogs/CreateRoomDialog-test.ts test/components/structures/MatrixChat-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+FAIL test/components/views/rooms/MessageComposer-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=119) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+(node:123) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/utils/SessionLock-test.ts (174.65 s)
+  SessionLock
+    ✓ A single instance starts up normally (83 ms)
+    ✓ A second instance starts up normally when the first shut down cleanly (44 ms)
+    ✓ A second instance starts up *eventually* when the first terminated uncleanly (189 ms)
+    ✓ A second instance waits for the first to shut down (219 ms)
+    ✓ If a third instance starts while we are waiting, we give up immediately (95 ms)
+    ✓ If two new instances start concurrently, only one wins (114 ms)
+
+(node:126) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:124) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Event.decrypted listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:124) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/stores/room-list/algorithms/list-ordering/NaturalAlgorithm-test.ts (174.688 s)
+  NaturalAlgorithm
+    When sortAlgorithm is alphabetical
+      ✓ orders rooms by alpha (67 ms)
+      handleRoomUpdate
+        ✓ removes a room (7 ms)
+        ✓ warns when removing a room that is not indexed (11 ms)
+        ✓ adds a new room (6 ms)
+        ✓ adds a new muted room (14 ms)
+        ✓ ignores a mute change update (3 ms)
+        ✓ throws for an unhandled update cause (81 ms)
+        time and read receipt updates
+          ✓ handles when a room is not indexed (6 ms)
+          ✓ re-sorts rooms when timeline updates (7 ms)
+    When sortAlgorithm is recent
+      ✓ orders rooms by recent with muted rooms to the bottom (37 ms)
+      handleRoomUpdate
+        ✓ removes a room (29 ms)
+        ✓ warns and returns without change when removing a room that is not indexed (13 ms)
+        ✓ adds a new room (23 ms)
+        ✓ does not re-sort on possible mute change when room did not change effective mutedness (18 ms)
+        ✓ re-sorts on a mute change (21 ms)
+
+(node:120) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/messages/MBeaconBody-test.tsx (176.623 s)
+  <MBeaconBody />
+    ✓ renders stopped beacon UI for an explicitly stopped beacon (353 ms)
+    ✓ renders stopped beacon UI for an expired beacon (85 ms)
+    ✓ renders loading beacon UI for a beacon that has not started yet (103 ms)
+    ✓ does not open maximised map when on click when beacon is stopped (62 ms)
+    ✓ renders stopped UI when a beacon event is not the latest beacon for a user (58 ms)
+    ✓ renders stopped UI when a beacon event is replaced (81 ms)
+    on liveness change
+      ✓ renders stopped UI when a beacon stops being live (52 ms)
+    latestLocationState
+      ✓ renders a live beacon without a location correctly (48 ms)
+      ✓ does nothing on click when a beacon has no location (38 ms)
+      ✓ renders a live beacon with a location correctly (281 ms)
+      ✓ opens maximised map view on click when beacon has a live location (361 ms)
+      ✓ updates latest location (81 ms)
+    redaction
+      ✓ does nothing when getRelationsForEvent is falsy (43 ms)
+      ✓ cleans up redaction listener on unmount (54 ms)
+      ✓ does nothing when beacon has no related locations (59 ms)
+      ✓ redacts related locations on beacon redaction (104 ms)
+    when map display is not configured
+      ✓ renders maps unavailable error for a live beacon with location (223 ms)
+      ✓ renders stopped beacon UI for an explicitly stopped beacon (25 ms)
+      ✓ renders stopped beacon UI for an expired beacon (28 ms)
+      ✓ renders loading beacon UI for a beacon that has not started yet (63 ms)
+      ✓ does not open maximised map when on click when beacon is stopped (49 ms)
+      ✓ renders stopped UI when a beacon event is not the latest beacon for a user (17 ms)
+      ✓ renders stopped UI when a beacon event is replaced (28 ms)
+
+PASS test/components/views/right_panel/VerificationPanel-test.tsx (177.66 s)
+  <VerificationPanel />
+    'Ready' phase (dialog mode)
+      ✓ should show a 'Start' button (635 ms)
+      ✓ should show a QR code if the other side can scan and QR bytes are calculated (1379 ms)
+    'Ready' phase (regular mode)
+      ✓ should show a 'Verify by emoji' button (131 ms)
+      ✓ should show a QR code if the other side can scan and QR bytes are calculated (1186 ms)
+    'Verify by emoji' flow
+      ✓ shows a spinner initially (71 ms)
+      ✓ should show some emojis once keys are exchanged (157 ms)
+      'Verify own device' flow
+        ✓ should show 'Waiting for you to verify' after confirming (213 ms)
+
+PASS test/components/views/dialogs/CreateRoomDialog-test.tsx (180.899 s)
+  <CreateRoomDialog />
+    ✓ should default to private room (816 ms)
+    ✓ should use defaultName from props (190 ms)
+    for a private room
+      ✓ should use server .well-known default for encryption setting (126 ms)
+      ✓ should use server .well-known force_disable for encryption setting (104 ms)
+      ✓ should use defaultEncrypted prop (109 ms)
+      ✓ should use defaultEncrypted prop when it is false (108 ms)
+      ✓ should override defaultEncrypted when server .well-known forces disabled encryption (77 ms)
+      ✓ should override defaultEncrypted when server forces enabled encryption (98 ms)
+      ✓ should enable encryption toggle and disable field when server forces encryption (87 ms)
+      ✓ should warn when trying to create a room with an invalid form (265 ms)
+      ✓ should create a private room (240 ms)
+    for a knock room
+      when feature is disabled
+        ✓ should not have the option to create a knock room (310 ms)
+      when feature is enabled
+        ✓ should have a heading (749 ms)
+        ✓ should have a hint (543 ms)
+        ✓ should create a knock room with private visibility (507 ms)
+        ✓ should create a knock room with public visibility (1785 ms)
+    for a public room
+      ✓ should set join rule to public defaultPublic is truthy (174 ms)
+      ✓ should not create a public room without an alias (339 ms)
+      ✓ should create a public room (204 ms)
+
+PASS test/components/views/elements/ProgressBar-test.tsx
+  <ProgressBar/>
+    ✓ works when animated (133 ms)
+    ✓ works when not animated (14 ms)
+
+PASS test/components/structures/LegacyCallEventGrouper-test.ts (8.796 s)
+  LegacyCallEventGrouper
+    ✓ detects a missed call (234 ms)
+    ✓ detects an ended call (207 ms)
+    ✓ detects call type (24 ms)
+
+FAIL test/components/views/rooms/ExtraTile-test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=121) was terminated by another process: signal=SIGKILL, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+PASS test/components/views/context_menus/EmbeddedPage-test.tsx (15.622 s)
+  <EmbeddedPage />
+    ✓ should translate _t strings (134 ms)
+    ✓ should show error if unable to load (126 ms)
+    ✓ should render nothing if no url given (39 ms)
+
+PASS test/components/views/voip/LegacyCallView/LegacyCallViewButtons-test.tsx (18.998 s)
+  LegacyCallViewButtons
+    ✓ should render the buttons (160 ms)
+
+(node:125) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/dialogs/AccessSecretStorageDialog-test.tsx (22.637 s)
+  AccessSecretStorageDialog
+    ✓ Closes the dialog when the form is submitted with a valid key (809 ms)
+    ✓ Notifies the user if they input an invalid Security Key (216 ms)
+    ✓ Notifies the user if they input an invalid passphrase (217 ms)
+
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/structures/ThreadPanel-test.tsx (200.371 s)
+  ThreadPanel
+    Header
+      ✓ expect that All filter for ThreadPanelHeader properly renders Show: All threads (244 ms)
+      ✓ expect that My filter for ThreadPanelHeader properly renders Show: My threads (62 ms)
+      ✓ matches snapshot when no threads (17 ms)
+      ✓ expect that ThreadPanelHeader properly opens a context menu when clicked on the button (177 ms)
+      ✓ expect that ThreadPanelHeader has the correct option selected in the context menu (90 ms)
+      ✓ sends an unthreaded read receipt when the Mark All Threads Read button is clicked (169 ms)
+      ✓ doesn't send a receipt if no room is in context (69 ms)
+      ✓ focuses the close button on FocusThreadsPanel dispatch (214 ms)
+    Filtering
+      ✓ correctly filters Thread List with multiple threads (755 ms)
+      ✓ correctly filters Thread List with a single, unparticipated thread (198 ms)
+
+PASS test/components/views/dialogs/InviteDialog-test.tsx (200.746 s)
+  InviteDialog
+    ✓ should label with space name (616 ms)
+    ✓ should label with room name (157 ms)
+    ✓ should not suggest valid unknown MXIDs (287 ms)
+    ✓ should not suggest invalid MXIDs (86 ms)
+    ✓ should lookup inputs which look like email addresses (dm) (308 ms)
+    ✓ should lookup inputs which look like email addresses (invite) (126 ms)
+    ✓ should suggest e-mail even if lookup fails (82 ms)
+    ✓ should add pasted values (111 ms)
+    ✓ should support pasting one username that is not a mx id or email (102 ms)
+    ✓ should allow to invite multiple emails to a room (1669 ms)
+    ✓ should not allow to invite more than one email to a DM (2291 ms)
+    ✓ should not allow to invite a MXID and an email to a DM (1464 ms)
+    ✓ should start a DM if the profile is available (7167 ms)
+    ✓ should not allow pasting the same user multiple times (4972 ms)
+    ✓ should add to selection on click of user tile (984 ms)
+    ✓ should not suggest users from other server when room has m.federate=false (41 ms)
+    when encryption by default is disabled
+      ✓ should allow to invite more than one email to a DM (1534 ms)
+    when inviting a user with an unknown profile
+      ✓ should not start the DM (1155 ms)
+      ✓ should show the »invite anyway« dialog if the profile is not available (699 ms)
+      when clicking »Start DM anyway«
+        ✓ should start the DM (961 ms)
+      when clicking »Close«
+        ✓ should not start the DM (818 ms)
+    when inviting a user with an unknown profile and »promptBeforeInviteUnknownUsers« setting = false
+      ✓ should not show the »invite anyway« dialog (633 ms)
+      ✓ should start the DM directly (460 ms)
+
+PASS test/components/views/elements/AccessibleButton-test.tsx (36.465 s)
+  <AccessibleButton />
+    ✓ renders div with role button by default (44 ms)
+    ✓ renders a button element (15 ms)
+    ✓ renders with correct classes when button has kind (12 ms)
+    ✓ disables button correctly (18 ms)
+    ✓ calls onClick handler on button click (13 ms)
+    ✓ calls onClick handler on button mousedown when triggerOnMousedown is passed (6 ms)
+    handling keyboard events
+      ✓ calls onClick handler on enter keydown (9 ms)
+      ✓ calls onClick handler on space keyup (4 ms)
+      ✓ calls onKeydown/onKeyUp handlers for keys other than space and enter (8 ms)
+      ✓ does nothing on non space/enter key presses when no onKeydown/onKeyUp handlers provided (17 ms)
+
+(node:118) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Symbol(update-status-indicator) listeners added to [RoomNotificationStateStore]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Symbol(selected-space) listeners added to [SpaceStoreClass]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 update listeners added to [RoomViewStore]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:118) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Symbol(home-behaviour) listeners added to [SpaceStoreClass]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/components/structures/MatrixChat-test.tsx (237.489 s)
+  <MatrixChat />
+    ✓ should render spinner while app is loading (226 ms)
+    ✓ should fire to focus the message composer (122 ms)
+    ✓ should fire to focus the threads panel (94 ms)
+    when query params have a OIDC params
+      ✓ should fail when query params do not include valid code and state (201 ms)
+      ✓ should make correct request to complete authorization (21 ms)
+      ✓ should look up userId using access token (31 ms)
+      ✓ should log error and return to welcome page when userId lookup fails (67 ms)
+      ✓ should call onTokenLoginCompleted (15 ms)
+      when login fails
+        ✓ should log and return to welcome page with correct error when login state is not found (52 ms)
+        ✓ should log and return to welcome page (58 ms)
+        ✓ should not clear storage (17 ms)
+        ✓ should not store clientId or issuer (12 ms)
+      when login succeeds
+        ✓ should persist login credentials (37 ms)
+        ✓ should store clientId and issuer in session storage (31 ms)
+        ✓ should set logged in and start MatrixClient (526 ms)
+        ✓ should persist device language when available (22 ms)
+        ✓ should not persist device language when not available (27 ms)
+    with an existing session
+      ✓ should render welcome page after login (2675 ms)
+      onAction()
+        ✓ should open user device settings (312 ms)
+        room actions
+          leave_room
+            for a room
+              ✓ should launch a confirmation modal (366 ms)
+              ✓ should warn when room has only one joined member (228 ms)
+              ✓ should warn when room is not public (227 ms)
+              ✓ should do nothing on cancel (230 ms)
+              ✓ should leave room and dispatch after leave action (191 ms)
+            for a space
+              ✓ should launch a confirmation modal (179 ms)
+              ✓ should warn when space is not public (389 ms)
+        logout
+          ✓ should hangup all legacy calls (289 ms)
+          ✓ should cleanup broadcasts (286 ms)
+          ✓ should disconnect all calls (271 ms)
+          ✓ should logout of posthog (256 ms)
+          ✓ should destroy pickle key (256 ms)
+          without delegated auth
+            ✓ should call /logout (246 ms)
+            ✓ should warn and do post-logout cleanup anyway when logout fails (246 ms)
+            ✓ should do post-logout cleanup (242 ms)
+    with a soft-logged-out session
+      ✓ should show the soft-logout page (41 ms)
+    login via key/pass
+      ✓ should render login page (137 ms)
+      post login setup
+        ✓ should go straight to logged in view when crypto is not enabled (680 ms)
+        ✓ should go straight to logged in view when user does not have cross signing keys and server does not support cross signing (348 ms)
+        ✓ should show complete security screen when user has cross signing setup (156 ms)
+        ✓ should setup e2e when server supports cross signing (202 ms)
+        when server supports cross signing and user does not have cross signing setup
+          ✓ should go to setup e2e screen (210 ms)
+          when encryption is force disabled
+            ✓ should go straight to logged in view when user is not in any encrypted rooms (429 ms)
+            ✓ should go to setup e2e screen when user is in encrypted rooms (243 ms)
+    when query params have a loginToken
+      ✓ should show an error dialog when no homeserver is found in local storage (49 ms)
+      ✓ should attempt token login (13 ms)
+      ✓ should call onTokenLoginCompleted (11 ms)
+      when login fails
+        ✓ should show a dialog (125 ms)
+        ✓ should not clear storage (25 ms)
+      when login succeeds
+        ✓ should clear storage (82 ms)
+        ✓ should persist login credentials (56 ms)
+        ✓ should set fresh login flag in session storage (28 ms)
+        ✓ should override hsUrl in creds when login response wellKnown differs from config (67 ms)
+        ✓ should continue to post login setup when no session is found in local storage (85 ms)
+    automatic SSO selection
+      ✓ should automatically setup and redirect to SSO login (17 ms)
+      ✓ should automatically setup and redirect to CAS login (17 ms)
+    Multi-tab lockout
+      ✓ waits for other tab to stop during startup (56 ms)
+      shows the lockout page when a second tab opens
+        ✓ after a session is restored (270 ms)
+        ✓ while we were waiting for the lock ourselves (32 ms)
+        ✓ while we are checking the sync store (16 ms)
+        ✓ during crypto init (31 ms)
+
+Test Suites: 2 failed, 14 passed, 16 total
+Tests:       185 passed, 185 total
+Snapshots:   23 passed, 23 total
+Time:        240.356 s

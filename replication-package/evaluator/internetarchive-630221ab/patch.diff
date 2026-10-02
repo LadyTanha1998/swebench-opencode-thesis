@@ -1,0 +1,378 @@
+diff --git a/openlibrary/accounts/model.py b/openlibrary/accounts/model.py
+index 167b0f27b..77fb7bd34 100644
+--- a/openlibrary/accounts/model.py
++++ b/openlibrary/accounts/model.py
+@@ -19,6 +19,7 @@ from infogami import config
+ from infogami.infobase.client import ClientException
+ from infogami.utils.view import public, render_template
+ from openlibrary.core import helpers, stats
++from openlibrary.core.awards import Awards
+ from openlibrary.core.booknotes import Booknotes
+ from openlibrary.core.bookshelves import Bookshelves
+ from openlibrary.core.edits import CommunityEditsQueue
+@@ -357,6 +358,9 @@ class Account(web.storage):
+         results['bookshelves_count'] = Bookshelves.update_username(
+             self.username, new_username, _test=test
+         )
++        results['awards_count'] = Awards.update_username(
++            self.username, new_username, _test=test
++        )
+         results['merge_request_count'] = CommunityEditsQueue.update_submitter_name(
+             self.username, new_username, _test=test
+         )
+diff --git a/openlibrary/core/awards.py b/openlibrary/core/awards.py
+new file mode 100644
+index 000000000..5397b4c4e
+--- /dev/null
++++ b/openlibrary/core/awards.py
+@@ -0,0 +1,103 @@
++"""Module for handling the Best Book Awards feature.
++
++Patrons who have marked a work as "Already Read" may nominate that work
++for a Best Book Award topic. A patron may only nominate a given work for
++a given topic once, and this is enforced by the table's primary key of
++(username, work_id, topic).
++"""
++
++from . import db
++
++
++class Awards(db.CommonExtras):
++    TABLENAME = "awards"
++    PRIMARY_KEY = ("username", "work_id", "topic")
++    ALLOW_DELETE_ON_CONFLICT = True
++
++    @classmethod
++    def get_work_count(cls, work_id):
++        """Returns the number of nominations made for the given work."""
++        oldb = db.get_db()
++        query = "SELECT count(*) AS count from awards WHERE work_id=$work_id"
++        results = oldb.query(query, vars={'work_id': int(work_id)})
++        return results[0]['count'] if results else 0
++
++    @classmethod
++    def get_user_count(cls, username):
++        """Returns the number of nominations made by the given user."""
++        oldb = db.get_db()
++        query = "SELECT count(*) AS count from awards WHERE username=$username"
++        results = oldb.query(query, vars={'username': username})
++        return results[0]['count'] if results else 0
++
++    @classmethod
++    def get_topic_count(cls, topic):
++        """Returns the number of nominations made for the given topic."""
++        oldb = db.get_db()
++        query = "SELECT count(*) AS count from awards WHERE topic=$topic"
++        results = oldb.query(query, vars={'topic': topic})
++        return results[0]['count'] if results else 0
++
++    @classmethod
++    def get_user_nomination(cls, username, work_id, topic):
++        """Returns the nomination record for a user/work/topic, or None."""
++        oldb = db.get_db()
++        data = {
++            'username': username,
++            'work_id': int(work_id),
++            'topic': topic,
++        }
++        query = (
++            "SELECT * from awards WHERE username=$username "
++            "AND work_id=$work_id AND topic=$topic"
++        )
++        results = list(oldb.query(query, vars=data))
++        return results[0] if results else None
++
++    @classmethod
++    def add(cls, username, work_id, topic):
++        """Add a nomination for a user/work/topic.
++
++        If a nomination already exists for this user/work/topic, it is
++        treated as an idempotent no-op rather than raising a unique
++        constraint violation.
++        """
++        oldb = db.get_db()
++        if cls.get_user_nomination(username, work_id, topic):
++            return None
++        return oldb.insert(
++            cls.TABLENAME,
++            username=username,
++            work_id=int(work_id),
++            topic=topic,
++        )
++
++    @classmethod
++    def update(cls, username, work_id, topic):
++        """Update a nomination for a user/work/topic.
++
++        Mirrors the semantics of add(): the nomination is guaranteed to
++        exist after this call, so add/update are interchangeable from the
++        API's perspective.
++        """
++        return cls.add(username, work_id, topic)
++
++    @classmethod
++    def remove(cls, username, work_id, topic):
++        """Remove a nomination for a user/work/topic."""
++        oldb = db.get_db()
++        where = {
++            'username': username,
++            'work_id': int(work_id),
++            'topic': topic,
++        }
++        try:
++            return oldb.delete(
++                cls.TABLENAME,
++                where=(
++                    'work_id=$work_id AND username=$username AND topic=$topic'
++                ),
++                vars=where,
++            )
++        except Exception:  # we want to catch no entry exists
++            return None
+diff --git a/openlibrary/core/models.py b/openlibrary/core/models.py
+index d77ec3427..6386cbd07 100644
+--- a/openlibrary/core/models.py
++++ b/openlibrary/core/models.py
+@@ -16,6 +16,7 @@ from infogami.infobase import client
+ from openlibrary import accounts
+ from openlibrary.catalog import add_book  # noqa: F401 side effects may be needed
+ from openlibrary.core import lending
++from openlibrary.core.awards import Awards
+ from openlibrary.core.booknotes import Booknotes
+ from openlibrary.core.bookshelves import Bookshelves
+ from openlibrary.core.follows import PubSub
+@@ -668,6 +669,7 @@ class Work(Thing):
+             r['occurrences']['observations'] = len(
+                 Observations.get_observations_for_work(olid)
+             )
++            r['occurrences']['awards'] = Awards.get_work_count(olid)
+ 
+             if new_olid != olid:
+                 # track updates
+@@ -683,9 +685,18 @@ class Work(Thing):
+                 r['updates']['observations'] = Observations.update_work_id(
+                     olid, new_olid, _test=test
+                 )
++                r['updates']['awards'] = Awards.update_work_id(
++                    olid, new_olid, _test=test
++                )
+                 summary['modified'] = summary['modified'] or any(
+                     any(r['updates'][group].values())
+-                    for group in ['readinglog', 'ratings', 'booknotes', 'observations']
++                    for group in [
++                        'readinglog',
++                        'ratings',
++                        'booknotes',
++                        'observations',
++                        'awards',
++                    ]
+                 )
+ 
+         return summary
+diff --git a/openlibrary/core/schema.sql b/openlibrary/core/schema.sql
+index 84e0d47bb..f8b954c5d 100644
+--- a/openlibrary/core/schema.sql
++++ b/openlibrary/core/schema.sql
+@@ -106,6 +106,18 @@ CREATE TABLE yearly_reading_goals (
+     primary key (username, year)
+ );
+ 
++CREATE TABLE awards (
++    username text NOT NULL,
++    work_id integer NOT NULL,
++    topic text NOT NULL,
++    updated timestamp without time zone default (current_timestamp at time zone 'utc'),
++    created timestamp without time zone default (current_timestamp at time zone 'utc'),
++    primary key (username, work_id, topic)
++);
++CREATE INDEX awards_work_id_idx ON awards (work_id);
++CREATE INDEX awards_username_idx ON awards (username);
++CREATE INDEX awards_topic_idx ON awards (topic);
++
+ CREATE TABLE wikidata (
+     id text not null primary key,
+     data json,
+diff --git a/openlibrary/plugins/admin/code.py b/openlibrary/plugins/admin/code.py
+index 493adc578..eef0727f7 100644
+--- a/openlibrary/plugins/admin/code.py
++++ b/openlibrary/plugins/admin/code.py
+@@ -459,6 +459,7 @@ class people_view:
+             f"Ratings updated: {results['ratings_count']}. "
+             f"Observations updated: {results['observations_count']}. "
+             f"Bookshelves updated: {results['bookshelves_count']}."
++            f"Awards updated: {results['awards_count']}."
+             f"Merge requests updated: {results['merge_request_count']}"
+         )
+         add_flash_message("info", msg)
+diff --git a/openlibrary/plugins/openlibrary/api.py b/openlibrary/plugins/openlibrary/api.py
+index 7a747cac1..6e572cb55 100644
+--- a/openlibrary/plugins/openlibrary/api.py
++++ b/openlibrary/plugins/openlibrary/api.py
+@@ -24,6 +24,8 @@ from openlibrary.accounts.model import (
+ )
+ from openlibrary.core import helpers as h
+ from openlibrary.core import lending, models
++from openlibrary.core.awards import Awards
++from openlibrary.core.bookshelves import Bookshelves
+ from openlibrary.core.bookshelves_events import BookshelvesEvents
+ from openlibrary.core.follows import PubSub
+ from openlibrary.core.helpers import NothingEncoder
+@@ -350,6 +352,112 @@ class work_bookshelves(delegate.page):
+         )
+ 
+ 
++class best_book_awards(delegate.page):
++    path = "/awards/best_book"
++    encoding = "json"
++
++    def POST(self):
++        """Add, update, or remove a Best Book Award nomination.
++
++        Authenticated patrons may nominate a work for a Best Book Award
++        topic, provided they have marked the work as "Already Read" in
++        their reading log.
++
++        POST params:
++        - work_id str: the work to nominate, e.g. "OL123W" (required)
++        - topic str: the award topic to nominate for (required)
++        - action str: one of "add", "update", "remove" (default: "add")
++        - redir bool: if patron not logged in / on success, redirect back
++        - redir_url str: url to redirect to when redir is true
++
++        :rtype: json
++        :return: a dict of the form {"success": msg} or {"error": msg}
++        """
++        user = accounts.get_current_user()
++        if not user:
++            raise web.seeother('/account/login?redirect=%s' % web.ctx.path)
++
++        i = web.input(
++            work_id=None,
++            topic=None,
++            action="add",
++            redir=False,
++            redir_url=None,
++        )
++
++        username = user.key.split('/')[2]
++
++        def response(msg, status="success"):
++            return delegate.RawText(
++                json.dumps({status: msg}), content_type="application/json"
++            )
++
++        if not i.work_id or not i.topic:
++            return response('work_id and topic are required', status="error")
++
++        work_id = extract_numeric_id_from_olid(i.work_id)
++
++        if i.action not in ('add', 'update', 'remove'):
++            return response('invalid action', status="error")
++
++        if i.action in ('add', 'update'):
++            read_status = Bookshelves.get_users_read_status_of_work(
++                username, work_id
++            )
++            if read_status != Bookshelves.PRESET_BOOKSHELVES['Already Read']:
++                return response(
++                    'You must mark this work as "Already Read" before nominating it.',
++                    status="error",
++                )
++
++        if i.action == 'add':
++            Awards.add(username, work_id, i.topic)
++            r = response('award nomination added')
++        elif i.action == 'update':
++            Awards.update(username, work_id, i.topic)
++            r = response('award nomination updated')
++        else:
++            Awards.remove(username, work_id, i.topic)
++            r = response('award nomination removed')
++
++        if i.redir:
++            raise web.seeother(i.redir_url or '/works/OL%sW' % work_id)
++        return r
++
++
++class best_book_awards_counts(delegate.page):
++    path = "/awards/best_book/counts"
++    encoding = "json"
++
++    def GET(self):
++        """Returns counts of Best Book Award nominations.
++
++        Counts may be filtered by work_id, username, and/or topic. Each
++        provided filter produces a corresponding count in the response.
++
++        GET params:
++        - work_id str: e.g. "OL123W"
++        - username str: a patron's username
++        - topic str: an award topic
++
++        :rtype: json
++        :return: a dict mapping each provided filter to its count
++        """
++        i = web.input(work_id=None, username=None, topic=None)
++        counts = {}
++        if i.work_id:
++            counts['work_id'] = Awards.get_work_count(
++                extract_numeric_id_from_olid(i.work_id)
++            )
++        if i.username:
++            counts['username'] = Awards.get_user_count(i.username)
++        if i.topic:
++            counts['topic'] = Awards.get_topic_count(i.topic)
++        return delegate.RawText(
++            json.dumps(counts), content_type="application/json"
++        )
++
++
+ class work_editions(delegate.page):
+     path = r"(/works/OL\d+W)/editions"
+     encoding = "json"
+diff --git a/openlibrary/plugins/upstream/account.py b/openlibrary/plugins/upstream/account.py
+index c8388265d..110357001 100644
+--- a/openlibrary/plugins/upstream/account.py
++++ b/openlibrary/plugins/upstream/account.py
+@@ -31,6 +31,7 @@ from openlibrary.accounts import (
+ from openlibrary.accounts.model import sendmail
+ from openlibrary.core import helpers as h
+ from openlibrary.core import lending, stats
++from openlibrary.core.awards import Awards
+ from openlibrary.core.booknotes import Booknotes
+ from openlibrary.core.bookshelves import Bookshelves
+ from openlibrary.core.follows import PubSub
+@@ -1011,6 +1012,9 @@ class export_books(delegate.page):
+         elif i.type == 'ratings':
+             data = self.generate_star_ratings(username)
+             filename = 'OpenLibrary_Ratings.csv'
++        elif i.type == 'awards':
++            data = self.generate_awards(username)
++            filename = 'OpenLibrary_Awards.csv'
+ 
+         web.header('Content-Type', 'text/csv')
+         web.header('Content-disposition', f'attachment; filename={filename}')
+@@ -1159,6 +1163,23 @@ class export_books(delegate.page):
+ 
+         return csv_string(Ratings.select_all_by_username(username), format_rating)
+ 
++    def generate_awards(self, username: str) -> str:
++
++        def format_award(award: Mapping) -> dict:
++            work_id = f"OL{award['work_id']}W"
++            work = self.get_work_from_id(work_id)
++            return {
++                "Work ID": work_id,
++                "Title": self.escape_csv_field(work.title),
++                "Author(s)": self.escape_csv_field(
++                    " | ".join(work.get_author_names())
++                ),
++                "Topic": self.escape_csv_field(award['topic']),
++                "Created On": award['created'].strftime(self.date_format),
++            }
++
++        return csv_string(Awards.select_all_by_username(username), format_award)
++
+ 
+ def _validate_follows_page(page, per_page, hits):
+     min_page = 1

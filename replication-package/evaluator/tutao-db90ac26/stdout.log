@@ -1,0 +1,9 @@
+Running all tests...
+Starting test execution...
+Build > Packages
+Build > Packages took 11292 ms
+Build > Types
+$ npx tsc --incremental true --noEmit true
+tests/api/worker/facades/LoginFacadeTest.ts(125,4): error TS2554: Expected 11 arguments, but got 12.
+tests/login/LoginViewModelTest.ts(139,21): error TS2554: Expected 5 arguments, but got 4.
+All tests completed.

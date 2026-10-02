@@ -1,0 +1,52 @@
+diff --git a/lib/utils/jsontools.go b/lib/utils/jsontools.go
+index e129b92d2c..9412a63271 100644
+--- a/lib/utils/jsontools.go
++++ b/lib/utils/jsontools.go
+@@ -18,12 +18,12 @@ package utils
+ 
+ import (
+ 	"bytes"
++	"encoding/json"
+ 	"io"
+ 	"reflect"
+ 	"unicode"
+ 
+ 	"github.com/gravitational/trace"
+-	jsoniter "github.com/json-iterator/go"
+ 
+ 	"github.com/ghodss/yaml"
+ 	kyaml "k8s.io/apimachinery/pkg/util/yaml"
+@@ -56,28 +56,22 @@ func hasPrefix(buf []byte, prefix []byte) bool {
+ 	return bytes.HasPrefix(trim, prefix)
+ }
+ 
+-// FastUnmarshal uses the json-iterator library for fast JSON unmarshalling.
++// FastUnmarshal uses the standard library for fast JSON unmarshalling.
+ // Note, this function marshals floats with 6 digits precision.
+ func FastUnmarshal(data []byte, v interface{}) error {
+-	iter := jsoniter.ConfigFastest.BorrowIterator(data)
+-	defer jsoniter.ConfigFastest.ReturnIterator(iter)
+-
+-	iter.ReadVal(v)
+-	if iter.Error != nil {
+-		return trace.Wrap(iter.Error)
++	if err := json.Unmarshal(data, v); err != nil {
++		return trace.Wrap(err)
+ 	}
+-
+ 	return nil
+ }
+ 
+-// FastMarshal uses the json-iterator library for fast JSON marshalling.
++// FastMarshal uses the standard library for fast JSON marshalling.
+ // Note, this function unmarshals floats with 6 digits precision.
+ func FastMarshal(v interface{}) ([]byte, error) {
+-	data, err := jsoniter.ConfigFastest.Marshal(v)
++	data, err := json.Marshal(v)
+ 	if err != nil {
+ 		return nil, trace.Wrap(err)
+ 	}
+-
+ 	return data, nil
+ }
+ 

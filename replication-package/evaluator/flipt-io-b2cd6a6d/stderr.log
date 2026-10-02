@@ -1,0 +1,11 @@
+# go.flipt.io/flipt/internal/telemetry [go.flipt.io/flipt/internal/telemetry.test]
+internal/telemetry/telemetry_test.go:61:19: assignment mismatch: 2 variables but NewReporter returns 1 value
+internal/telemetry/telemetry_test.go:61:51: too many arguments in call to NewReporter
+	have (config.Config, *zap.Logger, string, info.Flipt)
+	want (config.Config, *zap.Logger, analytics.Client)
+internal/telemetry/telemetry_test.go:116:18: reporter.ping undefined (type *Reporter has no field or method ping)
+internal/telemetry/telemetry_test.go:157:18: reporter.ping undefined (type *Reporter has no field or method ping)
+internal/telemetry/telemetry_test.go:190:18: reporter.ping undefined (type *Reporter has no field or method ping)
+internal/telemetry/telemetry_test.go:221:25: not enough arguments in call to reporter.report
+	have (context.Context)
+	want (context.Context, info.Flipt, file)

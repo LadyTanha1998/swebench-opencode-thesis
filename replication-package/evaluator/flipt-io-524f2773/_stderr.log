@@ -1,0 +1,2 @@
+# go.flipt.io/flipt/internal/storage/fs
+internal/storage/fs/snapshot.go:299:21: r.SegmentKey undefined (type *ext.Rule has no field or method SegmentKey)

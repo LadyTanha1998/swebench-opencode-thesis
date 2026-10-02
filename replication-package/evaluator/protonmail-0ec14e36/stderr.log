@@ -1,0 +1,77 @@
+FAIL src/app/helpers/expiration.test.ts (108 MB heap size)
+  canSetExpiration
+    ✓ should return false if feature flag is false (4 ms)
+    ✓ should return false if user is free (1 ms)
+    ✓ should return true if feature flag is true and user is paid (1 ms)
+    ✓ should return false if labelIDs contains spam or trash (2 ms)
+  getExpirationTime
+    ✓ should return null if days is undefined (3 ms)
+    ✓ should return a Unix timestamp if days is > 0 (5 ms)
+  getMinExpirationTime
+    ✕ should return undefined if date is not today (2 ms)
+    ✕ should return a Date if date is today (2 ms)
+    ✕ should return a Date with minutes set to 0 or 30 (2 ms)
+    ✕ should return a older next interval from now with a difference of at least 30 minutes (3 ms)
+
+  ● getMinExpirationTime › should return undefined if date is not today
+
+    TypeError: (0 , _expiration.getMinExpirationTime) is not a function
+
+      47 | describe('getMinExpirationTime', () => {
+      48 |     it('should return undefined if date is not today', () => {
+    > 49 |         expect(getMinExpirationTime(addDays(new Date(), 1))).toBe(undefined);
+         |                                    ^
+      50 |     });
+      51 |
+      52 |     it('should return a Date if date is today', () => {
+
+      at Object.<anonymous> (src/app/helpers/expiration.test.ts:49:36)
+
+  ● getMinExpirationTime › should return a Date if date is today
+
+    TypeError: (0 , _expiration.getMinExpirationTime) is not a function
+
+      51 |
+      52 |     it('should return a Date if date is today', () => {
+    > 53 |         expect(getMinExpirationTime(new Date())).toBeInstanceOf(Date);
+         |                                    ^
+      54 |     });
+      55 |
+      56 |     it('should return a Date with minutes set to 0 or 30', () => {
+
+      at Object.<anonymous> (src/app/helpers/expiration.test.ts:53:36)
+
+  ● getMinExpirationTime › should return a Date with minutes set to 0 or 30
+
+    TypeError: (0 , _expiration.getMinExpirationTime) is not a function
+
+      55 |
+      56 |     it('should return a Date with minutes set to 0 or 30', () => {
+    > 57 |         const date = getMinExpirationTime(new Date());
+         |                                          ^
+      58 |         const minutes = date?.getMinutes();
+      59 |         expect(minutes === 0 || minutes === 30).toBe(true);
+      60 |     });
+
+      at Object.<anonymous> (src/app/helpers/expiration.test.ts:57:42)
+
+  ● getMinExpirationTime › should return a older next interval from now with a difference of at least 30 minutes
+
+    TypeError: (0 , _expiration.getMinExpirationTime) is not a function
+
+      62 |     it('should return a older next interval from now with a difference of at least 30 minutes', () => {
+      63 |         const now = new Date();
+    > 64 |         const interval = getMinExpirationTime(now);
+         |                                              ^
+      65 |
+      66 |         if (!interval) {
+      67 |             throw new Error('Interval is undefined');
+
+      at Object.<anonymous> (src/app/helpers/expiration.test.ts:64:46)
+
+Test Suites: 1 failed, 1 total
+Tests:       4 failed, 6 passed, 10 total
+Snapshots:   0 total
+Time:        140.942 s
+Ran all test suites matching /src\/app\/helpers\/expiration.test.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

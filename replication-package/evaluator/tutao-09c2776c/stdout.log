@@ -1,0 +1,10 @@
+Running all tests...
+Starting test execution...
+Build > Packages
+Build > Packages took 23720 ms
+Build > Types
+$ npx tsc --incremental true --noEmit true
+tests/api/worker/facades/CalendarFacadeTest.ts(190,60): error TS2554: Expected 1 arguments, but got 2.
+tests/api/worker/facades/CalendarFacadeTest.ts(222,119): error TS2554: Expected 1 arguments, but got 2.
+tests/api/worker/facades/CalendarFacadeTest.ts(262,119): error TS2554: Expected 1 arguments, but got 2.
+All tests completed.

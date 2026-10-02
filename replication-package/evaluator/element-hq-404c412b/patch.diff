@@ -1,0 +1,64 @@
+diff --git a/src/utils/createMatrixClient.ts b/src/utils/createMatrixClient.ts
+index cf2e22abb1..54ec9b97e0 100644
+--- a/src/utils/createMatrixClient.ts
++++ b/src/utils/createMatrixClient.ts
+@@ -20,12 +20,16 @@ import {
+     MemoryCryptoStore,
+     MemoryStore,
+ } from "matrix-js-sdk/src/matrix";
++import { logger } from "matrix-js-sdk/src/logger";
+ import { IndexedDBCryptoStore } from "matrix-js-sdk/src/crypto/store/indexeddb-crypto-store";
+ import { IndexedDBStore } from "matrix-js-sdk/src/store/indexeddb";
+ import { LocalStorageCryptoStore } from "matrix-js-sdk/src/crypto/store/localStorage-crypto-store";
+ 
+ // @ts-ignore - `.ts` is needed here to make TS happy
+ import IndexedDBWorker from "../workers/indexeddb.worker.ts";
++import PlatformPeg from "../PlatformPeg";
++import Modal from "../Modal";
++import IndexedDBStoreErrorDialog from "../components/views/dialogs/IndexedDBStoreErrorDialog";
+ 
+ const localStorage = window.localStorage;
+ 
+@@ -69,8 +73,41 @@ export default function createMatrixClient(opts: ICreateClientOpts): MatrixClien
+         storeOpts.cryptoStore = new MemoryCryptoStore();
+     }
+ 
+-    return createClient({
++    const client = createClient({
+         ...storeOpts,
+         ...opts,
+     });
++
++    if (storeOpts.store instanceof IndexedDBStore) {
++        // The store could be closed or otherwise broken; listen for that and
++        // stop the client + show a dialog if so.
++        storeOpts.store.on("degraded", () => {
++            logger.error("IndexedDB store degraded, the app is going to stop working");
++            stopClient(client);
++        });
++    }
++
++    return client;
++}
++
++/**
++ * When the IndexedDB store closes unexpectedly the client cannot be relied upon
++ * to keep working. Stop the client and, unless the user is a guest, surface an
++ * error dialog explaining what happened and offering to reload the app. Guests
++ * are simply reloaded to avoid interrupting flows such as registration.
++ */
++function stopClient(client: MatrixClient): void {
++    if (client.isGuest()) {
++        // Reload the app to get a fresh client without disturbing the user.
++        PlatformPeg.get()?.reload();
++        return;
++    }
++
++    client.stopClient();
++
++    Modal.createDialog(IndexedDBStoreErrorDialog, {
++        onFinished: () => {
++            PlatformPeg.get()?.reload();
++        },
++    });
+ }

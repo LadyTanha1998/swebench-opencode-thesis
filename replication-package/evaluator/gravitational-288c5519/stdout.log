@@ -1,0 +1,481 @@
+Running selected tests: TestAuthSignKubeconfig/k8s_proxy_running_locally_without_public_addr TestAuthSignKubeconfig/--kube-cluster_specified_with_invalid_cluster TestDatabaseServerResource/get_specific_database_server TestAuthSignKubeconfig/--kube-cluster_specified_with_valid_cluster TestGenerateDatabaseKeys/database_certificate TestCheckKubeCluster/local_cluster _empty_kube_cluster TestCheckKubeCluster/remote_cluster _empty_kube_cluster TestTrimDurationSuffix/trim_minutes/seconds TestCheckKubeCluster/local_cluster _invalid_kube_cluster TestAuthSignKubeconfig/k8s_proxy_running_locally_with_public_addr TestTrimDurationSuffix TestDatabaseResource TestTrimDurationSuffix/trim_seconds TestTrimDurationSuffix/does_not_trim_non-zero_suffix TestGenerateDatabaseKeys/mongodb_certificate TestAppResource TestDatabaseServerResource/get_all_database_servers TestCheckKubeCluster/local_cluster _valid_kube_cluster TestCheckKubeCluster/local_cluster _empty_kube_cluster _no_registered_kube_clusters TestAuthSignKubeconfig/--proxy_specified TestCheckKubeCluster TestGenerateDatabaseKeys/database_certificate_multiple_SANs TestAuthSignKubeconfig/k8s_proxy_from_cluster_info TestCheckKubeCluster/non-k8s_output_format TestGenerateDatabaseKeys TestCheckKubeCluster/remote_cluster _non-empty_kube_cluster TestDatabaseServerResource TestTrimDurationSuffix/does_not_trim_zero_in_the_middle TestAuthSignKubeconfig TestDatabaseServerResource/remove_database_server
+?   	github.com/gravitational/teleport	[no test files]
+?   	github.com/gravitational/teleport/dronegen	[no test files]
+?   	github.com/gravitational/teleport/examples/bench	[no test files]
+?   	github.com/gravitational/teleport/examples/jwt	[no test files]
+?   	github.com/gravitational/teleport/lib	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/asciitable	0.133s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/auth	0.519s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/auth/keystore	0.407s [no tests to run]
+?   	github.com/gravitational/teleport/lib/auth/mocku2f	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/auth/native	0.423s [no tests to run]
+?   	github.com/gravitational/teleport/lib/auth/test	[no test files]
+?   	github.com/gravitational/teleport/lib/auth/testauthority	[no test files]
+?   	github.com/gravitational/teleport/lib/auth/u2f	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/backend	0.324s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/backend/lite	0.334s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/backend/memory	0.616s [no tests to run]
+?   	github.com/gravitational/teleport/lib/backend/test	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/benchmark	0.443s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/bpf	0.253s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/cache	0.349s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/cloud	0.259s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/config	0.648s [no tests to run]
+?   	github.com/gravitational/teleport/lib/datalog	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/defaults	0.277s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events	0.233s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/dynamoevents	0.345s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/firestoreevents	0.333s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/gcssessions	0.340s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/memsessions	0.345s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/events/s3sessions	0.533s [no tests to run]
+?   	github.com/gravitational/teleport/lib/events/test	[no test files]
+?   	github.com/gravitational/teleport/lib/fixtures	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/httplib	0.207s [no tests to run]
+?   	github.com/gravitational/teleport/lib/httplib/csrf	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/jwt	0.333s [no tests to run]
+?   	github.com/gravitational/teleport/lib/kube	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/kube/kubeconfig	0.472s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/kube/proxy	0.620s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/kube/utils	0.327s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/labels	0.247s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/limiter	0.192s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/modules	0.428s [no tests to run]
+PAM support not enabled, skipping tests
+ok  	github.com/gravitational/teleport/lib/pam	0.258s
+?   	github.com/gravitational/teleport/lib/plugin	[no test files]
+?   	github.com/gravitational/teleport/lib/restrictedsession	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/reversetunnel	0.440s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/reversetunnel/track	0.235s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/secret	0.421s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/service	0.530s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/session	0.278s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/shell	0.146s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv	0.351s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/alpnproxy	0.472s [no tests to run]
+?   	github.com/gravitational/teleport/lib/srv/alpnproxy/auth	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/alpnproxy/common	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/app	0.557s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/db	0.539s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/db/cloud	0.407s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/db/common	0.597s [no tests to run]
+?   	github.com/gravitational/teleport/lib/srv/db/dbutils	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/db/mongodb	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/db/mongodb/protocol	0.133s [no tests to run]
+?   	github.com/gravitational/teleport/lib/srv/db/mysql	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/db/mysql/protocol	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/db/postgres	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/desktop	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/srv/desktop/deskproto	0.143s [no tests to run]
+?   	github.com/gravitational/teleport/lib/srv/desktop/rdp/rdpclient	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/forward	[no test files]
+?   	github.com/gravitational/teleport/lib/srv/uacc	[no test files]
+?   	github.com/gravitational/teleport/lib/sshca	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/sshutils	0.290s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/sshutils/scp	0.266s [no tests to run]
+?   	github.com/gravitational/teleport/lib/system	[no test files]
+?   	github.com/gravitational/teleport/lib/teleagent	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/tlsca	0.237s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils	0.198s [no tests to run]
+?   	github.com/gravitational/teleport/lib/utils/agentconn	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/concurrentqueue	0.157s [no tests to run]
+?   	github.com/gravitational/teleport/lib/utils/interval	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/parse	0.234s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/proxy	0.214s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/socks	0.167s [no tests to run]
+?   	github.com/gravitational/teleport/lib/utils/testlog	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/lib/utils/workpool	0.110s [no tests to run]
+?   	github.com/gravitational/teleport/tool/tctl	[no test files]
+=== RUN   TestAuthSignKubeconfig
+=== PAUSE TestAuthSignKubeconfig
+=== RUN   TestCheckKubeCluster
+=== RUN   TestCheckKubeCluster/non-k8s_output_format
+=== RUN   TestCheckKubeCluster/local_cluster,_valid_kube_cluster
+=== RUN   TestCheckKubeCluster/local_cluster,_empty_kube_cluster
+=== RUN   TestCheckKubeCluster/local_cluster,_empty_kube_cluster,_no_registered_kube_clusters
+=== RUN   TestCheckKubeCluster/local_cluster,_invalid_kube_cluster
+=== RUN   TestCheckKubeCluster/remote_cluster,_empty_kube_cluster
+=== RUN   TestCheckKubeCluster/remote_cluster,_non-empty_kube_cluster
+--- PASS: TestCheckKubeCluster (0.00s)
+    --- PASS: TestCheckKubeCluster/non-k8s_output_format (0.00s)
+    --- PASS: TestCheckKubeCluster/local_cluster,_valid_kube_cluster (0.00s)
+    --- PASS: TestCheckKubeCluster/local_cluster,_empty_kube_cluster (0.00s)
+    --- PASS: TestCheckKubeCluster/local_cluster,_empty_kube_cluster,_no_registered_kube_clusters (0.00s)
+    --- PASS: TestCheckKubeCluster/local_cluster,_invalid_kube_cluster (0.00s)
+    --- PASS: TestCheckKubeCluster/remote_cluster,_empty_kube_cluster (0.00s)
+    --- PASS: TestCheckKubeCluster/remote_cluster,_non-empty_kube_cluster (0.00s)
+=== RUN   TestGenerateDatabaseKeys
+=== RUN   TestGenerateDatabaseKeys/database_certificate
+Database credentials have been written to /tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.key, /tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.crt, /tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.cas.
+
+To enable mutual TLS on your PostgreSQL server, add the following to its
+postgresql.conf configuration file:
+
+ssl = on
+ssl_cert_file = '/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.crt'
+ssl_key_file = '/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.key'
+ssl_ca_file = '/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.cas'
+
+To enable mutual TLS on your MySQL server, add the following to its
+mysql.cnf configuration file:
+
+[mysqld]
+require_secure_transport=ON
+ssl-cert=/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.crt
+ssl-key=/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.key
+ssl-ca=/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate1449942002/001/db.cas
+=== RUN   TestGenerateDatabaseKeys/database_certificate_multiple_SANs
+Database credentials have been written to /tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.key, /tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.crt, /tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.cas.
+
+To enable mutual TLS on your PostgreSQL server, add the following to its
+postgresql.conf configuration file:
+
+ssl = on
+ssl_cert_file = '/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.crt'
+ssl_key_file = '/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.key'
+ssl_ca_file = '/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.cas'
+
+To enable mutual TLS on your MySQL server, add the following to its
+mysql.cnf configuration file:
+
+[mysqld]
+require_secure_transport=ON
+ssl-cert=/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.crt
+ssl-key=/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.key
+ssl-ca=/path/to//tmp/TestGenerateDatabaseKeysdatabase_certificate_multiple_SANs628521186/001/db.cas
+    auth_command_test.go:432: 
+        	Error Trace:	auth_command_test.go:432
+        	Error:      	Not equal: 
+        	            	expected: "CN=mysql.external.net"
+        	            	actual  : "CN=mysql.external.net\\,mysql.internal.net\\,192.168.1.1"
+        	            	
+        	            	Diff:
+        	            	--- Expected
+        	            	+++ Actual
+        	            	@@ -1 +1 @@
+        	            	-CN=mysql.external.net
+        	            	+CN=mysql.external.net\,mysql.internal.net\,192.168.1.1
+        	Test:       	TestGenerateDatabaseKeys/database_certificate_multiple_SANs
+=== RUN   TestGenerateDatabaseKeys/mongodb_certificate
+Database credentials have been written to /tmp/TestGenerateDatabaseKeysmongodb_certificate961487734/001/db.crt, /tmp/TestGenerateDatabaseKeysmongodb_certificate961487734/001/db.cas.
+
+To enable mutual TLS on your MongoDB server, add the following to its
+mongod.yaml configuration file:
+
+net:
+  tls:
+    mode: requireTLS
+    certificateKeyFile: /path/to//tmp/TestGenerateDatabaseKeysmongodb_certificate961487734/001/db.crt
+    CAFile: /path/to//tmp/TestGenerateDatabaseKeysmongodb_certificate961487734/001/db.cas
+--- FAIL: TestGenerateDatabaseKeys (0.69s)
+    --- PASS: TestGenerateDatabaseKeys/database_certificate (0.01s)
+    --- FAIL: TestGenerateDatabaseKeys/database_certificate_multiple_SANs (0.01s)
+    --- PASS: TestGenerateDatabaseKeys/mongodb_certificate (0.00s)
+=== RUN   TestDatabaseServerResource
+2026-09-13T13:44:56Z INFO             Generating new host UUID: 78f1468b-1fad-4d62-ba90-c1e92d144506. service/service.go:638
+2026-09-13T13:44:56Z [AUTH]      INFO Updating cluster networking configuration: Kind:"cluster_networking_config" Version:"v2" Metadata:<Name:"cluster-networking-config" Namespace:"default" Labels:<key:"teleport.dev/origin" value:"config-file" > > Spec:<KeepAliveInterval:300000000000 KeepAliveCountMax:3 > . auth/init.go:445
+2026-09-13T13:44:56Z [AUTH]      INFO Updating session recording configuration: Kind:"session_recording_config" Version:"v2" Metadata:<Name:"session-recording-config" Namespace:"default" Labels:<key:"teleport.dev/origin" value:"config-file" > > Spec:<Mode:"node" ProxyChecksHostKeys:"\010\001" > . auth/init.go:463
+2026-09-13T13:44:56Z [AUTH]      INFO Updating cluster auth preference: AuthPreference(Type="local",SecondFactor="otp"). auth/init.go:427
+2026-09-13T13:44:56Z [AUTH]      INFO Updating cluster configuration: StaticTokens([]). auth/init.go:310
+2026-09-13T13:44:56Z [AUTH]      INFO Created namespace: "default". auth/init.go:317
+2026-09-13T13:44:56Z [AUTH]      INFO Created default admin role: "admin". auth/init.go:326
+2026-09-13T13:44:56Z [AUTH]      INFO First start: generating host certificate authority. auth/init.go:337
+2026-09-13T13:44:57Z [AUTH]      INFO First start: generating user certificate authority. auth/init.go:337
+2026-09-13T13:44:57Z [AUTH]      INFO First start: generating jwt certificate authority. auth/init.go:337
+2026-09-13T13:44:58Z [AUDIT]     INFO role.created cluster_name:d271e8a38bcd code:T9000I ei:0 event:role.created expires:0001-01-01T00:00:00Z name:admin time:2026-09-13T13:44:58.102Z uid:9c84808f-9b80-4072-a88a-b7b591e290af user:system events/emitter.go:324
+2026-09-13T13:44:58Z [AUTH]      INFO Enabling RBAC in OSS Teleport. Migrating users, roles and trusted clusters. auth/init.go:574
+2026-09-13T13:44:58Z [AUTH]      INFO Migration completed. Created 1 roles, updated 0 users, 0 trusted clusters and 0 Github connectors. auth/init.go:592
+2026-09-13T13:44:58Z [AUTH]      INFO Auth server is running periodic operations. auth/init.go:405
+2026-09-13T13:44:58Z [CA]        INFO Generating TLS certificate {0x5390af8 0xc000b44250 1.3.9999.1.7=#130c643237316538613338626364,CN=78f1468b-1fad-4d62-ba90-c1e92d144506.d271e8a38bcd,O=Admin,POSTALCODE=null,STREET= 2036-09-10 13:44:58.219195252 +0000 UTC [d271e8a38bcd *.teleport.cluster.local teleport.cluster.local] [] 5 []}. common_name:78f1468b-1fad-4d62-ba90-c1e92d144506.d271e8a38bcd dns_names:[d271e8a38bcd *.teleport.cluster.local teleport.cluster.local] locality:[] not_after:2036-09-10 13:44:58.219195252 +0000 UTC org:[Admin] org_unit:[] tlsca/ca.go:650
+2026-09-13T13:44:58Z INFO [PROC:1]    Admin has obtained credentials to connect to the cluster. service/connect.go:381
+2026-09-13T13:44:58Z INFO [PROC:1]    The process successfully wrote the credentials and state of Admin to the disk. service/connect.go:422
+2026-09-13T13:44:58Z INFO [PROC:1]    Service auth is creating new listener on 127.0.0.1:32913. service/signals.go:213
+2026-09-13T13:44:58Z INFO [AUTH:1]    Starting Auth service with PROXY protocol support. service/service.go:1305
+2026-09-13T13:44:58Z WARN [AUTH:1]    Configuration setting auth_service/advertise_ip is not set. guessing 127.0.0.1:32913. service/service.go:1383
+2026-09-13T13:44:58Z WARN             No TLS Keys provided, using self-signed certificate. service/service.go:3734
+2026-09-13T13:44:58Z WARN             Generating self-signed key and cert to /tmp/TestDatabaseServerResource3966381122/001/webproxy_key.pem /tmp/TestDatabaseServerResource3966381122/001/webproxy_cert.pem. service/service.go:3752
+2026-09-13T13:44:58Z INFO [AUTH:1]    Auth service 8.0.0-alpha.1: is starting on 127.0.0.1:32913. utils/cli.go:282
+[AUTH]         Auth service 8.0.0-alpha.1: is starting on 127.0.0.1:32913.
+2026-09-13T13:44:58Z [CA]        INFO Generating TLS certificate {0x5390af8 0xc000c1e260 1.3.9999.1.7=#130c643237316538613338626364,CN=78f1468b-1fad-4d62-ba90-c1e92d144506.d271e8a38bcd,O=Proxy,POSTALCODE=null,STREET= 2036-09-10 13:44:58.583742669 +0000 UTC [d271e8a38bcd 127.0.0.1 127.0.0.1 127.0.0.1 localhost 127.0.0.1 ::1 remote.kube.proxy.teleport.cluster.local *.teleport.cluster.local teleport.cluster.local] [] 5 []}. common_name:78f1468b-1fad-4d62-ba90-c1e92d144506.d271e8a38bcd dns_names:[d271e8a38bcd 127.0.0.1 127.0.0.1 127.0.0.1 localhost 127.0.0.1 ::1 remote.kube.proxy.teleport.cluster.local *.teleport.cluster.local teleport.cluster.local] locality:[] not_after:2036-09-10 13:44:58.583742669 +0000 UTC org:[Proxy] org_unit:[] tlsca/ca.go:650
+2026-09-13T13:44:58Z INFO [PROC:1]    Proxy has obtained credentials to connect to the cluster. service/connect.go:381
+2026-09-13T13:44:58Z [MXTLS:1]   WARN Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+2026-09-13T13:44:58Z [MXTLS:1]   WARN Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+2026-09-13T13:44:58Z ERRO [PROC:1]    Proxy failed to establish connection to cluster: Get "https://teleport.cluster.local/v2/domain": local error: tls: bad record MAC. service/connect.go:68
+2026-09-13T13:44:58Z [CA]        INFO Generating TLS certificate {0x5390af8 0xc000c1e260 1.3.9999.1.7=#130c643237316538613338626364,CN=78f1468b-1fad-4d62-ba90-c1e92d144506.d271e8a38bcd,O=Db,POSTALCODE=null,STREET= 2036-09-10 13:44:58.793918919 +0000 UTC [d271e8a38bcd] [] 5 []}. common_name:78f1468b-1fad-4d62-ba90-c1e92d144506.d271e8a38bcd dns_names:[d271e8a38bcd] locality:[] not_after:2036-09-10 13:44:58.793918919 +0000 UTC org:[Db] org_unit:[] tlsca/ca.go:650
+2026-09-13T13:44:58Z INFO [PROC:1]    Db has obtained credentials to connect to the cluster. service/connect.go:381
+2026-09-13T13:44:58Z [MXTLS:1]   WARN Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+2026-09-13T13:44:58Z [MXTLS:1]   WARN Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+2026-09-13T13:44:58Z [MXTLS:1]   WARN Handshake failed. error:[remote error: tls: bad certificate] multiplexer/tls.go:146
+2026-09-13T13:44:58Z ERRO [PROC:1]    Db failed to establish connection to cluster: Failed to connect to Auth Server directly or over tunnel, no methods remaining.. service/connect.go:68
+    helpers_test.go:150: Failed to fetch database servers
+2026-09-13T13:45:03Z [KEYGEN]    INFO Stopping key precomputation routine. native/native.go:142
+2026-09-13T13:45:03Z INFO [PROC:1]    Db stopping connection attempts, teleport is shutting down. service/connect.go:74
+--- FAIL: TestDatabaseServerResource (7.28s)
+=== RUN   TestDatabaseResource
+2026-09-13T13:45:03Z INFO             Generating new host UUID: 2318fee1-3e5c-4d8e-ab2b-41bcdd5966db. service/service.go:638
+2026-09-13T13:45:03Z WARN [PROC:1]    Teleport process has exited with error. error:[
+ERROR REPORT:
+Original Error: *trace.CompareFailedError teleport process has shutdown
+Stack Trace:
+	/app/lib/service/service.go:1977 github.com/gravitational/teleport/lib/service.(*TeleportProcess).registerWithAuthServer.func1
+	/app/lib/service/supervisor.go:494 github.com/gravitational/teleport/lib/service.(*LocalService).Serve
+	/app/lib/service/supervisor.go:263 github.com/gravitational/teleport/lib/service.(*LocalSupervisor).serve.func1
+	/usr/local/go/src/runtime/asm_amd64.s:1371 runtime.goexit
+User Message: teleport process has shutdown] service:register.db service/supervisor.go:268
+2026-09-13T13:45:03Z INFO [AUTH:1]    Shutting down immediately. service/service.go:1446
+2026-09-13T13:45:03Z INFO [PROC:1]    Proxy stopping connection attempts, teleport is shutting down. service/connect.go:74
+2026-09-13T13:45:03Z WARN [PROC:1]    Teleport process has exited with error. error:[
+ERROR REPORT:
+Original Error: *trace.CompareFailedError teleport process has shutdown
+Stack Trace:
+	/app/lib/service/service.go:1977 github.com/gravitational/teleport/lib/service.(*TeleportProcess).registerWithAuthServer.func1
+	/app/lib/service/supervisor.go:494 github.com/gravitational/teleport/lib/service.(*LocalService).Serve
+	/app/lib/service/supervisor.go:263 github.com/gravitational/teleport/lib/service.(*LocalSupervisor).serve.func1
+	/usr/local/go/src/runtime/asm_amd64.s:1371 runtime.goexit
+User Message: teleport process has shutdown] service:register.proxy service/supervisor.go:268
+2026-09-13T13:45:03Z INFO [AUTH:1]    Exited. service/service.go:1461
+2026-09-13T13:45:03Z WARN [AUTH:1]    TLS server exited with error: http: Server closed. service/service.go:1338
+2026-09-13T13:45:03Z INFO [AUTH]      Updating cluster networking configuration: Kind:"cluster_networking_config" Version:"v2" Metadata:<Name:"cluster-networking-config" Namespace:"default" Labels:<key:"teleport.dev/origin" value:"config-file" > > Spec:<KeepAliveInterval:300000000000 KeepAliveCountMax:3 > . auth/init.go:445
+2026-09-13T13:45:03Z INFO [AUTH]      Updating session recording configuration: Kind:"session_recording_config" Version:"v2" Metadata:<Name:"session-recording-config" Namespace:"default" Labels:<key:"teleport.dev/origin" value:"config-file" > > Spec:<Mode:"node" ProxyChecksHostKeys:"\010\001" > . auth/init.go:463
+2026-09-13T13:45:03Z INFO [AUTH]      Updating cluster auth preference: AuthPreference(Type="local",SecondFactor="otp"). auth/init.go:427
+2026-09-13T13:45:03Z INFO [AUTH]      Updating cluster configuration: StaticTokens([]). auth/init.go:310
+2026-09-13T13:45:03Z INFO [AUTH]      Created namespace: "default". auth/init.go:317
+2026-09-13T13:45:03Z INFO [AUTH]      Created default admin role: "admin". auth/init.go:326
+2026-09-13T13:45:03Z INFO [AUTH]      First start: generating host certificate authority. auth/init.go:337
+2026-09-13T13:45:04Z INFO [AUTH]      First start: generating user certificate authority. auth/init.go:337
+2026-09-13T13:45:04Z INFO [AUTH]      First start: generating jwt certificate authority. auth/init.go:337
+2026-09-13T13:45:04Z INFO [AUDIT]     role.created cluster_name:d271e8a38bcd code:T9000I ei:0 event:role.created expires:0001-01-01T00:00:00Z name:admin time:2026-09-13T13:45:04.992Z uid:2482a334-121f-4035-8315-6ec2a2bc87c3 user:system events/emitter.go:324
+2026-09-13T13:45:04Z INFO [AUTH]      Enabling RBAC in OSS Teleport. Migrating users, roles and trusted clusters. auth/init.go:574
+2026-09-13T13:45:04Z INFO [AUTH]      Migration completed. Created 1 roles, updated 0 users, 0 trusted clusters and 0 Github connectors. auth/init.go:592
+2026-09-13T13:45:04Z INFO [AUTH]      Auth server is running periodic operations. auth/init.go:405
+2026-09-13T13:45:05Z INFO [CA]        Generating TLS certificate {0x5390af8 0xc0007d02a0 1.3.9999.1.7=#130c643237316538613338626364,CN=2318fee1-3e5c-4d8e-ab2b-41bcdd5966db.d271e8a38bcd,O=Admin,POSTALCODE=null,STREET= 2036-09-10 13:45:05.289170797 +0000 UTC [d271e8a38bcd *.teleport.cluster.local teleport.cluster.local] [] 5 []}. common_name:2318fee1-3e5c-4d8e-ab2b-41bcdd5966db.d271e8a38bcd dns_names:[d271e8a38bcd *.teleport.cluster.local teleport.cluster.local] locality:[] not_after:2036-09-10 13:45:05.289170797 +0000 UTC org:[Admin] org_unit:[] tlsca/ca.go:650
+2026-09-13T13:45:05Z INFO [PROC:2]    Admin has obtained credentials to connect to the cluster. service/connect.go:381
+2026-09-13T13:45:05Z INFO [PROC:2]    The process successfully wrote the credentials and state of Admin to the disk. service/connect.go:422
+2026-09-13T13:45:05Z INFO [PROC:2]    Service auth is creating new listener on 127.0.0.1:43941. service/signals.go:213
+2026-09-13T13:45:05Z INFO [AUTH:2]    Starting Auth service with PROXY protocol support. service/service.go:1305
+2026-09-13T13:45:05Z WARN [AUTH:2]    Configuration setting auth_service/advertise_ip is not set. guessing 127.0.0.1:43941. service/service.go:1383
+2026-09-13T13:45:05Z WARN             No TLS Keys provided, using self-signed certificate. service/service.go:3734
+2026-09-13T13:45:05Z WARN             Generating self-signed key and cert to /tmp/TestDatabaseResource3018704528/001/webproxy_key.pem /tmp/TestDatabaseResource3018704528/001/webproxy_cert.pem. service/service.go:3752
+2026-09-13T13:45:05Z INFO [AUTH:2]    Auth service 8.0.0-alpha.1: is starting on 127.0.0.1:43941. utils/cli.go:282
+[AUTH]         Auth service 8.0.0-alpha.1: is starting on 127.0.0.1:43941.
+2026-09-13T13:45:05Z WARN [MXTLS:2]   Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+    helpers_test.go:60: 
+        	Error Trace:	helpers_test.go:60
+        	            				resource_command_test.go:160
+        	Error:      	Received unexpected error:
+        	            	failed direct dial to auth server: Get "https://teleport.cluster.local/v2/configuration/name": local error: tls: bad record MAC
+        	            		Get "https://teleport.cluster.local/v2/configuration/name": local error: tls: bad record MAC
+        	Test:       	TestDatabaseResource
+2026-09-13T13:45:05Z WARN [MXTLS:2]   Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+2026-09-13T13:45:05Z INFO [AUTH:2]    Shutting down immediately. service/service.go:1446
+2026-09-13T13:45:05Z INFO [AUTH:2]    Exited. service/service.go:1461
+2026-09-13T13:45:05Z WARN [AUTH:2]    TLS server exited with error: http: Server closed. service/service.go:1338
+--- FAIL: TestDatabaseResource (1.99s)
+=== RUN   TestAppResource
+2026-09-13T13:45:05Z INFO             Generating new host UUID: 4fd0b763-09b3-4ce6-880a-3147d827f086. service/service.go:638
+2026-09-13T13:45:05Z INFO [AUTH]      Updating cluster networking configuration: Kind:"cluster_networking_config" Version:"v2" Metadata:<Name:"cluster-networking-config" Namespace:"default" Labels:<key:"teleport.dev/origin" value:"config-file" > > Spec:<KeepAliveInterval:300000000000 KeepAliveCountMax:3 > . auth/init.go:445
+2026-09-13T13:45:05Z INFO [AUTH]      Updating session recording configuration: Kind:"session_recording_config" Version:"v2" Metadata:<Name:"session-recording-config" Namespace:"default" Labels:<key:"teleport.dev/origin" value:"config-file" > > Spec:<Mode:"node" ProxyChecksHostKeys:"\010\001" > . auth/init.go:463
+2026-09-13T13:45:05Z INFO [AUTH]      Updating cluster auth preference: AuthPreference(Type="local",SecondFactor="otp"). auth/init.go:427
+2026-09-13T13:45:05Z INFO [AUTH]      Updating cluster configuration: StaticTokens([]). auth/init.go:310
+2026-09-13T13:45:05Z INFO [AUTH]      Created namespace: "default". auth/init.go:317
+2026-09-13T13:45:05Z INFO [AUTH]      Created default admin role: "admin". auth/init.go:326
+2026-09-13T13:45:05Z INFO [AUTH]      First start: generating host certificate authority. auth/init.go:337
+2026-09-13T13:45:05Z INFO [KEYGEN]    Stopping key precomputation routine. native/native.go:142
+2026-09-13T13:45:05Z ERRO [PROC:2]    Proxy failed to establish connection to cluster: database is closed. service/connect.go:68
+2026-09-13T13:45:05Z INFO [PROC:2]    Proxy stopping connection attempts, teleport is shutting down. service/connect.go:74
+2026-09-13T13:45:05Z WARN [PROC:2]    Teleport process has exited with error. error:[
+ERROR REPORT:
+Original Error: *trace.CompareFailedError teleport process has shutdown
+Stack Trace:
+	/app/lib/service/service.go:1977 github.com/gravitational/teleport/lib/service.(*TeleportProcess).registerWithAuthServer.func1
+	/app/lib/service/supervisor.go:494 github.com/gravitational/teleport/lib/service.(*LocalService).Serve
+	/app/lib/service/supervisor.go:263 github.com/gravitational/teleport/lib/service.(*LocalSupervisor).serve.func1
+	/usr/local/go/src/runtime/asm_amd64.s:1371 runtime.goexit
+User Message: teleport process has shutdown] service:register.proxy service/supervisor.go:268
+2026-09-13T13:45:06Z INFO [AUTH]      First start: generating user certificate authority. auth/init.go:337
+2026-09-13T13:45:06Z INFO [AUTH]      First start: generating jwt certificate authority. auth/init.go:337
+2026-09-13T13:45:06Z INFO [AUDIT]     role.created cluster_name:d271e8a38bcd code:T9000I ei:0 event:role.created expires:0001-01-01T00:00:00Z name:admin time:2026-09-13T13:45:06.748Z uid:bc8ab21e-014d-468f-8f01-0a496c25da36 user:system events/emitter.go:324
+2026-09-13T13:45:06Z INFO [AUTH]      Enabling RBAC in OSS Teleport. Migrating users, roles and trusted clusters. auth/init.go:574
+2026-09-13T13:45:06Z INFO [AUTH]      Migration completed. Created 1 roles, updated 0 users, 0 trusted clusters and 0 Github connectors. auth/init.go:592
+2026-09-13T13:45:06Z INFO [AUTH]      Auth server is running periodic operations. auth/init.go:405
+2026-09-13T13:45:07Z INFO [CA]        Generating TLS certificate {0x5390af8 0xc000c1e7b0 1.3.9999.1.7=#130c643237316538613338626364,CN=4fd0b763-09b3-4ce6-880a-3147d827f086.d271e8a38bcd,O=Admin,POSTALCODE=null,STREET= 2036-09-10 13:45:07.009290965 +0000 UTC [d271e8a38bcd *.teleport.cluster.local teleport.cluster.local] [] 5 []}. common_name:4fd0b763-09b3-4ce6-880a-3147d827f086.d271e8a38bcd dns_names:[d271e8a38bcd *.teleport.cluster.local teleport.cluster.local] locality:[] not_after:2036-09-10 13:45:07.009290965 +0000 UTC org:[Admin] org_unit:[] tlsca/ca.go:650
+2026-09-13T13:45:07Z INFO [PROC:3]    Admin has obtained credentials to connect to the cluster. service/connect.go:381
+2026-09-13T13:45:07Z INFO [PROC:3]    The process successfully wrote the credentials and state of Admin to the disk. service/connect.go:422
+2026-09-13T13:45:07Z INFO [PROC:3]    Service auth is creating new listener on 127.0.0.1:40203. service/signals.go:213
+2026-09-13T13:45:07Z INFO [AUTH:3]    Starting Auth service with PROXY protocol support. service/service.go:1305
+2026-09-13T13:45:07Z WARN [AUTH:3]    Configuration setting auth_service/advertise_ip is not set. guessing 127.0.0.1:40203. service/service.go:1383
+2026-09-13T13:45:07Z WARN             No TLS Keys provided, using self-signed certificate. service/service.go:3734
+2026-09-13T13:45:07Z WARN             Generating self-signed key and cert to /tmp/TestAppResource346438169/001/webproxy_key.pem /tmp/TestAppResource346438169/001/webproxy_cert.pem. service/service.go:3752
+2026-09-13T13:45:07Z INFO [AUTH:3]    Auth service 8.0.0-alpha.1: is starting on 127.0.0.1:40203. utils/cli.go:282
+[AUTH]         Auth service 8.0.0-alpha.1: is starting on 127.0.0.1:40203.
+2026-09-13T13:45:07Z WARN [MXTLS:3]   Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+2026-09-13T13:45:07Z WARN [MXTLS:3]   Handshake failed. error:[remote error: tls: bad record MAC] multiplexer/tls.go:146
+    helpers_test.go:60: 
+        	Error Trace:	helpers_test.go:60
+        	            				resource_command_test.go:247
+        	Error:      	Received unexpected error:
+        	            	failed direct dial to auth server: Get "https://teleport.cluster.local/v2/configuration/name": local error: tls: bad record MAC
+        	            		Get "https://teleport.cluster.local/v2/configuration/name": local error: tls: bad record MAC
+        	Test:       	TestAppResource
+2026-09-13T13:45:07Z INFO [AUTH:3]    Shutting down immediately. service/service.go:1446
+2026-09-13T13:45:07Z INFO [AUTH:3]    Exited. service/service.go:1461
+2026-09-13T13:45:07Z WARN [AUTH:3]    TLS server exited with error: http: Server closed. service/service.go:1338
+--- FAIL: TestAppResource (1.85s)
+=== RUN   TestTrimDurationSuffix
+=== PAUSE TestTrimDurationSuffix
+=== CONT  TestAuthSignKubeconfig
+=== CONT  TestTrimDurationSuffix
+=== RUN   TestAuthSignKubeconfig/--proxy_specified
+=== RUN   TestTrimDurationSuffix/trim_minutes/seconds
+=== RUN   TestTrimDurationSuffix/trim_seconds
+=== RUN   TestTrimDurationSuffix/does_not_trim_non-zero_suffix
+=== RUN   TestTrimDurationSuffix/does_not_trim_zero_in_the_middle
+--- PASS: TestTrimDurationSuffix (0.00s)
+    --- PASS: TestTrimDurationSuffix/trim_minutes/seconds (0.00s)
+    --- PASS: TestTrimDurationSuffix/trim_seconds (0.00s)
+    --- PASS: TestTrimDurationSuffix/does_not_trim_non-zero_suffix (0.00s)
+    --- PASS: TestTrimDurationSuffix/does_not_trim_zero_in_the_middle (0.00s)
+2026-09-13T13:45:07Z INFO [KEYGEN]    Stopping key precomputation routine. native/native.go:142
+
+The credentials have been written to /tmp/auth_command_test394471269/kubeconfig
+=== RUN   TestAuthSignKubeconfig/k8s_proxy_running_locally_with_public_addr
+2026-09-13T13:45:07Z ERRO [PROC:3]    Proxy failed to establish connection to cluster: database is closed. service/connect.go:68
+2026-09-13T13:45:07Z INFO [PROC:3]    Proxy stopping connection attempts, teleport is shutting down. service/connect.go:74
+2026-09-13T13:45:07Z WARN [PROC:3]    Teleport process has exited with error. error:[
+ERROR REPORT:
+Original Error: *trace.CompareFailedError teleport process has shutdown
+Stack Trace:
+	/app/lib/service/service.go:1977 github.com/gravitational/teleport/lib/service.(*TeleportProcess).registerWithAuthServer.func1
+	/app/lib/service/supervisor.go:494 github.com/gravitational/teleport/lib/service.(*LocalService).Serve
+	/app/lib/service/supervisor.go:263 github.com/gravitational/teleport/lib/service.(*LocalSupervisor).serve.func1
+	/usr/local/go/src/runtime/asm_amd64.s:1371 runtime.goexit
+User Message: teleport process has shutdown] service:register.proxy service/supervisor.go:268
+
+The credentials have been written to /tmp/auth_command_test394471269/kubeconfig
+=== RUN   TestAuthSignKubeconfig/k8s_proxy_running_locally_without_public_addr
+
+The credentials have been written to /tmp/auth_command_test394471269/kubeconfig
+=== RUN   TestAuthSignKubeconfig/k8s_proxy_from_cluster_info
+
+The credentials have been written to /tmp/auth_command_test394471269/kubeconfig
+=== RUN   TestAuthSignKubeconfig/--kube-cluster_specified_with_valid_cluster
+
+The credentials have been written to /tmp/auth_command_test394471269/kubeconfig
+=== RUN   TestAuthSignKubeconfig/--kube-cluster_specified_with_invalid_cluster
+--- PASS: TestAuthSignKubeconfig (1.89s)
+    --- PASS: TestAuthSignKubeconfig/--proxy_specified (0.57s)
+    --- PASS: TestAuthSignKubeconfig/k8s_proxy_running_locally_with_public_addr (0.34s)
+    --- PASS: TestAuthSignKubeconfig/k8s_proxy_running_locally_without_public_addr (0.19s)
+    --- PASS: TestAuthSignKubeconfig/k8s_proxy_from_cluster_info (0.24s)
+    --- PASS: TestAuthSignKubeconfig/--kube-cluster_specified_with_valid_cluster (0.22s)
+    --- PASS: TestAuthSignKubeconfig/--kube-cluster_specified_with_invalid_cluster (0.33s)
+FAIL
+FAIL	github.com/gravitational/teleport/tool/tctl/common	13.996s
+?   	github.com/gravitational/teleport/tool/teleport	[no test files]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/tool/teleport/common	0.296s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/gravitational/teleport/tool/tsh	0.283s [no tests to run]
+FAIL

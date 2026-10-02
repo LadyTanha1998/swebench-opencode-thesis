@@ -1,0 +1,47 @@
+diff --git a/scanner/scanner.go b/scanner/scanner.go
+index 745a160..e552a3e 100644
+--- a/scanner/scanner.go
++++ b/scanner/scanner.go
+@@ -10,6 +10,7 @@ import (
+ 	"strings"
+ 	"time"
+ 
++	homedir "github.com/mitchellh/go-homedir"
+ 	"golang.org/x/exp/maps"
+ 	"golang.org/x/xerrors"
+ 
+@@ -562,9 +563,9 @@ func parseSSHConfiguration(stdout string) sshConfiguration {
+ 		case strings.HasPrefix(line, "stricthostkeychecking "):
+ 			sshConfig.strictHostKeyChecking = strings.TrimPrefix(line, "stricthostkeychecking ")
+ 		case strings.HasPrefix(line, "globalknownhostsfile "):
+-			sshConfig.globalKnownHosts = strings.Split(strings.TrimPrefix(line, "globalknownhostsfile "), " ")
++			sshConfig.globalKnownHosts = expandKnownHostsPaths(strings.Split(strings.TrimPrefix(line, "globalknownhostsfile "), " "))
+ 		case strings.HasPrefix(line, "userknownhostsfile "):
+-			sshConfig.userKnownHosts = strings.Split(strings.TrimPrefix(line, "userknownhostsfile "), " ")
++			sshConfig.userKnownHosts = expandKnownHostsPaths(strings.Split(strings.TrimPrefix(line, "userknownhostsfile "), " "))
+ 		case strings.HasPrefix(line, "proxycommand "):
+ 			sshConfig.proxyCommand = strings.TrimPrefix(line, "proxycommand ")
+ 		case strings.HasPrefix(line, "proxyjump "):
+@@ -574,6 +575,22 @@ func parseSSHConfiguration(stdout string) sshConfiguration {
+ 	return sshConfig
+ }
+ 
++func expandKnownHostsPaths(paths []string) []string {
++	expanded := make([]string, 0, len(paths))
++	for _, p := range paths {
++		if p == "" {
++			continue
++		}
++		if p[0] == '~' {
++			if home, err := homedir.Expand(p); err == nil {
++				p = home
++			}
++		}
++		expanded = append(expanded, p)
++	}
++	return expanded
++}
++
+ func parseSSHScan(stdout string) map[string]string {
+ 	keys := map[string]string{}
+ 	for _, line := range strings.Split(stdout, "\n") {

@@ -1,0 +1,142 @@
+diff --git a/cmd/flipt/bundle.go b/cmd/flipt/bundle.go
+index ceaa6b2d..00aa5b9d 100644
+--- a/cmd/flipt/bundle.go
++++ b/cmd/flipt/bundle.go
+@@ -27,6 +27,13 @@ func newBundleCommand() *cobra.Command {
+ 		Args:  cobra.ExactArgs(1),
+ 	})
+ 
++	cmd.AddCommand(&cobra.Command{
++		Use:   "copy <source> <destination>",
++		Short: "Copy a bundle",
++		RunE:  bundle.copy,
++		Args:  cobra.ExactArgs(2),
++	})
++
+ 	cmd.AddCommand(&cobra.Command{
+ 		Use:   "list",
+ 		Short: "List all bundles",
+@@ -36,6 +43,32 @@ func newBundleCommand() *cobra.Command {
+ 	return cmd
+ }
+ 
++func (c *bundleCommand) copy(cmd *cobra.Command, args []string) error {
++	store, err := c.getStore()
++	if err != nil {
++		return err
++	}
++
++	src, err := oci.ParseReference(args[0])
++	if err != nil {
++		return err
++	}
++
++	dst, err := oci.ParseReference(args[1])
++	if err != nil {
++		return err
++	}
++
++	bundle, err := store.Copy(cmd.Context(), src, dst)
++	if err != nil {
++		return err
++	}
++
++	fmt.Println(bundle.Digest)
++
++	return nil
++}
++
+ func (c *bundleCommand) build(cmd *cobra.Command, args []string) error {
+ 	store, err := c.getStore()
+ 	if err != nil {
+diff --git a/internal/oci/file.go b/internal/oci/file.go
+index c377b18c..b068b2dd 100644
+--- a/internal/oci/file.go
++++ b/internal/oci/file.go
+@@ -150,11 +150,6 @@ func (s *Store) getTarget(ref Reference) (oras.Target, error) {
+ 	case SchemeFlipt:
+ 		// build the store once to ensure it is valid
+ 		bundleDir := path.Join(s.opts.bundleDir, ref.Repository)
+-		_, err := oci.New(bundleDir)
+-		if err != nil {
+-			return nil, err
+-		}
+-
+ 		store, err := oci.New(bundleDir)
+ 		if err != nil {
+ 			return nil, err
+@@ -403,6 +398,62 @@ func (s *Store) Build(ctx context.Context, src fs.FS, ref Reference) (Bundle, er
+ 	return bundle, nil
+ }
+ 
++// Copy copies the bundle at the source reference to the destination reference.
++// Both references must include a tag, otherwise the operation fails.
++// It returns a Bundle representing the copied bundle at the destination.
++func (s *Store) Copy(ctx context.Context, src, dst Reference) (Bundle, error) {
++	if src.Reference.Reference == "" {
++		return Bundle{}, fmt.Errorf("source bundle: %w", ErrReferenceRequired)
++	}
++
++	if dst.Reference.Reference == "" {
++		return Bundle{}, fmt.Errorf("destination bundle: %w", ErrReferenceRequired)
++	}
++
++	srcStore, err := s.getTarget(src)
++	if err != nil {
++		return Bundle{}, err
++	}
++
++	dstStore, err := s.getTarget(dst)
++	if err != nil {
++		return Bundle{}, err
++	}
++
++	desc, err := oras.Copy(ctx,
++		srcStore,
++		src.Reference.Reference,
++		dstStore,
++		dst.Reference.Reference,
++		oras.DefaultCopyOptions)
++	if err != nil {
++		return Bundle{}, err
++	}
++
++	bytes, err := content.FetchAll(ctx, dstStore, desc)
++	if err != nil {
++		return Bundle{}, err
++	}
++
++	var manifest v1.Manifest
++	if err := json.Unmarshal(bytes, &manifest); err != nil {
++		return Bundle{}, err
++	}
++
++	bundle := Bundle{
++		Digest:     desc.Digest,
++		Repository: dst.Repository,
++		Tag:        dst.Reference.Reference,
++	}
++
++	bundle.CreatedAt, err = parseCreated(manifest.Annotations)
++	if err != nil {
++		return Bundle{}, err
++	}
++
++	return bundle, nil
++}
++
+ func (s *Store) buildLayers(ctx context.Context, store oras.Target, src fs.FS) (layers []v1.Descriptor, _ error) {
+ 	if err := storagefs.WalkDocuments(s.logger, src, func(doc *ext.Document) error {
+ 		payload, err := json.Marshal(&doc)
+diff --git a/internal/oci/oci.go b/internal/oci/oci.go
+index c7bb48c6..873adf5a 100644
+--- a/internal/oci/oci.go
++++ b/internal/oci/oci.go
+@@ -20,4 +20,7 @@ var (
+ 	// ErrUnexpectedMediaType is returned when an unexpected media type
+ 	// is found on a target manifest or descriptor
+ 	ErrUnexpectedMediaType = errors.New("unexpected media type")
++	// ErrReferenceRequired is returned when a reference is presented
++	// without a required tag
++	ErrReferenceRequired = errors.New("reference required")
+ )

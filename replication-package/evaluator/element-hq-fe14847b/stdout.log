@@ -1,0 +1,455 @@
+Running selected tests: test/components/views/dialogs/SpotlightDialog-test.ts test/voice-broadcast/components/VoiceBroadcastBody-test.tsx test/components/views/settings/devices/SelectableDeviceTile-test.ts test/components/structures/TabbedView-test.ts test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts test/notifications/ContentRules-test.ts test/components/views/dialogs/ExportDialog-test.ts test/test-utils/test-utils.ts test/voice-broadcast/components/VoiceBroadcastBody-test.ts test/createRoom-test.ts test/voice-broadcast/models/VoiceBroadcastRecording-test.ts test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts test/hooks/useDebouncedCallback-test.ts test/utils/validate/numberInRange-test.ts test/modules/ModuleComponents-test.ts test/components/views/settings/Notifications-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+(node:127) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/structures/TabbedView-test.tsx (44.576 s)
+  <TabbedView />
+    ✓ renders tabs (162 ms)
+    ✓ renders first tab as active tab when no initialTabId (41 ms)
+    ✓ renders first tab as active tab when initialTabId is not valid (23 ms)
+    ✓ renders initialTabId tab as active when valid (21 ms)
+    ✓ renders without error when there are no tabs (19 ms)
+    ✓ sets active tab on tab click (69 ms)
+    ✓ calls onchange on on tab click (24 ms)
+    ✓ keeps same tab active when order of tabs changes (24 ms)
+    ✓ does not reactivate inititalTabId on rerender (27 ms)
+
+FAIL test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts
+  VoiceBroadcastRecordingsStore
+    when setting a current Voice Broadcast recording
+      ✓ should return it as current (22 ms)
+      ✕ should return it by id (10 ms)
+      ✓ should emit a CurrentChanged event (5 ms)
+      and setting the same again
+        ✕ should not emit a CurrentChanged event (8 ms)
+    getByInfoEventId
+      when retrieving a known recording
+        ✕ should return the recording (8 ms)
+      when retrieving an unknown recording
+        ✕ should return the recording (12 ms)
+
+  ● VoiceBroadcastRecordingsStore › when setting a current Voice Broadcast recording › should return it by id
+
+    TypeError: recordings.getByInfoEvent is not a function
+
+      81 |
+      82 |         it("should return it by id", () => {
+    > 83 |             expect(recordings.getByInfoEvent(infoEvent, client)).toBe(recording);
+         |                               ^
+      84 |         });
+      85 |
+      86 |         it("should emit a CurrentChanged event", () => {
+
+      at Object.<anonymous> (test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts:83:31)
+
+  ● VoiceBroadcastRecordingsStore › when setting a current Voice Broadcast recording › and setting the same again › should not emit a CurrentChanged event
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: {"infoEvent": {"content": {}, "event_id": "$0.35247254005517603-0.7914368708245605", "origin_server_ts": 0, "prev_content": undefined, "room_id": "!room:example.com", "sender": "@userId:matrix.org", "type": "io.element.voice_broadcast_info", "unsigned": undefined}}
+
+       95 |
+       96 |             it("should not emit a CurrentChanged event", () => {
+    >  97 |                 expect(onCurrentChanged).not.toHaveBeenCalled();
+          |                                              ^
+       98 |             });
+       99 |         });
+      100 |     });
+
+      at Object.<anonymous> (test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts:97:46)
+
+  ● VoiceBroadcastRecordingsStore › getByInfoEventId › when retrieving a known recording › should return the recording
+
+    TypeError: recordings.getByInfoEvent is not a function
+
+      106 |             beforeEach(() => {
+      107 |                 recordings.setCurrent(recording);
+    > 108 |                 returnedRecording = recordings.getByInfoEvent(infoEvent, client);
+          |                                                ^
+      109 |             });
+      110 |
+      111 |             it("should return the recording", () => {
+
+      at Object.<anonymous> (test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts:108:48)
+
+  ● VoiceBroadcastRecordingsStore › getByInfoEventId › when retrieving an unknown recording › should return the recording
+
+    TypeError: recordings.getByInfoEvent is not a function
+
+      116 |         describe("when retrieving an unknown recording", () => {
+      117 |             beforeEach(() => {
+    > 118 |                 returnedRecording = recordings.getByInfoEvent(infoEvent, client);
+          |                                                ^
+      119 |             });
+      120 |
+      121 |             it("should return the recording", () => {
+
+      at Object.<anonymous> (test/voice-broadcast/stores/VoiceBroadcastRecordingsStore-test.ts:118:48)
+
+/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93
+    await this.client.sendStateEvent(this.roomId, _types.VoiceBroadcastInfoEventType, this.infoEvent, this.client.getUserId());
+                      ^
+
+TypeError: Cannot read properties of undefined (reading 'sendStateEvent')
+    at VoiceBroadcastRecording.sendStateEvent (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93:23)
+    at VoiceBroadcastRecording.stop (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:86:16)
+    at Object.<anonymous> (/app/test/voice-broadcast/models/VoiceBroadcastRecording-test.ts:82:41)
+    at Promise.then.completed (/app/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/app/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusHook (/app/node_modules/jest-circus/build/run.js:181:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/app/node_modules/jest-circus/build/run.js:148:5)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at run (/app/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/app/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/app/node_modules/jest-runner/build/runTest.js:475:34)
+    at Object.worker (/app/node_modules/jest-runner/build/testWorker.js:133:12)
+
+Node.js v22.15.0
+FAIL test/voice-broadcast/components/VoiceBroadcastBody-test.tsx (48.228 s)
+  VoiceBroadcastBody
+    when there is a Started Voice Broadcast info event
+      ✕ should render a live voice broadcast (85 ms)
+      and it is clicked
+        ✕ should render a non-live voice broadcast (44 ms)
+        ✕ should call stop on the recording (31 ms)
+
+  ● VoiceBroadcastBody › when there is a Started Voice Broadcast info event › should render a live voice broadcast
+
+    TypeError: _voiceBroadcast.VoiceBroadcastRecordingsStore.instance is not a function
+
+      63 |         } as unknown as IBodyProps;
+      64 |         render(<VoiceBroadcastBody {...props} />);
+    > 65 |         recording = VoiceBroadcastRecordingsStore.instance().getByInfoEvent(infoEvent, client);
+         |                                                   ^
+      66 |         recording.on(VoiceBroadcastRecordingEvent.StateChanged, onRecordingStateChanged);
+      67 |     };
+      68 |
+
+      at renderVoiceBroadcast (test/voice-broadcast/components/VoiceBroadcastBody-test.tsx:65:51)
+      at Object.<anonymous> (test/voice-broadcast/components/VoiceBroadcastBody-test.tsx:143:13)
+
+  ● VoiceBroadcastBody › when there is a Started Voice Broadcast info event › and it is clicked › should render a non-live voice broadcast
+
+    TypeError: _voiceBroadcast.VoiceBroadcastRecordingsStore.instance is not a function
+
+      63 |         } as unknown as IBodyProps;
+      64 |         render(<VoiceBroadcastBody {...props} />);
+    > 65 |         recording = VoiceBroadcastRecordingsStore.instance().getByInfoEvent(infoEvent, client);
+         |                                                   ^
+      66 |         recording.on(VoiceBroadcastRecordingEvent.StateChanged, onRecordingStateChanged);
+      67 |     };
+      68 |
+
+      at renderVoiceBroadcast (test/voice-broadcast/components/VoiceBroadcastBody-test.tsx:65:51)
+      at Object.<anonymous> (test/voice-broadcast/components/VoiceBroadcastBody-test.tsx:143:13)
+
+  ● VoiceBroadcastBody › when there is a Started Voice Broadcast info event › and it is clicked › should call stop on the recording
+
+    TypeError: _voiceBroadcast.VoiceBroadcastRecordingsStore.instance is not a function
+
+      63 |         } as unknown as IBodyProps;
+      64 |         render(<VoiceBroadcastBody {...props} />);
+    > 65 |         recording = VoiceBroadcastRecordingsStore.instance().getByInfoEvent(infoEvent, client);
+         |                                                   ^
+      66 |         recording.on(VoiceBroadcastRecordingEvent.StateChanged, onRecordingStateChanged);
+      67 |     };
+      68 |
+
+      at renderVoiceBroadcast (test/voice-broadcast/components/VoiceBroadcastBody-test.tsx:65:51)
+      at Object.<anonymous> (test/voice-broadcast/components/VoiceBroadcastBody-test.tsx:143:13)
+
+PASS test/notifications/ContentRules-test.ts
+  ContentRules
+    parseContentRules
+      ✓ should handle there being no keyword rules (2 ms)
+      ✓ should parse regular keyword notifications (1 ms)
+      ✓ should parse loud keyword notifications (1 ms)
+      ✓ should parse mixed keyword notifications (1 ms)
+
+PASS test/modules/ModuleComponents-test.tsx
+  Module Components
+    ✓ should override the factory for a TextInputField (81 ms)
+    ✓ should override the factory for a ModuleSpinner (17 ms)
+
+(node:125) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/settings/devices/SelectableDeviceTile-test.tsx
+  <SelectableDeviceTile />
+    ✓ renders unselected device tile with checkbox (70 ms)
+    ✓ renders selected tile (46 ms)
+    ✓ calls onClick on checkbox click (29 ms)
+    ✓ calls onClick on device tile info click (39 ms)
+    ✓ does not call onClick when clicking device tiles actions (26 ms)
+
+PASS test/utils/validate/numberInRange-test.ts
+  validateNumberInRange
+    ✓ returns false when value is a not a number (2 ms)
+    ✓ returns false when value is undefined (1 ms)
+    ✓ returns false when value is NaN
+    ✓ returns true when value is equal to min (1 ms)
+    ✓ returns true when value is equal to max
+    ✓ returns true when value is an int in range
+    ✓ returns true when value is a float in range
+
+FAIL test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts (52.923 s)
+  startNewVoiceBroadcastRecording
+    ✕ should create a new Voice Broadcast (5030 ms)
+
+  ● startNewVoiceBroadcastRecording › should create a new Voice Broadcast
+
+    TypeError: recordingsStore.add is not a function
+
+      57 |
+      58 |     const recording = new VoiceBroadcastRecording(roomId, content, client);
+    > 59 |     recordingsStore.add(recording);
+         |                     ^
+      60 |     recordingsStore.setCurrent(recording);
+      61 |     return recording;
+      62 | };
+
+      at startNewVoiceBroadcastRecording (src/voice-broadcast/utils/startNewVoiceBroadcastRecording.ts:59:21)
+
+  ● startNewVoiceBroadcastRecording › should create a new Voice Broadcast
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+      114 |     });
+      115 |
+    > 116 |     it("should create a new Voice Broadcast", (done) => {
+          |     ^
+      117 |         let ok = false;
+      118 |
+      119 |         startNewVoiceBroadcastRecording(roomId, client, recordingsStore).then((recording) => {
+
+      at test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts:116:5
+      at Object.<anonymous> (test/voice-broadcast/utils/startNewVoiceBroadcastRecording-test.ts:33:1)
+
+PASS test/hooks/useDebouncedCallback-test.tsx (53.157 s)
+  useDebouncedCallback
+    ✓ should be able to handle empty parameters (736 ms)
+    ✓ should call the callback with the parameters (520 ms)
+    ✓ should handle multiple parameters (522 ms)
+    ✓ should debounce quick changes (1243 ms)
+    ✓ should not debounce slow changes (3164 ms)
+    ✓ should not call the callback if it’s disabled (3162 ms)
+
+/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93
+    await this.client.sendStateEvent(this.roomId, _types.VoiceBroadcastInfoEventType, this.infoEvent, this.client.getUserId());
+                      ^
+
+TypeError: Cannot read properties of undefined (reading 'sendStateEvent')
+    at VoiceBroadcastRecording.sendStateEvent (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93:23)
+    at VoiceBroadcastRecording.stop (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:86:16)
+    at Object.<anonymous> (/app/test/voice-broadcast/models/VoiceBroadcastRecording-test.ts:82:41)
+    at Promise.then.completed (/app/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/app/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusHook (/app/node_modules/jest-circus/build/run.js:181:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/app/node_modules/jest-circus/build/run.js:148:5)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at run (/app/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/app/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/app/node_modules/jest-runner/build/runTest.js:475:34)
+    at Object.worker (/app/node_modules/jest-runner/build/testWorker.js:133:12)
+
+Node.js v22.15.0
+/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93
+    await this.client.sendStateEvent(this.roomId, _types.VoiceBroadcastInfoEventType, this.infoEvent, this.client.getUserId());
+                      ^
+
+TypeError: Cannot read properties of undefined (reading 'sendStateEvent')
+    at VoiceBroadcastRecording.sendStateEvent (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93:23)
+    at VoiceBroadcastRecording.stop (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:86:16)
+    at Object.<anonymous> (/app/test/voice-broadcast/models/VoiceBroadcastRecording-test.ts:82:41)
+    at Promise.then.completed (/app/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/app/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusHook (/app/node_modules/jest-circus/build/run.js:181:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/app/node_modules/jest-circus/build/run.js:148:5)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at run (/app/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/app/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/app/node_modules/jest-runner/build/runTest.js:475:34)
+    at Object.worker (/app/node_modules/jest-runner/build/testWorker.js:133:12)
+
+Node.js v22.15.0
+/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93
+    await this.client.sendStateEvent(this.roomId, _types.VoiceBroadcastInfoEventType, this.infoEvent, this.client.getUserId());
+                      ^
+
+TypeError: Cannot read properties of undefined (reading 'sendStateEvent')
+    at VoiceBroadcastRecording.sendStateEvent (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:93:23)
+    at VoiceBroadcastRecording.stop (/app/src/voice-broadcast/models/VoiceBroadcastRecording.ts:86:16)
+    at Object.<anonymous> (/app/test/voice-broadcast/models/VoiceBroadcastRecording-test.ts:82:41)
+    at Promise.then.completed (/app/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/app/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusHook (/app/node_modules/jest-circus/build/run.js:181:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/app/node_modules/jest-circus/build/run.js:148:5)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/run.js:60:9)
+    at run (/app/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/app/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/app/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/app/node_modules/jest-runner/build/runTest.js:475:34)
+    at Object.worker (/app/node_modules/jest-runner/build/testWorker.js:133:12)
+
+Node.js v22.15.0
+FAIL test/voice-broadcast/models/VoiceBroadcastRecording-test.ts
+  ● Test suite failed to run
+
+    Jest worker encountered 4 child process exceptions, exceeding retry limit
+
+      at ChildProcessWorker.initialize (node_modules/jest-worker/build/workers/ChildProcessWorker.js:185:21)
+
+(node:120) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/createRoom-test.ts (71.596 s)
+  createRoom
+    ✓ sets up Jitsi video rooms correctly (72 ms)
+    ✓ sets up Element video rooms correctly (10 ms)
+    ✓ doesn't create calls in non-video-rooms (13 ms)
+  canEncryptToAllUsers
+    ✓ returns true if all devices have crypto (10 ms)
+    ✓ returns false if not all users have crypto (4 ms)
+
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/settings/Notifications-test.tsx (73.062 s)
+  <Notifications />
+    ✓ renders spinner while loading (23569 ms)
+    ✓ renders error message when fetching push rules fails (130 ms)
+    ✓ renders error message when fetching pushers fails (24 ms)
+    ✓ renders error message when fetching threepids fails (24 ms)
+    main notification switches
+      ✓ renders only enable notifications switch when notifications are disabled (51 ms)
+      ✓ renders switches correctly (172 ms)
+      ✓ toggles and sets settings correctly (295 ms)
+      email switches
+        ✓ renders email switches correctly when email 3pids exist (101 ms)
+        ✓ renders email switches correctly when notifications are on for email (92 ms)
+        ✓ enables email notification when toggling on (148 ms)
+        ✓ displays error when pusher update fails (132 ms)
+        ✓ enables email notification when toggling off (279 ms)
+    individual notification level settings
+      ✓ renders categories correctly (61 ms)
+      ✓ renders radios correctly (61 ms)
+      ✓ updates notification level when changed (101 ms)
+
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/dialogs/ExportDialog-test.tsx (75.419 s)
+  <ExportDialog />
+    ✓ renders export dialog (684 ms)
+    ✓ calls onFinished when cancel button is clicked (147 ms)
+    ✓ exports room on submit (351 ms)
+    ✓ exports room using values set from ForceRoomExportParameters (135 ms)
+    ✓ renders success screen when export is finished (341 ms)
+    export format
+      ✓ renders export format with html selected by default (81 ms)
+      ✓ sets export format on radio button click (90 ms)
+      ✓ hides export format input when format is valid in ForceRoomExportParameters (86 ms)
+      ✓ does not render export format when set in ForceRoomExportParameters (53 ms)
+    export type
+      ✓ renders export type with timeline selected by default (80 ms)
+      ✓ sets export type on change (94 ms)
+      ✓ does not render export type when set in ForceRoomExportParameters (83 ms)
+      ✓ does not render message count input (77 ms)
+      ✓ renders message count input with default value 100 when export type is lastNMessages (86 ms)
+      ✓ sets message count on change (92 ms)
+      ✓ does not export when export type is lastNMessages and message count is falsy (91 ms)
+      ✓ does not export when export type is lastNMessages and message count is more than max (94 ms)
+      ✓ exports when export type is NOT lastNMessages and message count is falsy (190 ms)
+    size limit
+      ✓ renders size limit input with default value (76 ms)
+      ✓ updates size limit on change (81 ms)
+      ✓ does not export when size limit is falsy (87 ms)
+      ✓ does not export when size limit is larger than max (84 ms)
+      ✓ exports when size limit is max (175 ms)
+      ✓ does not render size limit input when set in ForceRoomExportParameters (68 ms)
+      ✓ exports when size limit set in ForceRoomExportParameters is larger than 2000 (207 ms)
+    include attachments
+      ✓ renders input with default value of false (78 ms)
+      ✓ updates include attachments on change (87 ms)
+      ✓ does not render input when set in ForceRoomExportParameters (69 ms)
+
+PASS test/components/views/dialogs/SpotlightDialog-test.tsx (76.512 s)
+  Spotlight Dialog
+    ✓ should start a DM when clicking a person (278 ms)
+    should apply filters supplied via props
+      ✓ without filter (468 ms)
+      ✓ with public room filter (282 ms)
+      ✓ with people filter (276 ms)
+    should apply manually selected filter
+      ✓ with public rooms (298 ms)
+      ✓ with people (288 ms)
+    should allow clearing filter manually
+      ✓ with public room filter (274 ms)
+      ✓ with people filter (313 ms)
+    searching for rooms
+      ✓ should find Rooms (3 ms)
+      ✓ should not find LocalRooms (3 ms)
+    Feedback prompt
+      ✓ should show feedback prompt if feedback is enabled (291 ms)
+      ✓ should hide feedback prompt if feedback is disabled (283 ms)
+
+Test Suites: 4 failed, 10 passed, 14 total
+Tests:       8 failed, 95 passed, 103 total
+Snapshots:   10 passed, 10 total
+Time:        79.434 s

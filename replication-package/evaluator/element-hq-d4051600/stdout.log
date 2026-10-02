@@ -1,0 +1,242 @@
+Running selected tests: test/components/views/dialogs/security/ExportE2eKeysDialog-test.tsx test/components/views/dialogs/security/ExportE2eKeysDialog-test.ts test/test-utils/test-utils.ts test/components/views/dialogs/security/__snapshots__/ExportE2eKeysDialog-test.tsx.snap
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+(node:38) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL test/components/views/dialogs/security/ExportE2eKeysDialog-test.tsx (67.114 s)
+  ExportE2eKeysDialog
+    ✕ renders (344 ms)
+    ✓ should have disabled submit button initially (88 ms)
+    ✓ should complain about weak passphrases (893 ms)
+    ✓ should complain if passphrases don't match (845 ms)
+    ✕ should export if everything is fine (1621 ms)
+
+  ● ExportE2eKeysDialog › renders
+
+    expect(received).toMatchSnapshot()
+
+    Snapshot name: `ExportE2eKeysDialog renders 1`
+
+    - Snapshot  - 4
+    + Received  + 5
+
+    @@ -32,11 +32,11 @@
+            >
+              <p>
+                This process allows you to export the keys for messages you have received in encrypted rooms to a local file. You will then be able to import the file into another Matrix client in the future, so that client will also be able to decrypt these messages.
+              </p>
+              <p>
+    -           The exported file will allow anyone who can read it to decrypt any encrypted messages that you can see, so you should be careful to keep it secure. To help with this, you should enter a unique passphrase below, which will only be used to encrypt the exported data. It will only be possible to import the data by using the same passphrase.
+    +           The exported file will allow anyone who can read it to decrypt any encrypted messages that you can see, so you should be careful to keep it secure. To help with this, you should enter a passphrase below, which will be used to encrypt the exported data. It will only be possible to import the data by using the same passphrase.
+              </p>
+              <div
+                class="error"
+              />
+              <div
+    @@ -44,17 +44,17 @@
+              >
+                <div
+                  class="mx_E2eKeysDialog_inputRow"
+                >
+                  <div
+    -               class="mx_Field mx_Field_input mx_PassphraseField"
+    +               class="mx_Field mx_Field_input"
+                  >
+                    <input
+    -                 autocomplete="new-password"
+                      id="mx_Field_1"
+                      label="Enter passphrase"
+                      placeholder="Enter passphrase"
+    +                 size="64"
+                      type="password"
+                      value=""
+                    />
+                    <label
+                      for="mx_Field_1"
+    @@ -68,14 +68,14 @@
+                >
+                  <div
+                    class="mx_Field mx_Field_input"
+                  >
+                    <input
+    -                 autocomplete="new-password"
+                      id="mx_Field_2"
+                      label="Confirm passphrase"
+                      placeholder="Confirm passphrase"
+    +                 size="64"
+                      type="password"
+                      value=""
+                    />
+                    <label
+                      for="mx_Field_2"
+    @@ -89,10 +89,11 @@
+            <div
+              class="mx_Dialog_buttons"
+            >
+              <input
+                class="mx_Dialog_primary"
+    +           disabled=""
+                type="submit"
+                value="Export"
+              />
+              <button>
+                Cancel
+
+      27 |         const onFinished = jest.fn();
+      28 |         const { asFragment } = render(<ExportE2eKeysDialog matrixClient={cli} onFinished={onFinished} />);
+    > 29 |         expect(asFragment()).toMatchSnapshot();
+         |                              ^
+      30 |     });
+      31 |
+      32 |     it("should have disabled submit button initially", () => {
+
+      at Object.<anonymous> (test/components/views/dialogs/security/ExportE2eKeysDialog-test.tsx:29:30)
+
+  ● ExportE2eKeysDialog › should export if everything is fine
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+    Ignored nodes: comments, script, style
+    [36m<html>[39m
+      [36m<head />[39m
+      [36m<body>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx_Tooltip_wrapper"[39m
+        [36m/>[39m
+        [36m<div>[39m
+          [36m<div[39m
+            [33mdata-focus-guard[39m=[32m"true"[39m
+            [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+            [33mtabindex[39m=[32m"0"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33maria-labelledby[39m=[32m"mx_BaseDialog_title"[39m
+            [33mclass[39m=[32m"mx_exportE2eKeysDialog mx_Dialog_fixedWidth"[39m
+            [33mdata-focus-lock-disabled[39m=[32m"false"[39m
+            [33mrole[39m=[32m"dialog"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_Dialog_header mx_Dialog_headerWithCancel"[39m
+            [36m>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"mx_Heading_h3 mx_Dialog_title"[39m
+                [33mid[39m=[32m"mx_BaseDialog_title"[39m
+              [36m>[39m
+                [0mExport room keys[0m
+              [36m</h2>[39m
+              [36m<div[39m
+                [33maria-label[39m=[32m"Close dialog"[39m
+                [33mclass[39m=[32m"mx_AccessibleButton mx_Dialog_cancelButton"[39m
+                [33mrole[39m=[32m"button"[39m
+                [33mtabindex[39m=[32m"0"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<form>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dialog_content"[39m
+              [36m>[39m
+                [36m<p>[39m
+                  [0mThis process allows you to export the keys for messages you have received in encrypted rooms to a local file. You will then be able to import the file into another Matrix client in the future, so that client will also be able to decrypt these messages.[0m
+                [36m</p>[39m
+                [36m<p>[39m
+                  [0mThe exported file will allow anyone who can read it to decrypt any encrypted messages that you can see, so you should be careful to keep it secure. To help with this, you should enter a passphrase below, which will be used to encrypt the exported data. It will only be possible to import the data by using the same passphrase.[0m
+                [36m</p>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"error"[39m
+                [36m/>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mx_E2eKeysDialog_inputTable"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_E2eKeysDialog_inputRow"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mid[39m=[32m"mx_Field_9"[39m
+                        [33mlabel[39m=[32m"Enter passphrase"[39m
+                        [33mplaceholder[39m=[32m"Enter passphrase"[39m
+                        [33msize[39m=[32m"64"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"ThisIsAMoreSecurePW123$$"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_9"[39m
+                      [36m>[39m
+                        [0mEnter passphrase[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_E2eKeysDialog_inputRow"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_Field mx_Field_input mx_Field_valid"[39m
+                    [36m>[39m
+                      [36m<input[39m
+                        [33mid[39m=[32m"mx_Field_10"[39m
+                        [33mlabel[39m=[32m"Confirm passphrase"[39m
+                        [33mplaceholder[39m=[32m"Confirm passphrase"[39m
+                        [33msize[39m=[32m"64"[39m
+                        [33mtype[39m=[32m"password"[39m
+                        [33mvalue[39m=[32m"ThisIsAMoreSecurePW123$$"[39m
+                      [36m/>[39m
+                      [36m<label[39m
+                        [33mfor[39m=[32m"mx_Field_10"[39m
+                      [36m>[39m
+                        [0mConfirm passphrase[0m
+                      [36m</label>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dialog_buttons"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"mx_Dialog_primary"[39m
+                  [33mtype[39m=[32m"submit"[39m
+                  [33mvalue[39m=[32m"Export"[39m
+                [36m/>[39m
+                [36m<button>[39m
+                  [0mCancel[0m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mdata-focus-guard[39m=[32m"true"[39m
+            [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+            [33mtabindex[39m=[32m"0"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</body>[39m
+    [36m</html>[39m
+
+      68 |         await userEvent.type(screen.getByLabelText("Confirm passphrase"), "ThisIsAMoreSecurePW123$$");
+      69 |         fireEvent.click(container.querySelector("[type=submit]")!);
+    > 70 |         await waitFor(() => expect(cli.exportRoomKeys).toHaveBeenCalled());
+         |                                                        ^
+      71 |     });
+      72 | });
+      73 |
+
+      at test/components/views/dialogs/security/ExportE2eKeysDialog-test.tsx:70:56
+      at runWithExpensiveErrorDiagnosticsDisabled (node_modules/@testing-library/dom/dist/config.js:47:12)
+      at checkCallback (node_modules/@testing-library/dom/dist/wait-for.js:127:77)
+      at checkRealTimersCallback (node_modules/@testing-library/dom/dist/wait-for.js:121:16)
+      at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsdom/browser/Window.js:520:19)
+
+ › 1 snapshot failed.
+Snapshot Summary
+ › 1 snapshot failed from 1 test suite. Inspect your code changes or run `npm run npx -- -u` to update them.
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 3 passed, 5 total
+Snapshots:   1 failed, 1 total
+Time:        67.605 s

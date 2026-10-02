@@ -1,0 +1,143 @@
+diff --git a/scan/base.go b/scan/base.go
+index f3854d1..568c006 100644
+--- a/scan/base.go
++++ b/scan/base.go
+@@ -731,7 +731,7 @@ func (l *base) detectWpPlugins() ([]models.WpPackage, error) {
+ 
+ func (l *base) scanPorts() (err error) {
+ 	dest := l.detectScanDest()
+-	open, err := l.execPortsScan(dest)
++	open, err := l.execPortsScan(flattenScanDest(dest))
+ 	if err != nil {
+ 		return err
+ 	}
+@@ -740,8 +740,8 @@ func (l *base) scanPorts() (err error) {
+ 	return nil
+ }
+ 
+-func (l *base) detectScanDest() []string {
+-	scanIPPortsMap := map[string][]string{}
++func (l *base) detectScanDest() map[string][]string {
++	scanDestIPPorts := map[string][]string{}
+ 
+ 	for _, p := range l.osPackages.Packages {
+ 		if p.AffectedProcs == nil {
+@@ -752,36 +752,39 @@ func (l *base) detectScanDest() []string {
+ 				continue
+ 			}
+ 			for _, port := range proc.ListenPorts {
+-				scanIPPortsMap[port.Address] = append(scanIPPortsMap[port.Address], port.Port)
++				addrs := []string{port.Address}
++				if port.Address == "*" {
++					addrs = l.ServerInfo.IPv4Addrs
++				}
++				for _, addr := range addrs {
++					if !containsString(scanDestIPPorts[addr], port.Port) {
++						scanDestIPPorts[addr] = append(scanDestIPPorts[addr], port.Port)
++					}
++				}
+ 			}
+ 		}
+ 	}
+ 
+-	scanDestIPPorts := []string{}
+-	for addr, ports := range scanIPPortsMap {
+-		if addr == "*" {
+-			for _, addr := range l.ServerInfo.IPv4Addrs {
+-				for _, port := range ports {
+-					scanDestIPPorts = append(scanDestIPPorts, addr+":"+port)
+-				}
+-			}
+-		} else {
+-			for _, port := range ports {
+-				scanDestIPPorts = append(scanDestIPPorts, addr+":"+port)
+-			}
++	return scanDestIPPorts
++}
++
++func containsString(ss []string, s string) bool {
++	for _, e := range ss {
++		if e == s {
++			return true
+ 		}
+ 	}
++	return false
++}
+ 
+-	m := map[string]bool{}
+-	uniqScanDestIPPorts := []string{}
+-	for _, e := range scanDestIPPorts {
+-		if !m[e] {
+-			m[e] = true
+-			uniqScanDestIPPorts = append(uniqScanDestIPPorts, e)
++func flattenScanDest(dest map[string][]string) []string {
++	scanDestIPPorts := []string{}
++	for addr, ports := range dest {
++		for _, port := range ports {
++			scanDestIPPorts = append(scanDestIPPorts, addr+":"+port)
+ 		}
+ 	}
+-
+-	return uniqScanDestIPPorts
++	return scanDestIPPorts
+ }
+ 
+ func (l *base) execPortsScan(scanDestIPPorts []string) ([]string, error) {
+diff --git a/scan/base_test.go b/scan/base_test.go
+index 005d7c9..7c6b410 100644
+--- a/scan/base_test.go
++++ b/scan/base_test.go
+@@ -281,7 +281,7 @@ func Test_detectScanDest(t *testing.T) {
+ 	tests := []struct {
+ 		name   string
+ 		args   base
+-		expect []string
++		expect map[string][]string
+ 	}{
+ 		{
+ 			name: "empty",
+@@ -292,7 +292,7 @@ func Test_detectScanDest(t *testing.T) {
+ 					NewVersion: "7.64.0-4+deb10u1",
+ 				}},
+ 			}},
+-			expect: []string{},
++			expect: map[string][]string{},
+ 		},
+ 		{
+ 			name: "single-addr",
+@@ -306,7 +306,7 @@ func Test_detectScanDest(t *testing.T) {
+ 				},
+ 				}},
+ 			},
+-			expect: []string{"127.0.0.1:22"},
++			expect: map[string][]string{"127.0.0.1": {"22"}},
+ 		},
+ 		{
+ 			name: "dup-addr",
+@@ -320,7 +320,7 @@ func Test_detectScanDest(t *testing.T) {
+ 				},
+ 				}},
+ 			},
+-			expect: []string{"127.0.0.1:22"},
++			expect: map[string][]string{"127.0.0.1": {"22"}},
+ 		},
+ 		{
+ 			name: "multi-addr",
+@@ -334,7 +334,7 @@ func Test_detectScanDest(t *testing.T) {
+ 				},
+ 				}},
+ 			},
+-			expect: []string{"127.0.0.1:22", "192.168.1.1:22"},
++			expect: map[string][]string{"127.0.0.1": {"22"}, "192.168.1.1": {"22"}},
+ 		},
+ 		{
+ 			name: "asterisk",
+@@ -352,7 +352,7 @@ func Test_detectScanDest(t *testing.T) {
+ 					IPv4Addrs: []string{"127.0.0.1", "192.168.1.1"},
+ 				},
+ 			},
+-			expect: []string{"127.0.0.1:22", "192.168.1.1:22"},
++			expect: map[string][]string{"127.0.0.1": {"22"}, "192.168.1.1": {"22"}},
+ 		}}
+ 	for _, tt := range tests {
+ 		t.Run(tt.name, func(t *testing.T) {

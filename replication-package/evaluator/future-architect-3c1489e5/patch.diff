@@ -1,0 +1,56 @@
+diff --git a/models/vulninfos.go b/models/vulninfos.go
+index 83453b6..6826df6 100644
+--- a/models/vulninfos.go
++++ b/models/vulninfos.go
+@@ -496,24 +496,36 @@ func (v VulnInfo) MaxCvss2Score() CveContentCvss {
+ 	// Convert severity to cvss score roughly, then returns max severity.
+ 	// Only Ubuntu, RedHat and Oracle have severity data in OVAL.
+ 	// GitHub Security Alerts also has Severity. It is mainly used to calculate score for non-CVE-ID.
+-	order = []CveContentType{Ubuntu, RedHat, Oracle, GitHub}
++	// A CVE may have only a severity field (Cvss2Severity or Cvss3Severity) without
++	// a numeric score. Estimate a score from the severity so that such CVEs are still
++	// considered by filtering, grouping and reporting.
++	order = append(AllCveContetTypes, Oracle)
+ 	for _, ctype := range order {
+-		if cont, found := v.CveContents[ctype]; found && 0 < len(cont.Cvss2Severity) {
+-			score := severityToV2ScoreRoughly(cont.Cvss2Severity)
+-			if max < score {
+-				value = CveContentCvss{
+-					Type: ctype,
+-					Value: Cvss{
+-						Type:                 CVSS2,
+-						Score:                score,
+-						CalculatedBySeverity: true,
+-						Vector:               cont.Cvss2Vector,
+-						Severity:             strings.ToUpper(cont.Cvss2Severity),
+-					},
+-				}
++		cont, found := v.CveContents[ctype]
++		if !found {
++			continue
++		}
++		severity := cont.Cvss2Severity
++		if severity == "" {
++			severity = cont.Cvss3Severity
++		}
++		if severity == "" {
++			continue
++		}
++		score := severityToV2ScoreRoughly(severity)
++		if max < score {
++			value = CveContentCvss{
++				Type: ctype,
++				Value: Cvss{
++					Type:                 CVSS2,
++					Score:                score,
++					CalculatedBySeverity: true,
++					Vector:               cont.Cvss2Vector,
++					Severity:             strings.ToUpper(severity),
++				},
+ 			}
+-			max = score
+ 		}
++		max = score
+ 	}
+ 
+ 	// Only RedHat, Oracle and Amazon has severity data in advisory.

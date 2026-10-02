@@ -1,0 +1,579 @@
+Running selected tests: test/audio/VoiceMessageRecording-test.ts test/utils/exportUtils/HTMLExport-test.ts test/components/views/messages/MessageEvent-test.ts test/components/views/location/LocationPicker-test.ts test/components/views/dialogs/ConfirmRedactDialog-test.ts test/components/views/settings/AddPrivilegedUsers-test.ts test/utils/DMRoomMap-test.ts test/components/views/rooms/MessageComposer-test.ts test/components/views/settings/CrossSigningPanel-test.ts test/components/views/dialogs/AccessSecretStorageDialog-test.ts test/stores/AutoRageshakeStore-test.ts test/hooks/useWindowWidth-test.ts test/components/views/context_menus/ContextMenu-test.ts test/utils/SearchInput-test.ts test/components/views/rooms/RoomTile-test.ts test/stores/room-list/algorithms/list-ordering/NaturalAlgorithm-test.ts test/components/views/messages/EncryptionEvent-test.ts test/notifications/PushRuleVectorState-test.ts test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.ts test/components/views/messages/MStickerBody-test.ts test/stores/room-list/SpaceWatcher-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+PASS test/utils/DMRoomMap-test.ts (112.491 s)
+  DMRoomMap
+    when m.direct has valid content
+      ✓ getRoomIds should return the room Ids (98 ms)
+      and there is an update with valid data
+        ✓ getRoomIds should return the new room Ids (19 ms)
+      and there is an update with invalid data
+        ✓ getRoomIds should return the valid room Ids (23 ms)
+        ✓ should log the invalid content (57 ms)
+    when m.direct content contains the entire event
+      ✓ should log the invalid content (12 ms)
+      ✓ getRoomIds should return an empty list (12 ms)
+    when partially crap m.direct content appears
+      ✓ should log the invalid content (13 ms)
+      ✓ getRoomIds should only return the valid items (16 ms)
+    getUniqueRoomsWithIndividuals()
+      ✓ returns an empty object when room map has not been populated (14 ms)
+      ✓ returns map of users to rooms with 2 members (15 ms)
+      ✓ excludes rooms that are not found by matrixClient (9 ms)
+
+(node:123) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Room.accountData listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:123) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 RoomState.events listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:123) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:123) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Room listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:123) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Room.myMembership listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:123) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 RoomState.members listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/stores/room-list/SpaceWatcher-test.ts (112.84 s)
+  SpaceWatcher
+    ✓ initialises sanely with home behaviour (88 ms)
+    ✓ initialises sanely with all behaviour (178 ms)
+    ✓ sets space=Home filter for all -> home transition (59 ms)
+    ✓ sets filter correctly for all -> space transition (14 ms)
+    ✓ removes filter for home -> all transition (38 ms)
+    ✓ sets filter correctly for home -> space transition (19 ms)
+    ✓ removes filter for space -> all transition (21 ms)
+    ✓ removes filter for favourites -> all transition (24 ms)
+    ✓ removes filter for people -> all transition (24 ms)
+    ✓ removes filter for orphans -> all transition (22 ms)
+    ✓ updates filter correctly for space -> home transition (18 ms)
+    ✓ updates filter correctly for space -> orphans transition (11 ms)
+    ✓ updates filter correctly for orphans -> people transition (8 ms)
+    ✓ updates filter correctly for space -> space transition (9 ms)
+    ✓ doesn't change filter when changing showAllRooms mode to true (38 ms)
+    ✓ doesn't change filter when changing showAllRooms mode to false (17 ms)
+
+PASS test/audio/VoiceMessageRecording-test.ts (112.707 s)
+  VoiceMessageRecording
+    ✓ hasRecording should return false (59 ms)
+    ✓ createVoiceMessageRecording should return a VoiceMessageRecording (17 ms)
+    ✓ durationSeconds should return the VoiceRecording value (9 ms)
+    ✓ contentType should return the VoiceRecording value (50 ms)
+    ✓ isRecording should return true from VoiceRecording (8 ms)
+    ✓ isRecording should return false from VoiceRecording (8 ms)
+    ✓ isSupported should return true from VoiceRecording (15 ms)
+    ✓ isSupported should return false from VoiceRecording (11 ms)
+    ✓ should return liveData from VoiceRecording (9 ms)
+    ✓ start should forward the call to VoiceRecording.start (26 ms)
+    ✓ on should forward the call to VoiceRecording (6 ms)
+    ✓ off should forward the call to VoiceRecording (6 ms)
+    ✓ emit should forward the call to VoiceRecording (8 ms)
+    ✓ upload should raise an error (88 ms)
+    when the first data has been received
+      ✓ contentLength should return the buffer length (10 ms)
+      ✓ stop should return a copy of the data buffer (11 ms)
+      ✓ hasRecording should return true (11 ms)
+      upload
+        ✓ should upload the file and trigger the upload events (192 ms)
+        ✓ should reuse the result (7 ms)
+      getPlayback
+        ✓ should return a Playback with the data (17 ms)
+        ✓ should reuse the result (8 ms)
+
+(node:122) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Event.decrypted listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:122) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [MockClientWithEventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/stores/room-list/algorithms/list-ordering/NaturalAlgorithm-test.ts (112.864 s)
+  NaturalAlgorithm
+    When sortAlgorithm is alphabetical
+      ✓ orders rooms by alpha (43 ms)
+      handleRoomUpdate
+        ✓ removes a room (9 ms)
+        ✓ warns when removing a room that is not indexed (9 ms)
+        ✓ adds a new room (9 ms)
+        ✓ adds a new muted room (6 ms)
+        ✓ ignores a mute change update (3 ms)
+        ✓ throws for an unhandled update cause (75 ms)
+        time and read receipt updates
+          ✓ handles when a room is not indexed (3 ms)
+          ✓ re-sorts rooms when timeline updates (2 ms)
+    When sortAlgorithm is recent
+      ✓ orders rooms by recent with muted rooms to the bottom (10 ms)
+      handleRoomUpdate
+        ✓ removes a room (19 ms)
+        ✓ warns and returns without change when removing a room that is not indexed (4 ms)
+        ✓ adds a new room (5 ms)
+        ✓ does not re-sort on possible mute change when room did not change effective mutedness (4 ms)
+        ✓ re-sorts on a mute change (11 ms)
+
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:121) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added to [MockMap]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:121) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 load listeners added to [MockMap]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+PASS test/components/views/location/LocationPicker-test.tsx (113.26 s)
+  LocationPicker
+    <LocationPicker />
+      ✓ displays error when map emits an error (297 ms)
+      ✓ displays error when map display is not configured properly (44 ms)
+      ✓ displays error when WebGl is not enabled (43 ms)
+      ✓ displays error when map setup throws (60 ms)
+      ✓ initiates map with geolocation (24 ms)
+      for Own location share type
+        user location behaviours
+          ✓ closes and displays error when geolocation errors (40 ms)
+          ✓ sets position on geolocate event (82 ms)
+          ✓ disables submit button until geolocation completes (65 ms)
+          ✓ submits location (51 ms)
+      for Live location share type
+        ✓ renders live duration dropdown with default option (18 ms)
+        ✓ updates selected duration (85 ms)
+        user location behaviours
+          ✓ closes and displays error when geolocation errors (57 ms)
+          ✓ sets position on geolocate event (55 ms)
+          ✓ disables submit button until geolocation completes (63 ms)
+          ✓ submits location (33 ms)
+      for Pin drop location share type
+        ✓ initiates map with geolocation (32 ms)
+        ✓ removes geolocation control on geolocation error (20 ms)
+        ✓ does not set position on geolocate event (26 ms)
+        ✓ sets position on click event (34 ms)
+        ✓ submits location (30 ms)
+
+(node:120) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/rooms/RoomTile-test.tsx (114.745 s)
+  RoomTile
+    when message previews are not enabled
+      ✓ should render the room (501 ms)
+      ✓ does not render the room options context menu when UIComponent customisations disable room options (73 ms)
+      ✓ renders the room options context menu when UIComponent customisations enable room options (245 ms)
+      ✓ does not render the room options context menu when knocked to the room (73 ms)
+      ✓ does not render the room options context menu when knock has been denied (50 ms)
+      when a call starts
+        ✓ tracks connection state (462 ms)
+        ✓ tracks participants (94 ms)
+        and a live broadcast starts
+          ✓ should still render the call subtitle (96 ms)
+      when a live voice broadcast starts
+        ✓ should render the »Live« subtitle (134 ms)
+        and the broadcast stops
+          ✓ should not render the »Live« subtitle (94 ms)
+    when message previews are enabled
+      ✓ should render a room without a message as expected (79 ms)
+      and there is a message in the room
+        ✓ should render as expected (95 ms)
+      and there is a message in a thread
+        ✓ should render as expected (177 ms)
+      and there is a message and a thread without a reply
+        ✓ should render the message preview (92 ms)
+
+PASS test/components/views/context_menus/ContextMenu-test.tsx
+  <ContextMenu />
+    ✓ near top edge of window (137 ms)
+    ✓ near right edge of window (75 ms)
+    ✓ near bottom edge of window (67 ms)
+    ✓ near left edge of window (56 ms)
+    ✓ should automatically close when a modal is opened (88 ms)
+    ✓ should not automatically close when a modal is opened under the existing one (29 ms)
+
+PASS test/components/views/messages/EncryptionEvent-test.tsx (6.282 s)
+  EncryptionEvent
+    for an encrypted room
+      ✓ should show the expected texts (138 ms)
+      with same previous algorithm
+        ✓ should show the expected texts (23 ms)
+      with unknown algorithm
+        ✓ should show the expected texts (18 ms)
+    for an unencrypted room
+      ✓ should show the expected texts (17 ms)
+    for an encrypted local room
+      ✓ should show the expected texts (18 ms)
+
+PASS test/components/views/dialogs/ConfirmRedactDialog-test.tsx (5.665 s)
+  ConfirmRedactDialog
+    ✓ should raise an error for an event without ID (66 ms)
+    ✓ should raise an error for an event without room-ID (7 ms)
+    when redacting a voice broadcast started event
+      and the server does not support relation based redactions
+        and displaying and confirm the dialog for a voice broadcast
+          ✓ should call redact without `with_rel_types` (658 ms)
+      and the server supports relation based redactions
+        and displaying and confirm the dialog for a voice broadcast
+          ✓ should call redact with `with_rel_types` (200 ms)
+
+(node:124) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+PASS test/components/views/dialogs/AccessSecretStorageDialog-test.tsx (8.608 s)
+  AccessSecretStorageDialog
+    ✓ Closes the dialog when the form is submitted with a valid key (1085 ms)
+    ✓ Notifies the user if they input an invalid Security Key (297 ms)
+    ✓ Notifies the user if they input an invalid passphrase (565 ms)
+
+PASS test/components/views/settings/CrossSigningPanel-test.tsx (8.931 s)
+  <CrossSigningPanel />
+    ✓ should render a spinner while loading (524 ms)
+    ✓ should render when homeserver does not support cross-signing (86 ms)
+    when cross signing is ready
+      ✓ should render when keys are not backed up (83 ms)
+      ✓ should render when keys are backed up (67 ms)
+      ✓ should allow reset of cross-signing (216 ms)
+    when cross signing is not ready
+      ✓ should render when keys are not backed up (177 ms)
+      ✓ should render when keys are backed up (546 ms)
+
+(node:123) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+PASS test/components/views/settings/AddPrivilegedUsers-test.tsx (10.429 s)
+  <AddPrivilegedUsers />
+    ✓ checks whether form submit works as intended (1813 ms)
+    ✓ getUserIdsFromCompletions() should map completions to user id's (6 ms)
+    ✓ hasLowerOrEqualLevelThanDefaultLevel() should return false for default level -50 (1 ms)
+    ✓ hasLowerOrEqualLevelThanDefaultLevel() should return true for default level 0 (4 ms)
+    ✓ hasLowerOrEqualLevelThanDefaultLevel() should return true for default level 50 (1 ms)
+
+PASS test/stores/AutoRageshakeStore-test.ts (9.486 s)
+  AutoRageshakeStore
+    when the initial sync completed
+      and an undecryptable event occurs
+        ✓ should send a to-device message (133 ms)
+
+(node:118) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/notifications/PushRuleVectorState-test.ts (9.613 s)
+  PushRuleVectorState
+    contentRuleVectorStateKind
+      ✓ should understand normal notifications (7 ms)
+      ✓ should handle loud notifications (2 ms)
+      ✓ should understand missing highlight.value (3 ms)
+
+PASS test/components/views/messages/MessageEvent-test.tsx (11.363 s)
+  MessageEvent
+    when a voice broadcast start event occurs
+      ✓ should render a VoiceBroadcast component (241 ms)
+
+FAIL test/hooks/useWindowWidth-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../../src/hooks/useWindowWidth' from 'test/hooks/useWindowWidth-test.ts'
+
+      19 |
+      20 | import UIStore, { UI_EVENTS } from "../../src/stores/UIStore";
+    > 21 | import { useWindowWidth } from "../../src/hooks/useWindowWidth";
+         | ^
+      22 |
+      23 | describe("useWindowWidth", () => {
+      24 |     beforeEach(() => {
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (test/hooks/useWindowWidth-test.ts:21:1)
+
+PASS test/utils/SearchInput-test.ts (10.515 s)
+  transforming search term
+    ✓ should return the primaryEntityId if the search term was a permalink (7 ms)
+    ✓ should return the original search term if the search term is a permalink and the primaryEntityId is null (2 ms)
+    ✓ should return the original search term if the search term was not a permalink (2 ms)
+
+PASS test/components/views/messages/MStickerBody-test.tsx (13.287 s)
+  <MStickerBody/>
+    ✓ should show a tooltip on hover (864 ms)
+
+(node:119) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:119) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 sync listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(node:117) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/utils/exportUtils/HTMLExport-test.ts (169.125 s)
+  HTMLExport
+    ✓ should throw when created with invalid config for LastNMessages (877 ms)
+    ✓ should have an SDK-branded destination file name (199 ms)
+    ✓ should export (2717 ms)
+    ✓ should include the room's avatar (325 ms)
+    ✓ should include the creation event (256 ms)
+    ✓ should include the topic (318 ms)
+    ✓ should include avatars (308 ms)
+    ✓ should handle when an event has no sender (1699 ms)
+    ✓ should handle when events sender cannot be found in room state (4192 ms)
+    ✓ should include attachments (24506 ms)
+    ✓ should handle when attachment cannot be fetched (2485 ms)
+    ✓ should handle when attachment srcHttp is falsy (518 ms)
+    ✓ should omit attachments (321 ms)
+    ✓ should add link to next and previous file (11 ms)
+    ✓ should not leak javascript from room names or topics (226 ms)
+    ✓ should not make /messages requests when exporting 'Current Timeline' (29 ms)
+
+FAIL test/components/views/rooms/MessageComposer-test.tsx (170.439 s)
+  MessageComposer
+    ✓ should render SendWysiwygComposer when enabled (29 ms)
+    for a Room
+      ✓ Renders a SendMessageComposer and MessageComposerButtons by default (2509 ms)
+      ✓ Does not render a SendMessageComposer or MessageComposerButtons when user has no permission (198 ms)
+      ✓ Does not render a SendMessageComposer or MessageComposerButtons when room is tombstoned (135 ms)
+      ✓ should not render the send button (4228 ms)
+      when receiving a »reply_to_event«
+        ✓ should call notifyTimelineHeightChanged() for the same context (395 ms)
+        ✓ should not call notifyTimelineHeightChanged() for a different context (248 ms)
+      when MessageComposerInput.showStickersButton = true
+        ✓ shouldtrue display the button (3274 ms)
+        and setting MessageComposerInput.showStickersButton to false
+          ✓ shouldnot display the button (287 ms)
+      when MessageComposerInput.showStickersButton = false
+        ✓ shouldnot display the button (355 ms)
+        and setting MessageComposerInput.showStickersButton to true
+          ✓ shouldtrue display the button (266 ms)
+      when MessageComposerInput.showPollsButton = true
+        ✓ shouldtrue display the button (245 ms)
+        and setting MessageComposerInput.showPollsButton to false
+          ✓ shouldnot display the button (225 ms)
+      when MessageComposerInput.showPollsButton = false
+        ✓ shouldnot display the button (294 ms)
+        and setting MessageComposerInput.showPollsButton to true
+          ✓ shouldtrue display the button (269 ms)
+      when feature_voice_broadcast = true
+        ✓ shouldtrue display the button (273 ms)
+        and setting feature_voice_broadcast to false
+          ✓ shouldnot display the button (2853 ms)
+      when feature_voice_broadcast = false
+        ✓ shouldnot display the button (734 ms)
+        and setting feature_voice_broadcast to true
+          ✓ shouldtrue display the button (3134 ms)
+      when a message has been entered
+        ✕ should render the send button (7664 ms)
+      UIStore interactions
+        when a non-resize event occurred in UIStore
+          ✓ should still display the sticker picker (1675 ms)
+        when a resize to narrow event occurred in UIStore
+          ✕ should close the menu (7872 ms)
+          ✓ should not show the attachment button (1954 ms)
+          ✓ should close the sticker picker (533 ms)
+        when a resize to non-narrow event occurred in UIStore
+          ✓ should close the menu (395 ms)
+          ✓ should show the attachment button (276 ms)
+          ✓ should close the sticker picker (218 ms)
+      when not replying to an event
+        ✓ should pass the expected placeholder to SendMessageComposer (33 ms)
+        ✓ and an e2e status it should pass the expected placeholder to SendMessageComposer (30 ms)
+      when replying to an event
+        without encryption
+          ✓ should pass the expected placeholder to SendMessageComposer (56 ms)
+        with encryption
+          ✓ should pass the expected placeholder to SendMessageComposer (42 ms)
+        with a non-thread relation
+          ✓ should pass the expected placeholder to SendMessageComposer (40 ms)
+        that is a thread
+          ✓ should pass the expected placeholder to SendMessageComposer (44 ms)
+          with encryption
+            ✓ should pass the expected placeholder to SendMessageComposer (35 ms)
+      when clicking start a voice message
+        ✓ should try to start a voice message (389 ms)
+      when recording a voice broadcast and trying to start a voice message
+        ✓ should not start a voice message and display the info dialog (401 ms)
+      when there is a stopped voice broadcast recording and trying to start a voice message
+        ✓ should try to start a voice message and should not display the info dialog (309 ms)
+    for a LocalRoom
+      ✓ should not show the stickers button (155 ms)
+
+  ● MessageComposer › for a Room › when a message has been entered › should render the send button
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      254 |
+      255 |         describe("when a message has been entered", () => {
+    > 256 |             beforeEach(async () => {
+          |             ^
+      257 |                 const renderResult = wrapAndRender({ room }).renderResult;
+      258 |                 await addTextToComposerRTL(renderResult, "Hello");
+      259 |             });
+
+      at beforeEach (test/components/views/rooms/MessageComposer-test.tsx:256:13)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:255:9)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:117:5)
+      at Object.describe (test/components/views/rooms/MessageComposer-test.tsx:91:1)
+
+  ● MessageComposer › for a Room › UIStore interactions › when a resize to narrow event occurred in UIStore › should close the menu
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      288 |
+      289 |             describe("when a resize to narrow event occurred in UIStore", () => {
+    > 290 |                 beforeEach(async () => {
+          |                 ^
+      291 |                     wrapAndRender({ room }, true, true);
+      292 |                     await openStickerPicker();
+      293 |                     resizeCallback(UI_EVENTS.Resize, {});
+
+      at beforeEach (test/components/views/rooms/MessageComposer-test.tsx:290:17)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:289:13)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:266:9)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:117:5)
+      at Object.describe (test/components/views/rooms/MessageComposer-test.tsx:91:1)
+
+FAIL test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx (174.389 s)
+  WysiwygComposer
+    ✓ Should have contentEditable at false when disabled (18964 ms)
+    Standard behavior
+      ✓ Should have contentEditable at true (420 ms)
+      ✓ Should have focus (1438 ms)
+      ✓ Should call onChange handler (1920 ms)
+      ✓ Should call onSend when Enter is pressed (396 ms)
+      ✕ Should not call onSend when Shift+Enter is pressed (8300 ms)
+      ✓ Should not call onSend when ctrl+Enter is pressed (3117 ms)
+      ✓ Should not call onSend when alt+Enter is pressed (602 ms)
+      ✓ Should not call onSend when meta+Enter is pressed (8904 ms)
+    Mentions and commands
+      ✓ shows the autocomplete when text has @ prefix and autoselects the first item (950 ms)
+      ✓ pressing up and down arrows allows us to change the autocomplete selection (602 ms)
+      ✓ pressing enter selects the mention and inserts it into the composer as a link (585 ms)
+      ✓ pressing escape closes the autocomplete (339 ms)
+      ✓ typing with the autocomplete open still works as expected (371 ms)
+      ✓ clicking on a mention in the composer dispatches the correct action (392 ms)
+      ✓ selecting a mention without a href closes the autocomplete but does not insert a mention (399 ms)
+      ✓ selecting a room mention with a completionId uses client.getRoom (399 ms)
+      ✓ selecting a room mention without a completionId uses client.getRooms (395 ms)
+      ✓ selecting a command inserts the command (353 ms)
+      ✓ selecting an at-room completion inserts @room (374 ms)
+      ✓ allows a community completion to pass through (355 ms)
+    When settings require Ctrl+Enter to send
+      ✓ Should not call onSend when Enter is pressed (108 ms)
+      ✓ Should send a message when Ctrl+Enter is pressed (85 ms)
+    Keyboard navigation
+      In message creation
+        ✓ Should not moving when the composer is filled (108 ms)
+        ✓ Should moving when the composer is empty (448 ms)
+      In message editing
+        Moving up
+          ✓ Should not moving when caret is not at beginning of the text (382 ms)
+          ✓ Should not moving when the content has changed (174 ms)
+          ✓ Should moving up (137 ms)
+          ✓ Should moving up in list (142 ms)
+        Moving down
+          ✓ Should not moving when caret is not at the end of the text (125 ms)
+          ✓ Should not moving when the content has changed (130 ms)
+          ✓ Should moving down (124 ms)
+          ✓ Should moving down in list (138 ms)
+          ✓ Should close editing (125 ms)
+
+  ● WysiwygComposer › Standard behavior › Should not call onSend when Shift+Enter is pressed
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      119 |         });
+      120 |
+    > 121 |         it("Should not call onSend when Shift+Enter is pressed", async () => {
+          |         ^
+      122 |             //When
+      123 |             await userEvent.type(screen.getByRole("textbox"), "{shift>}{enter}");
+      124 |
+
+      at it (test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx:121:9)
+      at describe (test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx:73:5)
+      at Object.describe (test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx:44:1)
+
+A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
+Summary of all failing tests
+FAIL test/hooks/useWindowWidth-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../../src/hooks/useWindowWidth' from 'test/hooks/useWindowWidth-test.ts'
+
+      19 |
+      20 | import UIStore, { UI_EVENTS } from "../../src/stores/UIStore";
+    > 21 | import { useWindowWidth } from "../../src/hooks/useWindowWidth";
+         | ^
+      22 |
+      23 | describe("useWindowWidth", () => {
+      24 |     beforeEach(() => {
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (test/hooks/useWindowWidth-test.ts:21:1)
+
+FAIL test/components/views/rooms/MessageComposer-test.tsx (170.439 s)
+  ● MessageComposer › for a Room › when a message has been entered › should render the send button
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      254 |
+      255 |         describe("when a message has been entered", () => {
+    > 256 |             beforeEach(async () => {
+          |             ^
+      257 |                 const renderResult = wrapAndRender({ room }).renderResult;
+      258 |                 await addTextToComposerRTL(renderResult, "Hello");
+      259 |             });
+
+      at beforeEach (test/components/views/rooms/MessageComposer-test.tsx:256:13)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:255:9)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:117:5)
+      at Object.describe (test/components/views/rooms/MessageComposer-test.tsx:91:1)
+
+  ● MessageComposer › for a Room › UIStore interactions › when a resize to narrow event occurred in UIStore › should close the menu
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      288 |
+      289 |             describe("when a resize to narrow event occurred in UIStore", () => {
+    > 290 |                 beforeEach(async () => {
+          |                 ^
+      291 |                     wrapAndRender({ room }, true, true);
+      292 |                     await openStickerPicker();
+      293 |                     resizeCallback(UI_EVENTS.Resize, {});
+
+      at beforeEach (test/components/views/rooms/MessageComposer-test.tsx:290:17)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:289:13)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:266:9)
+      at describe (test/components/views/rooms/MessageComposer-test.tsx:117:5)
+      at Object.describe (test/components/views/rooms/MessageComposer-test.tsx:91:1)
+
+FAIL test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx (174.389 s)
+  ● WysiwygComposer › Standard behavior › Should not call onSend when Shift+Enter is pressed
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      119 |         });
+      120 |
+    > 121 |         it("Should not call onSend when Shift+Enter is pressed", async () => {
+          |         ^
+      122 |             //When
+      123 |             await userEvent.type(screen.getByRole("textbox"), "{shift>}{enter}");
+      124 |
+
+      at it (test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx:121:9)
+      at describe (test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx:73:5)
+      at Object.describe (test/components/views/rooms/wysiwyg_composer/components/WysiwygComposer-test.tsx:44:1)
+
+
+Test Suites: 3 failed, 18 passed, 21 total
+Tests:       3 failed, 221 passed, 224 total
+Snapshots:   11 passed, 11 total
+Time:        177.391 s
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice

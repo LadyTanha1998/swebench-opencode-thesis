@@ -1,0 +1,147 @@
+diff --git a/src/components/views/dialogs/CreateRoomDialog.tsx b/src/components/views/dialogs/CreateRoomDialog.tsx
+index 3ef2ff5c96..885e3e6765 100644
+--- a/src/components/views/dialogs/CreateRoomDialog.tsx
++++ b/src/components/views/dialogs/CreateRoomDialog.tsx
+@@ -33,7 +33,7 @@ import BaseDialog from "../dialogs/BaseDialog";
+ import JoinRuleDropdown from "../elements/JoinRuleDropdown";
+ import { getKeyBindingsManager } from "../../../KeyBindingsManager";
+ import { KeyBindingAction } from "../../../accessibility/KeyboardShortcuts";
+-import { privateShouldBeEncrypted } from "../../../utils/rooms";
++import { privateShouldBeEncrypted, e2eeWellKnownDisabled } from "../../../utils/rooms";
+ 
+ interface IProps {
+     type?: RoomType;
+@@ -78,7 +78,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
+         const cli = MatrixClientPeg.safeGet();
+         this.state = {
+             isPublic: this.props.defaultPublic || false,
+-            isEncrypted: this.props.defaultEncrypted ?? privateShouldBeEncrypted(cli),
++            isEncrypted: this.props.defaultEncrypted ?? (privateShouldBeEncrypted(cli) && !e2eeWellKnownDisabled(cli)),
+             joinRule,
+             name: this.props.defaultName || "",
+             topic: "",
+@@ -89,9 +89,19 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
+             canChangeEncryption: true,
+         };
+ 
+-        cli.doesServerForceEncryptionForPreset(Preset.PrivateChat).then((isForced) =>
+-            this.setState({ canChangeEncryption: !isForced }),
+-        );
++        this.updateCanChangeEncryption();
++    }
++
++    private async updateCanChangeEncryption(): Promise<void> {
++        const cli = MatrixClientPeg.safeGet();
++        let canChangeEncryption = true;
++        if (await cli.doesServerForceEncryptionForPreset(Preset.PrivateChat)) {
++            canChangeEncryption = false;
++        }
++        if (e2eeWellKnownDisabled(cli)) {
++            canChangeEncryption = false;
++        }
++        this.setState({ canChangeEncryption });
+     }
+ 
+     private roomCreateOptions(): IOpts {
+@@ -107,8 +117,12 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
+             const { alias } = this.state;
+             createOpts.room_alias_name = alias.substring(1, alias.indexOf(":"));
+         } else {
+-            // If we cannot change encryption we pass `true` for safety, the server should automatically do this for us.
+-            opts.encryption = this.state.canChangeEncryption ? this.state.isEncrypted : true;
++            const { isEncrypted, canChangeEncryption } = this.state;
++            // If the server forces encryption to be enabled, we pass `true` for safety,
++            // the server should automatically do this for us.
++            // If the server forces encryption to be disabled, we pass `false` for safety,
++            // the server should automatically do this for us.
++            opts.encryption = canChangeEncryption ? isEncrypted : !e2eeWellKnownDisabled(MatrixClientPeg.safeGet());
+         }
+ 
+         if (this.state.topic) {
+@@ -283,7 +297,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
+         }
+ 
+         let e2eeSection: JSX.Element | undefined;
+-        if (this.state.joinRule !== JoinRule.Public) {
++        if (this.state.joinRule !== JoinRule.Public && !e2eeWellKnownDisabled(MatrixClientPeg.safeGet())) {
+             let microcopy: string;
+             if (privateShouldBeEncrypted(MatrixClientPeg.safeGet())) {
+                 if (this.state.canChangeEncryption) {
+diff --git a/src/utils/WellKnownUtils.ts b/src/utils/WellKnownUtils.ts
+index a17f721c46..7910a7dd1d 100644
+--- a/src/utils/WellKnownUtils.ts
++++ b/src/utils/WellKnownUtils.ts
+@@ -33,6 +33,7 @@ export interface IE2EEWellKnown {
+     default?: boolean;
+     secure_backup_required?: boolean;
+     secure_backup_setup_methods?: SecureBackupSetupMethod[];
++    force_disable?: boolean;
+ }
+ 
+ export interface ITileServerWellKnown {
+diff --git a/src/utils/rooms.ts b/src/utils/rooms.ts
+index 13823288dd..f640886951 100644
+--- a/src/utils/rooms.ts
++++ b/src/utils/rooms.ts
+@@ -26,3 +26,12 @@ export function privateShouldBeEncrypted(client: MatrixClient): boolean {
+     }
+     return true;
+ }
++
++export function e2eeWellKnownDisabled(client: MatrixClient): boolean {
++    const e2eeWellKnown = getE2EEWellKnown(client);
++    if (e2eeWellKnown) {
++        const forceDisabled = e2eeWellKnown["force_disable"] === true;
++        return forceDisabled;
++    }
++    return false;
++}
+diff --git a/test/components/views/dialogs/CreateRoomDialog-test.tsx b/test/components/views/dialogs/CreateRoomDialog-test.tsx
+index a18cf50adc..2e38134a5f 100644
+--- a/test/components/views/dialogs/CreateRoomDialog-test.tsx
++++ b/test/components/views/dialogs/CreateRoomDialog-test.tsx
+@@ -107,6 +107,44 @@ describe("<CreateRoomDialog />", () => {
+             expect(screen.getByText("Your server requires encryption to be enabled in private rooms."));
+         });
+ 
++        it("should hide encryption toggle and not encrypt when server force disables encryption", async () => {
++            mockClient.getClientWellKnown.mockReturnValue({
++                "io.element.e2ee": {
++                    force_disable: true,
++                },
++            });
++            getComponent();
++            await flushPromises();
++
++            // encryption toggle is hidden when forced to be disabled
++            expect(screen.queryByText("Enable end-to-end encryption")).not.toBeInTheDocument();
++        });
++
++        it("should create a room without encryption when server force disables encryption", async () => {
++            mockClient.getClientWellKnown.mockReturnValue({
++                "io.element.e2ee": {
++                    force_disable: true,
++                },
++            });
++            const onFinished = jest.fn();
++            getComponent({ onFinished });
++            await flushPromises();
++
++            const roomName = "Test Room Name";
++            fireEvent.change(screen.getByLabelText("Name"), { target: { value: roomName } });
++            fireEvent.click(screen.getByText("Create room"));
++            await flushPromises();
++
++            expect(onFinished).toHaveBeenCalledWith(true, {
++                createOpts: {
++                    name: roomName,
++                },
++                encryption: false,
++                parentSpace: undefined,
++                roomType: undefined,
++            });
++        });
++
+         it("should warn when trying to create a room with an invalid form", async () => {
+             const onFinished = jest.fn();
+             getComponent({ onFinished });

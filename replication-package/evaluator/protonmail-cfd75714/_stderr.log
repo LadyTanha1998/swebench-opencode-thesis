@@ -1,0 +1,19 @@
+FAIL components/v2/addressesAutomplete/AddressesAutocomplete.helper.test.ts
+  ● Test suite failed to run
+
+    Cannot find module './AddressesAutocomplete.helper' from 'components/v2/addressesAutomplete/AddressesAutocomplete.helper.test.ts'
+
+    > 1 | import { splitBySeparator } from './AddressesAutocomplete.helper';
+        | ^
+      2 |
+      3 | describe('splitBySeparator', () => {
+      4 |     it('should omit separators present at the beginning and the end', () => {
+
+      at Resolver._throwModNotFoundError (../../node_modules/jest-resolve/build/resolver.js:491:11)
+      at Object.<anonymous> (components/v2/addressesAutomplete/AddressesAutocomplete.helper.test.ts:1:1)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        250.611 s
+Ran all test suites matching /packages\/components\/components\/v2\/addressesAutomplete\/AddressesAutocomplete.helper.test.ts/i.

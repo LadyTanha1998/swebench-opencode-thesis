@@ -1,0 +1,2 @@
+# go.flipt.io/flipt/internal/config [go.flipt.io/flipt/internal/config.test]
+internal/config/config_test.go:470:57: undefined: AuthenticationMethodTokenBootstrapConfig

@@ -1,0 +1,2 @@
+# github.com/future-architect/vuls/gost [github.com/future-architect/vuls/gost.test]
+gost/debian_test.go:478:25: (Debian{}).CompareSeverity undefined (type Debian has no field or method CompareSeverity)

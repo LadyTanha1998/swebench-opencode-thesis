@@ -1,0 +1,31 @@
+diff --git a/internal/server/audit/logfile/logfile.go b/internal/server/audit/logfile/logfile.go
+index aa917ba4..90ea4f3c 100644
+--- a/internal/server/audit/logfile/logfile.go
++++ b/internal/server/audit/logfile/logfile.go
+@@ -5,6 +5,7 @@ import (
+ 	"encoding/json"
+ 	"fmt"
+ 	"os"
++	"path/filepath"
+ 	"sync"
+ 
+ 	"github.com/hashicorp/go-multierror"
+@@ -24,6 +25,18 @@ type Sink struct {
+ 
+ // NewSink is the constructor for a Sink.
+ func NewSink(logger *zap.Logger, path string) (audit.Sink, error) {
++	dir := filepath.Dir(path)
++
++	if _, err := os.Stat(dir); err != nil {
++		if !os.IsNotExist(err) {
++			return nil, fmt.Errorf("checking log file directory %q: %w", dir, err)
++		}
++
++		if err := os.MkdirAll(dir, 0755); err != nil {
++			return nil, fmt.Errorf("creating log file directory %q: %w", dir, err)
++		}
++	}
++
+ 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+ 	if err != nil {
+ 		return nil, fmt.Errorf("opening log file: %w", err)

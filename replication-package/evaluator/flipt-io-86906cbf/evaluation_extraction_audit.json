@@ -1,0 +1,21 @@
+{
+  "status": "CLEAN",
+  "touched_files": [
+    "go.work.sum"
+  ],
+  "patch_files": [
+    "go.work.sum"
+  ],
+  "missing_from_patch": [],
+  "touched_count": 1,
+  "patch_file_count": 1,
+  "before_status": [
+    "M go.work.sum",
+    "---BASELINE_UNTRACKED---"
+  ],
+  "baseline_tracked_paths": [
+    "go.work.sum"
+  ],
+  "baseline_tracked_count": 1,
+  "baseline_tracked_dirty": true
+}

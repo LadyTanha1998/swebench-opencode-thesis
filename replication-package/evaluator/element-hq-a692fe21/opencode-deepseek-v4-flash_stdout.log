@@ -1,0 +1,718 @@
+Running selected tests: test/components/views/dialogs/CreateRoomDialog-test.tsx test/utils/room/shouldForceDisableEncryption-test.ts test/components/views/right_panel/RoomHeaderButtons-test.ts test/stores/room-list/algorithms/RecentAlgorithm-test.ts test/utils/rooms-test.ts test/utils/permalinks/Permalinks-test.ts test/components/views/rooms/BasicMessageComposer-test.ts test/utils/LruCache-test.ts test/components/views/rooms/wysiwyg_composer/SendWysiwygComposer-test.ts test/createRoom-test.ts test/settings/watchers/ThemeWatcher-test.ts test/components/views/dialogs/CreateRoomDialog-test.ts
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+(node:119) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/settings/watchers/ThemeWatcher-test.tsx (64.311 s)
+  ThemeWatcher
+    ✓ should choose a light theme by default (16 ms)
+    ✓ should choose default theme if system settings are inconclusive (1 ms)
+    ✓ should choose a dark theme if that is selected (3 ms)
+    ✓ should choose a light theme if that is selected (8 ms)
+    ✓ should choose a light-high-contrast theme if that is selected (3 ms)
+    ✓ should choose a light theme if system prefers it (via default) (1 ms)
+    ✓ should choose a dark theme if system prefers it (via default)
+    ✓ should choose a light theme if system prefers it (explicit) (5 ms)
+    ✓ should choose a dark theme if system prefers it (explicit) (17 ms)
+    ✓ should choose a high-contrast theme if system prefers it (8 ms)
+    ✓ should not choose a high-contrast theme if not available (5 ms)
+
+PASS test/utils/LruCache-test.ts (64.673 s)
+  LruCache
+    ✓ when creating a cache with negative capacity it should raise an error (62 ms)
+    ✓ when creating a cache with 0 capacity it should raise an error (7 ms)
+    when there is a cache with a capacity of 3
+      ✓ has() should return false (3 ms)
+      ✓ get() should return undefined (10 ms)
+      ✓ values() should return an empty iterator (11 ms)
+      ✓ delete() should not raise an error
+      when the cache contains 2 items
+        ✓ has() should return false for an item not in the cache (1 ms)
+        ✓ get() should return undefined for an item not in the cahce (3 ms)
+        ✓ values() should return the items in the cache (4 ms)
+        ✓ clear() should clear the cache (5 ms)
+        ✓ when an error occurs while setting an item the cache should be cleard (4 ms)
+        and adding another item
+          ✓ deleting an unkonwn item should not raise an error
+          ✓ deleting the first item should work (4 ms)
+          ✓ deleting the item in the middle should work (3 ms)
+          ✓ deleting the last item should work (3 ms)
+          ✓ deleting all items should work (2 ms)
+          ✓ deleting and adding some items should work (1 ms)
+          and accesing the first added item and adding another item
+            ✓ should contain the last recently accessed items (3 ms)
+            ✓ should not contain the least recently accessed items (1 ms)
+          and adding 2 additional items
+            ✓ has() should return false for expired items (13 ms)
+            ✓ has() should return true for items in the caceh (4 ms)
+            ✓ get() should return undefined for expired items (1 ms)
+            ✓ get() should return the items in the cache (2 ms)
+            ✓ values() should return the items in the cache (3 ms)
+      when the cache contains some items where one of them is a replacement
+        ✓ should contain the last recently set items (3 ms)
+
+FAIL test/utils/room/shouldForceDisableEncryption-test.ts
+  ● Test suite failed to run
+
+    Cannot find module '../../../src/utils/room/shouldForceDisableEncryption' from 'test/utils/room/shouldForceDisableEncryption-test.ts'
+
+      15 | */
+      16 |
+    > 17 | import { shouldForceDisableEncryption } from "../../../src/utils/room/shouldForceDisableEncryption";
+         | ^
+      18 | import { getMockClientWithEventEmitter } from "../../test-utils";
+      19 |
+      20 | describe("shouldForceDisableEncryption()", () => {
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:425:11)
+      at Object.require (test/utils/room/shouldForceDisableEncryption-test.ts:17:1)
+
+FAIL test/utils/rooms-test.ts (60.42 s)
+  privateShouldBeEncrypted()
+    ✓ should return true when there is no e2ee well known (5 ms)
+    ✓ should return true when default is not set to false (1 ms)
+    ✓ should return true when there is no default property (1 ms)
+    ✕ should return false when encryption is force disabled (23 ms)
+    ✓ should return false when default encryption setting is false (2 ms)
+    ✓ should return true when default encryption setting is set to something other than false (1 ms)
+
+  ● privateShouldBeEncrypted() › should return false when encryption is force disabled
+
+    expect(received).toEqual(expected) // deep equality
+
+    Expected: false
+    Received: true
+
+      56 |             },
+      57 |         });
+    > 58 |         expect(privateShouldBeEncrypted(mockClient)).toEqual(false);
+         |                                                      ^
+      59 |     });
+      60 |
+      61 |     it("should return false when default encryption setting is false", () => {
+
+      at Object.toEqual (test/utils/rooms-test.ts:58:54)
+
+PASS test/utils/permalinks/Permalinks-test.ts (125.121 s)
+  Permalinks
+    ✓ should pick no candidate servers when the room has no members (43 ms)
+    ✓ should gracefully handle invalid MXIDs (35 ms)
+    ✓ should pick a candidate server for the highest power level user in the room (27 ms)
+    ✓ should change candidate server when highest power level user leaves the room (18 ms)
+    ✓ should pick candidate servers based on user population (51 ms)
+    ✓ should pick prefer candidate servers with higher power levels (8 ms)
+    ✓ should pick a maximum of 3 candidate servers (10 ms)
+    ✓ should not consider IPv4 hosts (8 ms)
+    ✓ should not consider IPv6 hosts (10 ms)
+    ✓ should not consider IPv4 hostnames with ports (15 ms)
+    ✓ should not consider IPv6 hostnames with ports (5 ms)
+    ✓ should work with hostnames with ports (13 ms)
+    ✓ should not consider servers explicitly denied by ACLs (8 ms)
+    ✓ should not consider servers not allowed by ACLs (5 ms)
+    ✓ should consider servers not explicitly banned by ACLs (7 ms)
+    ✓ should consider servers not disallowed by ACLs (6 ms)
+    ✓ should generate an event permalink for room IDs with no candidate servers (3 ms)
+    ✓ should generate an event permalink for room IDs with some candidate servers (4 ms)
+    ✓ should generate a room permalink for room IDs with some candidate servers (2 ms)
+    ✓ should generate a room permalink for room aliases with no candidate servers
+    ✓ should generate a room permalink for room aliases without candidate servers
+    ✓ should generate a user permalink
+    parsePermalink
+      ✓ should correctly parse room permalinks with a via argument (10 ms)
+      ✓ should correctly parse room permalink via arguments (4 ms)
+      ✓ should correctly parse event permalink via arguments (2 ms)
+      ✓ should correctly parse permalinks with http protocol (1 ms)
+      ✓ should correctly parse permalinks without protocol (3 ms)
+
+(node:120) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 Thread.update listeners added to [Thread]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS test/stores/room-list/algorithms/RecentAlgorithm-test.ts (125.197 s)
+  RecentAlgorithm
+    getLastTs
+      ✓ returns the last ts (62 ms)
+      ✓ returns a fake ts for rooms without a timeline (8 ms)
+      ✓ works when not a member (10 ms)
+    sortRooms
+      ✓ orders rooms per last message ts (16 ms)
+      ✓ orders rooms without messages first (22 ms)
+      ✓ orders rooms based on thread replies too (39 ms)
+
+(node:122) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL test/createRoom-test.ts (125.21 s)
+  createRoom
+    ✓ sets up Jitsi video rooms correctly (100 ms)
+    ✓ sets up Element video rooms correctly (28 ms)
+    ✓ doesn't create calls in non-video-rooms (47 ms)
+    ✓ correctly sets up MSC3401 power levels (19 ms)
+    ✓ should upload avatar if one is passed (21 ms)
+  canEncryptToAllUsers
+    ✓ should return true if userIds is empty (1 ms)
+    ✓ should return true if download keys does not return any user (1 ms)
+    ✓ should return false if none of the users has a device
+    ✓ should return false if some of the users don't have a device (1 ms)
+    ✓ should return true if all users have a device (3 ms)
+  checkUserIsAllowedToChangeEncryption()
+    ✕ should allow changing when neither server nor well known force encryption (3 ms)
+    ✕ should not allow changing when server forces encryption (2 ms)
+    ✕ should not allow changing when well-known force_disable is true (2 ms)
+    ✕ should not allow changing when server forces enabled and wk forces disabled encryption (1 ms)
+
+  ● checkUserIsAllowedToChangeEncryption() › should allow changing when neither server nor well known force encryption
+
+    TypeError: (0 , _createRoom.checkUserIsAllowedToChangeEncryption) is not a function
+
+      220 |
+      221 |     it("should allow changing when neither server nor well known force encryption", async () => {
+    > 222 |         expect(await checkUserIsAllowedToChangeEncryption(mockClient, Preset.PrivateChat)).toEqual({
+          |                                                          ^
+      223 |             allowChange: true,
+      224 |         });
+      225 |
+
+      at Object.<anonymous> (test/createRoom-test.ts:222:58)
+
+  ● checkUserIsAllowedToChangeEncryption() › should not allow changing when server forces encryption
+
+    TypeError: (0 , _createRoom.checkUserIsAllowedToChangeEncryption) is not a function
+
+      229 |     it("should not allow changing when server forces encryption", async () => {
+      230 |         mockClient.doesServerForceEncryptionForPreset.mockResolvedValue(true);
+    > 231 |         expect(await checkUserIsAllowedToChangeEncryption(mockClient, Preset.PrivateChat)).toEqual({
+          |                                                          ^
+      232 |             allowChange: false,
+      233 |             forcedValue: true,
+      234 |         });
+
+      at Object.<anonymous> (test/createRoom-test.ts:231:58)
+
+  ● checkUserIsAllowedToChangeEncryption() › should not allow changing when well-known force_disable is true
+
+    TypeError: (0 , _createRoom.checkUserIsAllowedToChangeEncryption) is not a function
+
+      241 |             },
+      242 |         });
+    > 243 |         expect(await checkUserIsAllowedToChangeEncryption(mockClient, Preset.PrivateChat)).toEqual({
+          |                                                          ^
+      244 |             allowChange: false,
+      245 |             forcedValue: false,
+      246 |         });
+
+      at Object.<anonymous> (test/createRoom-test.ts:243:58)
+
+  ● checkUserIsAllowedToChangeEncryption() › should not allow changing when server forces enabled and wk forces disabled encryption
+
+    TypeError: (0 , _createRoom.checkUserIsAllowedToChangeEncryption) is not a function
+
+      254 |         });
+      255 |         mockClient.doesServerForceEncryptionForPreset.mockResolvedValue(true);
+    > 256 |         expect(await checkUserIsAllowedToChangeEncryption(mockClient, Preset.PrivateChat)).toEqual(
+          |                                                          ^
+      257 |             // server's forced enable takes precedence
+      258 |             { allowChange: false, forcedValue: true },
+      259 |         );
+
+      at Object.<anonymous> (test/createRoom-test.ts:256:58)
+
+(node:116) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:121) [DEP0044] DeprecationWarning: The `util.isArray` API is deprecated. Please use `Array.isArray()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PASS test/components/views/right_panel/RoomHeaderButtons-test.tsx (126.152 s)
+  RoomHeaderButtons-test.tsx
+    ✓ should render (188 ms)
+    ✓ shows the thread button (68 ms)
+    ✓ room wide notification does not change the thread button (36 ms)
+    ✓ thread notification does change the thread button (123 ms)
+    ✓ thread activity does change the thread button (147 ms)
+
+PASS test/components/views/rooms/BasicMessageComposer-test.tsx (127.223 s)
+  BasicMessageComposer
+    ✓ should allow a user to paste a URL without it being mangled (487 ms)
+    ✓ should replaceEmoticons properly (1821 ms)
+
+FAIL test/components/views/dialogs/CreateRoomDialog-test.tsx (129.753 s)
+  <CreateRoomDialog />
+    ✓ should default to private room (1062 ms)
+    ✓ should use defaultName from props (500 ms)
+    for a private room
+      ✓ should use server .well-known default for encryption setting (207 ms)
+      ✕ should use server .well-known force_disable for encryption setting (196 ms)
+      ✓ should use defaultEncrypted prop (205 ms)
+      ✓ should use defaultEncrypted prop when it is false (212 ms)
+      ✕ should override defaultEncrypted when server .well-known forces disabled encryption (259 ms)
+      ✕ should override defaultEncrypted when server forces enabled encryption (158 ms)
+      ✓ should enable encryption toggle and disable field when server forces encryption (359 ms)
+      ✓ should warn when trying to create a room with an invalid form (285 ms)
+      ✓ should create a private room (256 ms)
+    for a public room
+      ✓ should set join rule to public defaultPublic is truthy (239 ms)
+      ✓ should not create a public room without an alias (489 ms)
+      ✓ should create a public room (390 ms)
+
+  ● <CreateRoomDialog /> › for a private room › should use server .well-known force_disable for encryption setting
+
+    TestingLibraryElementError: Unable to find a label with the text of: Enable end-to-end encryption
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mdata-focus-guard[39m=[32m"true"[39m
+          [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"mx_BaseDialog_title"[39m
+          [33mclass[39m=[32m"mx_CreateRoomDialog mx_Dialog_fixedWidth"[39m
+          [33mdata-focus-lock-disabled[39m=[32m"false"[39m
+          [33mrole[39m=[32m"dialog"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_Dialog_header mx_Dialog_headerWithCancel"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"mx_Heading_h2 mx_Dialog_title"[39m
+              [33mid[39m=[32m"mx_BaseDialog_title"[39m
+            [36m>[39m
+              [0mCreate a private room[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Close dialog"[39m
+              [33mclass[39m=[32m"mx_AccessibleButton mx_Dialog_cancelButton"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<form>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_Dialog_content"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Field mx_Field_input mx_CreateRoomDialog_name"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mid[39m=[32m"mx_Field_7"[39m
+                  [33mlabel[39m=[32m"Name"[39m
+                  [33mplaceholder[39m=[32m"Name"[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m/>[39m
+                [36m<label[39m
+                  [33mfor[39m=[32m"mx_Field_7"[39m
+                [36m>[39m
+                  [0mName[0m
+                [36m</label>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Field mx_Field_input mx_CreateRoomDialog_topic"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mid[39m=[32m"mx_Field_8"[39m
+                  [33mlabel[39m=[32m"Topic (optional)"[39m
+                  [33mplaceholder[39m=[32m"Topic (optional)"[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m/>[39m
+                [36m<label[39m
+                  [33mfor[39m=[32m"mx_Field_8"[39m
+                [36m>[39m
+                  [0mTopic (optional)[0m
+                [36m</label>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dropdown mx_JoinRuleDropdown"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-describedby[39m=[32m"mx_JoinRuleDropdown_value"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"listbox"[39m
+                  [33maria-label[39m=[32m"Room visibility"[39m
+                  [33maria-owns[39m=[32m"mx_JoinRuleDropdown_input"[39m
+                  [33mclass[39m=[32m"mx_AccessibleButton mx_Dropdown_input mx_no_textinput"[39m
+                  [33mrole[39m=[32m"button"[39m
+                  [33mtabindex[39m=[32m"0"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_Dropdown_option"[39m
+                    [33mid[39m=[32m"mx_JoinRuleDropdown_value"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_JoinRuleDropdown_invite"[39m
+                    [36m>[39m
+                      [0mPrivate room (invite only)[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_Dropdown_arrow"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<p>[39m
+                [0mOnly people invited will be able to find and join this room.[0m
+                [0m [0m
+                [0mYou can change this at any time from room settings.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"mx_CreateRoomDialog_details"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33mclass[39m=[32m"mx_CreateRoomDialog_details_summary"[39m
+                [36m>[39m
+                  [0mShow advanced[0m
+                [36m</summary>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mx_SettingsFlag"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_SettingsFlag_label"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mid[39m=[32m"mx_LabelledToggleSwitch_LVQjM7U7J73G"[39m
+                    [36m>[39m
+                      [36m<span>[39m
+                        [0mBlock anyone not part of [0m
+                        [0m from ever joining this room.[0m
+                      [36m</span>[39m
+                    [36m</div>[39m
+                  [36m</span>[39m
+                  [36m<div[39m
+                    [33maria-checked[39m=[32m"false"[39m
+                    [33maria-disabled[39m=[32m"false"[39m
+                    [33maria-labelledby[39m=[32m"mx_LabelledToggleSwitch_LVQjM7U7J73G"[39m
+                    [33mclass[39m=[32m"mx_AccessibleButton mx_ToggleSwitch mx_ToggleSwitch_enabled"[39m
+                    [33mrole[39m=[32m"switch"[39m
+                    [33mtabindex[39m=[32m"0"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_ToggleSwitch_ball"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<p>[39m
+                  [0mYou might enable this if the room will only be used for collaborating with internal teams on your homeserver. This cannot be changed later.[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+          [36m</form>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_Dialog_buttons"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"mx_Dialog_buttons_row"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mdata-testid[39m=[32m"dialog-cancel-button"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCancel[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"mx_Dialog_primary"[39m
+                [33mdata-testid[39m=[32m"dialog-primary-button"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCreate room[0m
+              [36m</button>[39m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mdata-focus-guard[39m=[32m"true"[39m
+          [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      33 |     });
+      34 |
+    > 35 |     const getE2eeEnableToggleInputElement = () => screen.getByLabelText("Enable end-to-end encryption");
+         |                                                          ^
+      36 |     // labelled toggle switch doesn't set the disabled attribute, only aria-disabled
+      37 |     const getE2eeEnableToggleIsDisabled = () =>
+      38 |         getE2eeEnableToggleInputElement().getAttribute("aria-disabled") === "true";
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at getAllByLabelText (node_modules/@testing-library/dom/dist/queries/label-text.js:103:38)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at getByLabelText (test/components/views/dialogs/CreateRoomDialog-test.tsx:35:58)
+      at Object.getE2eeEnableToggleInputElement (test/components/views/dialogs/CreateRoomDialog-test.tsx:95:20)
+
+  ● <CreateRoomDialog /> › for a private room › should override defaultEncrypted when server .well-known forces disabled encryption
+
+    TestingLibraryElementError: Unable to find a label with the text of: Enable end-to-end encryption
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mdata-focus-guard[39m=[32m"true"[39m
+          [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"mx_BaseDialog_title"[39m
+          [33mclass[39m=[32m"mx_CreateRoomDialog mx_Dialog_fixedWidth"[39m
+          [33mdata-focus-lock-disabled[39m=[32m"false"[39m
+          [33mrole[39m=[32m"dialog"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_Dialog_header mx_Dialog_headerWithCancel"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"mx_Heading_h2 mx_Dialog_title"[39m
+              [33mid[39m=[32m"mx_BaseDialog_title"[39m
+            [36m>[39m
+              [0mCreate a private room[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Close dialog"[39m
+              [33mclass[39m=[32m"mx_AccessibleButton mx_Dialog_cancelButton"[39m
+              [33mrole[39m=[32m"button"[39m
+              [33mtabindex[39m=[32m"0"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<form>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mx_Dialog_content"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Field mx_Field_input mx_CreateRoomDialog_name"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mid[39m=[32m"mx_Field_13"[39m
+                  [33mlabel[39m=[32m"Name"[39m
+                  [33mplaceholder[39m=[32m"Name"[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m/>[39m
+                [36m<label[39m
+                  [33mfor[39m=[32m"mx_Field_13"[39m
+                [36m>[39m
+                  [0mName[0m
+                [36m</label>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Field mx_Field_input mx_CreateRoomDialog_topic"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mid[39m=[32m"mx_Field_14"[39m
+                  [33mlabel[39m=[32m"Topic (optional)"[39m
+                  [33mplaceholder[39m=[32m"Topic (optional)"[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m/>[39m
+                [36m<label[39m
+                  [33mfor[39m=[32m"mx_Field_14"[39m
+                [36m>[39m
+                  [0mTopic (optional)[0m
+                [36m</label>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mx_Dropdown mx_JoinRuleDropdown"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-describedby[39m=[32m"mx_JoinRuleDropdown_value"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"listbox"[39m
+                  [33maria-label[39m=[32m"Room visibility"[39m
+                  [33maria-owns[39m=[32m"mx_JoinRuleDropdown_input"[39m
+                  [33mclass[39m=[32m"mx_AccessibleButton mx_Dropdown_input mx_no_textinput"[39m
+                  [33mrole[39m=[32m"button"[39m
+                  [33mtabindex[39m=[32m"0"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mx_Dropdown_option"[39m
+                    [33mid[39m=[32m"mx_JoinRuleDropdown_value"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_JoinRuleDropdown_invite"[39m
+                    [36m>[39m
+                      [0mPrivate room (invite only)[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_Dropdown_arrow"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<p>[39m
+                [0mOnly people invited will be able to find and join this room.[0m
+                [0m [0m
+                [0mYou can change this at any time from room settings.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"mx_CreateRoomDialog_details"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33mclass[39m=[32m"mx_CreateRoomDialog_details_summary"[39m
+                [36m>[39m
+                  [0mShow advanced[0m
+                [36m</summary>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mx_SettingsFlag"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"mx_SettingsFlag_label"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mid[39m=[32m"mx_LabelledToggleSwitch_UMgzQlmqjxSG"[39m
+                    [36m>[39m
+                      [36m<span>[39m
+                        [0mBlock anyone not part of [0m
+                        [0m from ever joining this room.[0m
+                      [36m</span>[39m
+                    [36m</div>[39m
+                  [36m</span>[39m
+                  [36m<div[39m
+                    [33maria-checked[39m=[32m"false"[39m
+                    [33maria-disabled[39m=[32m"false"[39m
+                    [33maria-labelledby[39m=[32m"mx_LabelledToggleSwitch_UMgzQlmqjxSG"[39m
+                    [33mclass[39m=[32m"mx_AccessibleButton mx_ToggleSwitch mx_ToggleSwitch_enabled"[39m
+                    [33mrole[39m=[32m"switch"[39m
+                    [33mtabindex[39m=[32m"0"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"mx_ToggleSwitch_ball"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<p>[39m
+                  [0mYou might enable this if the room will only be used for collaborating with internal teams on your homeserver. This cannot be changed later.[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+          [36m</form>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx_Dialog_buttons"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"mx_Dialog_buttons_row"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mdata-testid[39m=[32m"dialog-cancel-button"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCancel[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"mx_Dialog_primary"[39m
+                [33mdata-testid[39m=[32m"dialog-primary-button"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCreate room[0m
+              [36m</button>[39m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mdata-focus-guard[39m=[32m"true"[39m
+          [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      33 |     });
+      34 |
+    > 35 |     const getE2eeEnableToggleInputElement = () => screen.getByLabelText("Enable end-to-end encryption");
+         |                                                          ^
+      36 |     // labelled toggle switch doesn't set the disabled attribute, only aria-disabled
+      37 |     const getE2eeEnableToggleIsDisabled = () =>
+      38 |         getE2eeEnableToggleInputElement().getAttribute("aria-disabled") === "true";
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at getAllByLabelText (node_modules/@testing-library/dom/dist/queries/label-text.js:103:38)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at getByLabelText (test/components/views/dialogs/CreateRoomDialog-test.tsx:35:58)
+      at Object.getE2eeEnableToggleInputElement (test/components/views/dialogs/CreateRoomDialog-test.tsx:146:20)
+
+  ● <CreateRoomDialog /> › for a private room › should override defaultEncrypted when server forces enabled encryption
+
+    expect(element).toBeChecked()
+
+    Received element is not checked:
+      <div aria-checked="false" aria-disabled="true" aria-labelledby="mx_LabelledToggleSwitch_brd7TEV45bni" class="mx_AccessibleButton mx_ToggleSwitch" role="switch" tabindex="0" />
+
+      159 |
+      160 |             // server forces encryption to enabled, even though defaultEncrypted is true
+    > 161 |             expect(getE2eeEnableToggleInputElement()).toBeChecked();
+          |                                                       ^
+      162 |             expect(getE2eeEnableToggleIsDisabled()).toBeTruthy();
+      163 |             expect(screen.getByText("Your server requires encryption to be enabled in private rooms."));
+      164 |         });
+
+      at Object.toBeChecked (test/components/views/dialogs/CreateRoomDialog-test.tsx:161:55)
+
+(node:115) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 accountData listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS test/components/views/rooms/wysiwyg_composer/SendWysiwygComposer-test.tsx (131.583 s)
+  SendWysiwygComposer
+    ✓ Should render WysiwygComposer when isRichTextEnabled is at true (4411 ms)
+    ✓ Should render PlainTextComposer when isRichTextEnabled is at false (52 ms)
+    Should focus when receiving an Action.FocusSendMessageComposer action
+      ✓ Should focus when receiving an Action.FocusSendMessageComposer action (285 ms)
+      ✓ Should focus and clear when receiving an Action.ClearAndFocusSendMessageComposer (192 ms)
+      ✓ Should focus when receiving a reply_to_event action (72 ms)
+      ✓ Should not focus when disabled (51 ms)
+      ✓ Should focus when receiving an Action.FocusSendMessageComposer action (53 ms)
+      ✓ Should focus and clear when receiving an Action.ClearAndFocusSendMessageComposer (73 ms)
+      ✓ Should focus when receiving a reply_to_event action (53 ms)
+      ✓ Should not focus when disabled (54 ms)
+    Placeholder when { isRichTextEnabled: true }
+      ✓ Should not has placeholder (68 ms)
+      ✓ Should has placeholder (63 ms)
+      ✓ Should display or not placeholder when editor content change (133 ms)
+    Placeholder when { isRichTextEnabled: false }
+      ✓ Should not has placeholder (44 ms)
+      ✓ Should has placeholder (44 ms)
+      ✓ Should display or not placeholder when editor content change (98 ms)
+    Emoji when { isRichTextEnabled: true }
+      ✓ Should add an emoji in an empty composer (94 ms)
+      ✓ Should add an emoji in the middle of a word (136 ms)
+      ✓ Should add an emoji when a word is selected (133 ms)
+    Emoji when { isRichTextEnabled: false }
+      ✓ Should add an emoji in an empty composer (66 ms)
+      ✓ Should add an emoji in the middle of a word (112 ms)
+      ✓ Should add an emoji when a word is selected (108 ms)
+
+Test Suites: 4 failed, 7 passed, 11 total
+Tests:       8 failed, 124 passed, 132 total
+Snapshots:   1 passed, 1 total
+Time:        134.133 s
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
